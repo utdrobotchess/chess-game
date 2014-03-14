@@ -11,6 +11,8 @@
 byte errorFlag = 0; //For error detection. Can be 0 (no error), 1 (not fully within a square when asked to 
                     //center or cross squares)
 
+bool needToCenter = false; //For detecting whether centering is necessary before the next movement. 
+
 int backRightLight; //Used by CheckSquareState() to hold 
 int backLeftLight;  //photodiode value for determining position 
 int frontLeftLight; //on chessboard. Can be 0 to 1256. 
@@ -21,7 +23,7 @@ String squareState;         //photodiode is over a black (1) or white (0) square
                             //hex form for the 4-digit binary number that squareStateArray represents.
 
 volatile bool _LeftEncoderBSet;         //Used by HandleLeftMotorInterruptA() and HandleRightMotorInterruptA() respectively
-volatile long _LeftEncoderTicks = 0;    //as well as centerAgainstEdgeBlack() and centerAgainstEdgeWhite(). Used to count 
+volatile long _LeftEncoderTicks = 0;    //as well as alignWithEdgeBlack() and alignWithEdgeWhite(). Used to count 
 volatile bool _RightEncoderBSet;        //encoder ticks.
 volatile long _RightEncoderTicks = 0; 
 
@@ -43,31 +45,64 @@ FreeSixIMU my3IMU = FreeSixIMU();   //to compute the current angles of the Chess
                                     //which corresponds to currentAngles[0]. 
 
 /*
+ void Center()
  
-*/
+ Description:           Checks if ChessBot is in black or white square and does the corresponding centering routine. Flags an 
+                        error if asked to center while not in either a black or white square. 
+ 
+ Methods Called by:     None
+ 
+ Methods Called:        RotateBaseTo
+                        alignWithEdgeBlack
+                        alignWithEdgeWhite
+                        CheckSquareState
+ 
+ Global Vars effected:  errorFlag
+ */
 void Center() {
     
     CheckSquareState();
     if(squareState == "f")
     {
         RotateBaseTo(90); 
-        centerAgainstEdgeBlack();
+        alignWithEdgeBlack();
         RotateBaseTo(-90);
-        centerAgainstEdgeBlack();
+        alignWithEdgeBlack();
     }
     else if(squareState == "0")
     {
         RotateBaseTo(90);  
-        centerAgainstEdgeWhite();
+        alignWithEdgeWhite();
         RotateBaseTo(-90);
-        centerAgainstEdgeWhite(); 
+        alignWithEdgeWhite(); 
     }
     else
         errorFlag = 1;
     
     
-}//done
+}
 
+/*
+ void CrossSquares()
+ 
+ Description:           This method is used for crossing a certain number of squares in either a diagonal or straight fashion. It first checks
+                        to see whether the ChessBot is completely within a black or white square and flags an error if it is not. If there is no
+                        error, the method saves the color of the starting square and calls AccelTo. Once AccelTo is finished, the method looks for
+                        crossings until the numOfCrossings reaches the desired numOfSquares to be crossed. Within this loop, the squareState is continually
+                        checked and a few things can happen based on the squareState of the ChessBot as it is moving. The method checks to see if at least 
+                        one of the photodiodes crosses into the next square first. It then adjusts the heading of the ChessBot to try to make both of the front 
+                        photodiodes crossover at the same time. Once both front photodiodes are crossed over, this procedure it repeated for the back photodiodes.
+                        Once they have crossed over, that means a square has been completely crossed and numOfCrossings can be incremented. Notice that 
+                        case 1 is for the ChessBot moving straight across and case 2 is for the ChessBot moving diagonally across. 
+ 
+ Methods Called by:     None
+ 
+ Methods Called:        CheckSquareState()
+                        AccelTo()
+                        SetWheelVelocities()
+                        
+ Global Vars effected:  None
+ */
 void CrossSquares(int numOfSquares){
     byte lookForCrossingSwitch = 0;
     String startingSquare;
@@ -79,82 +114,73 @@ void CrossSquares(int numOfSquares){
     if((squareState == "f") || (squareState == "0"))
     {
         startingSquare = squareState;
-        
-        if(abs(angleState) == 45 || abs(angleState) == 135 || abs(angleState) == 225 || abs(angleState) == 315)
+        AccelTo(crossingSpeed);
+        while(numOfCrossings < numOfSquares)
         {
-            AccelTo(crossingSpeed);
-            while(numOfCrossings < numOfSquares)
+            
+            CheckSquareState();
+            switch (lookForCrossingSwitch)
             {
-                
-                CheckSquareState();
-                switch (lookForCrossingSwitch)
-                {
-                    case 0:
-                        if((squareState == "e") || (squareState == "1"))
-                        {
-                            adjustAngle += -0.1;
-                            delay(5);
-                        }
-                        if((squareState == "d") || (squareState == "2"))
-                        {
-                            adjustAngle += 0.1;
-                            delay(5);
-                        }
-                        
-                        if((squareState == "c") || (squareState == "3"))
-                            lookForCrossingSwitch = 1;
+                case 0:
+                    if((squareState == "e") || (squareState == "1"))
+                    {
+                        adjustAngle += -0.1;
                         break;
-                    case 1:
-                        if(startingSquare == squareState)
-                        {
-                            numOfCrossings++;
-                            lookForCrossingSwitch = 0;
-                        }
-                        break; 
-                }
-                
-                SetWheelVelocities(0);
-                RotateWheels(currentVelocityL, currentVelocityR);
-                
-            }
-        }
-        else
-        {
-            AccelTo(crossingSpeed);
-            while(numOfCrossings < numOfSquares)
-            {
-                CheckSquareState();
-                switch (lookForCrossingSwitch)
-                {
-                    case 0:
-                        if((squareState == "e") || (squareState == "1"))
-                        {
-                            adjustAngle += -0.1;
-                            delay(5);
-                        }
-                        if((squareState == "d") || (squareState == "2"))
-                        {
-                            adjustAngle += 0.1;
-                            delay(5);
-                        }
-                        
-                        if((squareState == "c") || (squareState == "3"))
-                            lookForCrossingSwitch = 1;
+                    }
+                    if((squareState == "d") || (squareState == "2"))
+                    {
+                        adjustAngle += 0.1;
                         break;
-                    case 1:
-                        if((startingSquare == "f" && squareState == "0") || (startingSquare == "0" && squareState == "f"))
-                        {
-                            numOfCrossings++;
-                            lookForCrossingSwitch = 0;
-                            startingSquare = squareState;
-                        }
-                        break; 
-                }
-                
-                SetWheelVelocities(adjustAngle);
-                RotateWheels(currentVelocityL, currentVelocityR);
-                
+                    }
+                    
+                    if((squareState == "c") || (squareState == "3"))
+                    {
+                        if(abs(angleState) == 45 || abs(angleState) == 135 || abs(angleState) == 225 || abs(angleState) == 315)
+                            lookForCrossingSwitch = 2;
+                        else
+                            lookForCrossingSwitch = 1;
+                    }       
+                    break;
+                case 1:
+                    if((squareState == "d") || (squareState == "2"))
+                    {
+                        adjustAngle += -0.1;
+                        break;
+                    }
+                    if((squareState == "e") || (squareState == "1"))
+                    {
+                        adjustAngle += 0.1;
+                        break;
+                    }
+                    if(startingSquare == squareState)
+                    {
+                        numOfCrossings++;
+                        lookForCrossingSwitch = 0;
+                    }
+                    break; 
+                case 2:
+                    if((squareState == "d") || (squareState == "2"))
+                    {
+                        adjustAngle += -0.1;
+                        break;
+                    }
+                    if((squareState == "e") || (squareState == "1"))
+                    {
+                        adjustAngle += 0.1;
+                        break;
+                    }
+                    if((startingSquare == "f" && squareState == "0") || (startingSquare == "0" && squareState == "f"))
+                    {
+                        numOfCrossings++;
+                        lookForCrossingSwitch = 0;
+                        startingSquare = squareState;
+                    }
+                    break;
             }
+            
+            SetWheelVelocities(adjustAngle);
+            delay(10);
+            
         }
     }
     else
@@ -162,8 +188,30 @@ void CrossSquares(int numOfSquares){
     
     delay(100);
     HardStop();
-} //done (might need to add delay between SetWheelVelocities() updates. Also test the adjustAngle feature)
+    
+    if(abs(adjustAngle > 10))
+        needToCenter = true;
+}
 
+/*
+ void RotateBaseTo()
+ 
+ Description:           This method is used to rotate the base of the ChessBot about its center. To do this, it first reinitializes the gyro until 
+                        it initializes around 0 degrees. Then, it continues to rotate the ChessBot using SetWheelVelocities() until the heading of 
+                        the ChessBot is close enough to endAngle. At this point, it counts the number of milliseconds until fineTuneEndTime 
+                        and then stops the motors. Finally, it updates the angleState by the amount of the endAngle.
+ 
+ Methods Called by:     Center()
+ 
+ Methods Called:        SetWheekVelocities()
+                        HardStop()
+ 
+ Global Vars effected:  velocityState
+                        integralOffsetR
+                        integralOffsetL
+                        prevAngle
+                        angleState 
+ */
 void RotateBaseTo(float endAngle){
     float fineTuneBeginTime, fineTuneElapsedTime, fineTuneEndTime = 500;
     byte fineTuneTimingSwitch = 0; 
@@ -172,7 +220,6 @@ void RotateBaseTo(float endAngle){
     integralOffsetL = 0;
     velocityState = 0;
     prevAngle = 0;
-    
     
     do
     {
@@ -185,7 +232,6 @@ void RotateBaseTo(float endAngle){
         {
             
             SetWheelVelocities(endAngle);
-            RotateWheels(currentVelocityL,currentVelocityR);
             delay(10);
             
             if(abs(currentAngles[0]-endAngle)<1)
@@ -208,8 +254,29 @@ void RotateBaseTo(float endAngle){
     angleState += endAngle;
     if(abs(angleState) == 360)
         angleState = 0;
-}//done (might need to adjust delay between SetWheelVelocities() updates)
+}
 
+/*
+ void CheckSquareState()
+ 
+ Description:           Reads values of each of the photodiodes and stores in corresponding variables. Stores whether each of the 
+                        photodiode values is larger than 800 (1 if true, 0 if false). Converts the squareStateArray, which
+                        represents a 4 digit binary number, into a 1 digit hex number.
+ 
+ Methods Called by:     Center()
+                        CrossSquares()
+                        alignWithEdgeBlack()
+                        centerAgsinstEdgeWhite()
+ 
+ Methods Called:        None
+ 
+ Global Vars effected:  squareState
+                        squareStateArray
+                        backRightLight
+                        backLeftLight
+                        frontLeftLight
+                        frontRightLight
+ */
 void CheckSquareState(){
     backRightLight = analogRead(backRightLightPin);
     backLeftLight = analogRead(backLeftLightPin);
@@ -222,8 +289,30 @@ void CheckSquareState(){
     squareStateArray[3] = (frontRightLight > 800);
     
     squareState = String(squareStateArray[0]*8 + squareStateArray[1]*4 + squareStateArray[2]*2 + squareStateArray[3],HEX);
-}//done
+}
 
+/*
+ void AccelTo()
+ 
+ Description:           Determines whether to deccelerate or accelerate depending on calculation that determines accelBy, which 
+                        can be +1 or -1. Sets integral offsets and prevAngle to 0 so that offsets from previous movements do not
+                        affect this one. Checks if desired speed is greater than 70 and sets the velocityState to 70, or checks if
+                        it is less than -70 and sets the velocityState to -70 (this is because the motors usually don't move until
+                        around an input of 80 or -80). Resets the gyroscope until the initialized gyroscope angle is close to 0. 
+                        Increments velocityState and calls SetWheelVelocities until the velocityState reaches the desired endspeed. 
+                        
+ 
+ Methods Called by:     CrossSquares()
+                        alignWithEdgeBlack()
+                        centerAgsinstEdgeWhite()
+ 
+ Methods Called:        None
+ 
+ Global Vars effected:  velocityState
+                        integralOffsetR
+                        integralOffsetL
+                        prevAngle
+ */
 void AccelTo(int endspeed){
     int accelBy = (endspeed - velocityState)/abs(endspeed - velocityState);
     integralOffsetR = 0;
@@ -246,30 +335,70 @@ void AccelTo(int endspeed){
     
     
     
-    while(abs(endspeed - velocityState) > 1)
+    while(endspeed != velocityState)
     {
         velocityState += accelBy; 
-        
         SetWheelVelocities(0);
-        RotateWheels(currentVelocityL, currentVelocityR);
         delay(10);
     }
-}//done
+}
 
+/*
+ void HardStop()
+ 
+ Description:           Checks the current velocity values for each of the wheels and writes to the motors the opposite values for 20
+                        milliseconds followed by writing 0 to each of the motors.
+ 
+ Methods Called by:     CrossSquares()
+                        RotateBaseTo()
+                        alignWithEdgeBlack()
+                        alignWithEdgeWhite()
+ 
+ Methods Called:        RotateWheels()
+ 
+ Global Vars effected:  velocityState
+ */
 void HardStop(){
     
     RotateWheels(-1*currentVelocityL,-1*currentVelocityR);
     delay(20);
     RotateWheels(0, 0);
-    currentVelocityL = 0;
-    currentVelocityR = 0;
     velocityState = 0;
-}//done
+}
 
+/*
+ void SetWheelVelocities()
+ 
+ Description:           This method is used to calculate the velocity of each wheel so that a desired heading is achieved. It is basically
+                        the implementation of a PID controller, with the motors being the actuators and the  heading angle being the variable
+                        to be controlled. There is a special case when the desired heading is 180, in which case the control variable is disconinuous,
+                        wrapping back around to -180. After calculating what the velocities shoudl be, it calls the RotateWheels method. 
+ 
+ Methods Called by:     RotateBaseTo()
+                        CrossSquares()
+                        AccelTo()
+                        alignWithEdgeBlack()
+                        alignWithEdgeWhite()
+ 
+ Methods Called:        RotateWheels()
+ 
+ Global Vars effected:  currentVelocityL
+                        currentVelocityR
+ */
 void SetWheelVelocities(float endAngle){
+    int setVelocityL, setVelocityR;
     my3IMU.getEuler(currentAngles); 
     
-    if(endAngle == 180)
+    if(abs(endAngle) != 180)
+    {
+        integralOffsetR += (endAngle - currentAngles[0])/50;
+        integralOffsetL += (endAngle - currentAngles[0])/-50;
+        
+        proportionalOffSetR = 3*(endAngle - currentAngles[0]);
+        proportionalOffSetL = -3*(endAngle - currentAngles[0]);
+    }
+    
+    else
     {
         if(currentAngles[0]>=0)
         {
@@ -287,17 +416,7 @@ void SetWheelVelocities(float endAngle){
             proportionalOffSetR = -3*abs(endAngle - currentAngles[0]);
             proportionalOffSetL = 3*abs(endAngle - currentAngles[0]);
             
-        }
-    }
-    
-    else
-    {
-        integralOffsetR += (endAngle - currentAngles[0])/50;
-        integralOffsetL += (endAngle - currentAngles[0])/-50;
-        
-        proportionalOffSetR = 3*(endAngle - currentAngles[0]);
-        proportionalOffSetL = -3*(endAngle - currentAngles[0]);
-        
+        }        
     }
     
     derivativeOffsetR = -10*(currentAngles[0] - prevAngle);
@@ -305,17 +424,19 @@ void SetWheelVelocities(float endAngle){
     
     prevAngle = currentAngles[0];
     
-    currentVelocityR = velocityState + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
-    currentVelocityL = velocityState + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
+    setVelocityR = velocityState + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
+    setVelocityL = velocityState + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
+    
+    RotateWheels(setVelocityL, setVelocityR);
     
         
-} //need to check if gains are set correctly
+} 
 
 /*
  void RotateWheels()
  
  Description:           Takes input wheel speeds and ensures that they do not exceed abs(255). Then writes the corrresponding
-                        values to the motor pins. 
+                        values to the motor pins. Finally, sets the global variables for the wheel velocities to the input values. 
  
  Methods Called by:     RotateBaseTo()
                         CrossSquares()
@@ -323,7 +444,9 @@ void SetWheelVelocities(float endAngle){
                         HardStop()
                         
  Methods Called:        None
- Global Vars effected:  None
+ 
+ Global Vars effected:  currentVelocityL
+                        currentVelocityR
  */
 void RotateWheels(int angularSpeedL, int angularSpeedR){
     
@@ -359,6 +482,10 @@ void RotateWheels(int angularSpeedL, int angularSpeedR){
         analogWrite(motor3Pin, abs(angularSpeedL));
         digitalWrite(motor4Pin, LOW);
     }
+    
+    currentVelocityL = angularSpeedL;
+    currentVelocityR = angularSpeedR;
+    
 }
 
 /*
@@ -406,81 +533,111 @@ void Setup(){
     digitalWrite(12, HIGH); 
 }
 
-void centerAgainstEdgeBlack(){
+/*
+ void alignWithEdgeBlack()
+ 
+ Description:           This method is used for aligning the front two photodiodes of the ChessBot with the edge of a black square. To do this,
+                        it first accelerates to a low speed, and continues moving while completely within the black square. It calls HardStop()
+                        as soon as one of the photodiodes is over a white square. It then continually moves either the right wheel or left wheel
+                        (depending on whichever one needs to move to align the front photodiodes with the edge) until both front photodiodes read
+                        white. It then stops, and slowly backs up until 1400 ticks are counted for both wheels, which should get the ChessBot to about
+                        the center of the black square.
+ 
+ Methods Called by:     Center()
+ 
+ Methods Called:        CheckSquareState()
+                        RotateWheels()
+                        HardStop()
+                        SetWheelVelocities()
+ 
+ Global Vars effected:  _LeftEncoderTicks
+                        _RightEncoderTicks
+ */
+void alignWithEdgeBlack(){
+    
     AccelTo(70);
+    
     while(squareState == "f")
     {
         CheckSquareState();
         SetWheelVelocities(0);
-        RotateWheels(currentVelocityL, currentVelocityR);
     }
+    
     HardStop();
+    
     while(squareState != "c")
     {
         CheckSquareState();
         if(squareState == "d")
-        {
             RotateWheels(0, 90);
-            currentVelocityL = 0;
-            currentVelocityR = 90;
-        }
         else if(squareState == "e")
-        {
             RotateWheels(90, 0);
-            currentVelocityL = 90;
-            currentVelocityR = 0;
-        }
     }
+    
     HardStop();
     _LeftEncoderTicks = 0;
     _RightEncoderTicks = 0;
     AccelTo(-70);
+    
     while((abs(_LeftEncoderTicks) < 1400) && (abs(_RightEncoderTicks) < 1400))
-    {
         SetWheelVelocities(0);
-        RotateWheels(currentVelocityL, currentVelocityR);
-    }
+    
     HardStop();
     CheckSquareState();
-}//done (might need to add delay between SetWheelVelocities() updates)
+}
 
-void centerAgainstEdgeWhite(){
+/*
+ void alignWithEdgeWhite()
+ 
+ Description:           This method is used for aligning the front two photodiodes of the ChessBot with the edge of a white square. To do this,
+                        it first accelerates to a low speed, and continues moving while completely within the white square. It calls HardStop()
+                        as soon as one of the photodiodes is over a black square. It then continually moves either the right wheel or left wheel
+                        (depending on whichever one needs to move to align the front photodiodes with the edge) until both front photodiodes read
+                        black. It then stops, and slowly backs up until 1400 ticks are counted for both wheels, which should get the ChessBot to about
+                        the center of the white square.
+ 
+ Methods Called by:     Center()
+ 
+ Methods Called:        CheckSquareState()
+                        RotateWheels()
+                        HardStop()
+                        SetWheelVelocities()
+ 
+ Global Vars effected:  _LeftEncoderTicks
+                        _RightEncoderTicks
+ */
+void alignWithEdgeWhite(){
+    
     AccelTo(70);
+    
     while(squareState == "0")
     {
         CheckSquareState();
         SetWheelVelocities(0);
-        RotateWheels(currentVelocityL, currentVelocityR);
     }
+    
     HardStop();
+    
     while(squareState != "3")
     {
         CheckSquareState();
         if(squareState == "2")
-        {
             RotateWheels(0, 90);
-            currentVelocityL = 0;
-            currentVelocityR = 90;
-        }
         else if(squareState == "1")
-        {
             RotateWheels(90, 0);
-            currentVelocityL = 90;
-            currentVelocityR = 0;
-        }
     }
+    
     HardStop();
     _LeftEncoderTicks = 0;
     _RightEncoderTicks = 0;
     AccelTo(-70);
+    
     while((abs(_LeftEncoderTicks) < 1400) && (abs(_RightEncoderTicks) < 1400))
-    {
         SetWheelVelocities(0);
-        RotateWheels(currentVelocityL, currentVelocityR);
-    }
+    
     HardStop();
     CheckSquareState();
-}//done (might need to add delay between SetWheelVelocities() updates)
+}
 
 /*
  void HandleLeftMotorInterruptA()
@@ -532,22 +689,4 @@ void HandleRightMotorInterruptA(){
 #else 
     _RightEncoderTicks += _RightEncoderBSet ? -1 : +1; 
 #endif
-}
-
-/*
- void checkForError()
- 
- Description:           Unfinished. We plan to use it to communicate to the main chess program that the piece cannot make
-                        the desired move and must be manually repositioned before continuing the game. 
- 
- 
- Methods Called by:     
- Methods Called:        
- 
- Global Vars effected:  
- */
-void checkForError(){
-    if(errorFlag != 0)
-    {
-    }
 }

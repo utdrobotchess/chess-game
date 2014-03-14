@@ -82,10 +82,9 @@ void HardStop();
 void SetWheelVelocities(int endAngle);
 void RotateWheels(int angularSpeedL, int angularSpeedR);
 void Setup();
-void centerAgainstEdgeBlack();
-void centerAgainstEdgeWhite();
+void alignWithEdgeBlack();
+void alignWithEdgeWhite();
 void HandleLeftMotorInterruptA();
 void HandleRightMotorInterruptA();
-void checkForError();
 
 #endif
