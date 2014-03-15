@@ -47,8 +47,8 @@ class FreeSixIMU
     ITG3200 gyro;
     
   private:
-    volatile float gx, gy, gz;
-    volatile float angleX, angleY, angleZ;
+    float gx, gy, gz;
+    float angleX, angleY, angleZ;
     unsigned long lastUpdate, now; // sample period expressed in milliseconds
     float sampleFreq; // sample period expressed in seconds
 };

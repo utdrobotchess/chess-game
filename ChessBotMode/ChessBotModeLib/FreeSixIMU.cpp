@@ -101,6 +101,21 @@ void FreeSixIMU::getEuler(float * angles) {
     angleX += gx;
     angleY += gy;
     angleZ += gz;
+    
+    if(angleX > 180)
+        angleX = -180;
+    else if(angleX < -180)
+        angleX = 180;
+    
+    if(angleY > 180)
+        angleY = -180;
+    else if(angleY < -180)
+        angleY = 180;
+    
+    if(angleZ > 180)
+        angleZ = -180;
+    else if(angleZ < -180)
+        angleZ = 180;
 
     angles[0] = angleX;
     angles[1] = angleY;

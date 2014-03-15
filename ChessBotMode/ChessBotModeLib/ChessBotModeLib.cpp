@@ -38,7 +38,7 @@ float derivativeOffsetR=0, derivativeOffsetL=0; //used in SetWheelVelocities() t
 
 float prevAngle = 0;                //Used by several methods to hold computed heading angles. The FreeSixIMU object my3IMU
 float currentAngles[3];             //is defined by the FreeSixIMU.h library, which contains drivers for the gyroscope. 
-int angleState=0;                   //Using my3IMU.getEuler(currentAngles), for example, will use the gyroscope MEMS device
+int angleState=0;                   //Using my3IMU.getEuler(), for example, will use the gyroscope MEMS device
 FreeSixIMU my3IMU = FreeSixIMU();   //to compute the current angles of the ChessBot and return pitch, yaw, and roll
                                     //angles between -180 and 180 (counterclockwise positive). The methods below are only
                                     //concerned with the angle of rotation about the axis perpendicular to the ground,
