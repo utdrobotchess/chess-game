@@ -121,7 +121,6 @@ public:
   
   // Gyro initialization
   void init(unsigned int address);
-  void reinit();
   void init(unsigned int address, byte _SRateDiv, byte _Range, byte _filterBW, byte _ClockSrc, bool _ITGReady, bool _INTRawDataReady);      
     
   // Who Am I

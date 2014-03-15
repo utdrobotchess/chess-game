@@ -54,12 +54,6 @@ void ITG3200::init(unsigned int  address) {
   //init(NOSRDIVIDER, RANGE2000, BW010_SR1, PLL_EXTERNAL32, true, true);
 }
 
-void ITG3200::reinit() {
-  setGains(1.0,1.0,1.0);
-  setOffsets(0.0,0.0,0.0);
-  setRevPolarity(0,0,0);
-}
-
 void ITG3200::init(unsigned int address, byte _SRateDiv, byte _Range, byte _filterBW, byte _ClockSrc, bool _ITGReady, bool _INTRawDataReady) {
   _dev_address = address;
   setSampleRateDiv(_SRateDiv);
