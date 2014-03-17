@@ -72,19 +72,62 @@
  are performed reliably.
 */
 
-void Center();
-void CrossSquares(int numOfSquares);
-void RotateBaseTo(float endAngle);
+class ChessBot
+{
+    public:
+        ChessBot();
+        void Center();
+        void CrossSquares(int numOfSquares);
+        void RotateBaseTo(float endAngle);
 
-void CheckSquareState();
-void AccelTo(int endspeed);
-void HardStop();
-void SetWheelVelocities(int endAngle);
-void RotateWheels(int angularSpeedL, int angularSpeedR);
-void Setup();
-void alignWithEdgeBlack();
-void alignWithEdgeWhite();
-void HandleLeftMotorInterruptA();
-void HandleRightMotorInterruptA();
+        void CheckSquareState();
+        void AccelTo(int endspeed);
+        void HardStop();
+        void SetWheelVelocities(float endAngle);
+        void RotateWheels(int angularSpeedL, int angularSpeedR);
+        void Setup();
+        void alignWithEdgeBlack();
+        void alignWithEdgeWhite();
+        void HandleLeftMotorInterruptA();
+        void HandleRightMotorInterruptA();
+    
+        byte errorFlag; //For error detection. Can be 0 (no error), 1 (not fully within a square when asked to 
+        //center or cross squares)
+    
+        bool needToCenter; //For detecting whether centering is necessary before the next movement. 
+    
+        int backRightLight; //Used by CheckSquareState() to hold 
+        int backLeftLight;  //photodiode value for determining position 
+        int frontLeftLight; //on chessboard. Can be 0 to 1256. 
+        int frontRightLight;
+        
+        bool squareStateArray[4];   //Used by CheckSquareState() to hold bool value that corresponds to whether a  
+        String squareState;         //photodiode is over a black (1) or white (0) square. String squareState is the 
+                                    //hex form for the 4-digit binary number that squareStateArray represents.
+        
+        volatile bool _LeftEncoderBSet;         //Used by HandleLeftMotorInterruptA() and HandleRightMotorInterruptA() respectively
+        volatile long _LeftEncoderTicks;        //as well as alignWithEdgeBlack() and alignWithEdgeWhite(). Used to count 
+        volatile bool _RightEncoderBSet;        //encoder ticks.
+        volatile long _RightEncoderTicks; 
+        
+        
+        
+        int velocityState;                              //Used by nearly all methods listed below. Variable velocityState holds a 
+        int currentVelocityR, currentVelocityL;         //value between -255 and 255 that corrresponds to the velocity of the ChessBot
+        int proportionalOffSetR, proportionalOffSetL;   //center of gravity. Likewise, currentVelocityR and currentVelocityL hold such
+        float integralOffsetR, integralOffsetL;         //values for the right and left wheels respectively. Each of the offsets are
+        float derivativeOffsetR, derivativeOffsetL;     //used in SetWheelVelocities() to achieve a desired heading angle. They can
+                                                        //be any real value within the limits of int and float definitions. 
+            
+        float prevAngle;                    //Used by several methods to hold computed heading angles. The FreeSixIMU object my3IMU
+        float currentAngles[3];             //is defined by the FreeSixIMU.h library, which contains drivers for the gyroscope. 
+        int angleState;                     //Using my3IMU.getEuler(), for example, will use the gyroscope MEMS device
+        FreeSixIMU my3IMU;                  //to compute the current angles of the ChessBot and return pitch, yaw, and roll
+                                            //angles between -180 and 180 (counterclockwise positive). The methods below are only
+                                            //concerned with the angle of rotation about the axis perpendicular to the ground,
+                                            //which corresponds to currentAngles[0]. 
+    
+};
+
 
 #endif

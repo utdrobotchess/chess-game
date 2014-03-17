@@ -7,42 +7,23 @@
 
 #include <ChessBotModeLib.h>
 
+ChessBot::ChessBot(){
+        
+    errorFlag = 0; 
 
-byte errorFlag = 0; //For error detection. Can be 0 (no error), 1 (not fully within a square when asked to 
-                    //center or cross squares)
+    needToCenter = false; 
 
-bool needToCenter = false; //For detecting whether centering is necessary before the next movement. 
+    _LeftEncoderTicks = 0;    
+    _RightEncoderTicks = 0; 
 
-int backRightLight; //Used by CheckSquareState() to hold 
-int backLeftLight;  //photodiode value for determining position 
-int frontLeftLight; //on chessboard. Can be 0 to 1256. 
-int frontRightLight;
+    velocityState=0;                            
+    integralOffsetR=0, integralOffsetL=0;     
+    derivativeOffsetR=0, derivativeOffsetL=0; 
 
-bool squareStateArray[4];   //Used by CheckSquareState() to hold bool value that corresponds to whether a  
-String squareState;         //photodiode is over a black (1) or white (0) square. String squareState is the 
-                            //hex form for the 4-digit binary number that squareStateArray represents.
-
-volatile bool _LeftEncoderBSet;         //Used by HandleLeftMotorInterruptA() and HandleRightMotorInterruptA() respectively
-volatile long _LeftEncoderTicks = 0;    //as well as alignWithEdgeBlack() and alignWithEdgeWhite(). Used to count 
-volatile bool _RightEncoderBSet;        //encoder ticks.
-volatile long _RightEncoderTicks = 0; 
-
-
-
-int velocityState=0;                            //Used by nearly all methods listed below. Variable velocityState holds a 
-int currentVelocityR, currentVelocityL;         //value between -255 and 255 that corrresponds to the velocity of the ChessBot
-int proportionalOffSetR, proportionalOffSetL;   //center of gravity. Likewise, currentVelocityR and currentVelocityL hold such
-float integralOffsetR=0, integralOffsetL=0;     //values for the right and left wheels respectively. Each of the offsets are
-float derivativeOffsetR=0, derivativeOffsetL=0; //used in SetWheelVelocities() to achieve a desired heading angle. They can
-                                                //be any real value within the limits of int and float definitions. 
-
-float prevAngle = 0;                //Used by several methods to hold computed heading angles. The FreeSixIMU object my3IMU
-float currentAngles[3];             //is defined by the FreeSixIMU.h library, which contains drivers for the gyroscope. 
-int angleState=0;                   //Using my3IMU.getEuler(), for example, will use the gyroscope MEMS device
-FreeSixIMU my3IMU = FreeSixIMU();   //to compute the current angles of the ChessBot and return pitch, yaw, and roll
-                                    //angles between -180 and 180 (counterclockwise positive). The methods below are only
-                                    //concerned with the angle of rotation about the axis perpendicular to the ground,
-                                    //which corresponds to currentAngles[0]. 
+    prevAngle = 0;              
+    angleState=0;                
+    my3IMU = FreeSixIMU(); 
+}
 
 /*
  void Center()
@@ -59,7 +40,7 @@ FreeSixIMU my3IMU = FreeSixIMU();   //to compute the current angles of the Chess
  
  Global Vars effected:  errorFlag
  */
-void Center() {
+void ChessBot::Center() {
     
     CheckSquareState();
     if(squareState == "f")
@@ -103,7 +84,7 @@ void Center() {
                         
  Global Vars effected:  None
  */
-void CrossSquares(int numOfSquares){
+void ChessBot::CrossSquares(int numOfSquares){
     byte lookForCrossingSwitch = 0;
     String startingSquare;
     int numOfCrossings = 0;
@@ -212,7 +193,7 @@ void CrossSquares(int numOfSquares){
                         prevAngle
                         angleState 
  */
-void RotateBaseTo(float endAngle){
+void ChessBot::RotateBaseTo(float endAngle){
     float fineTuneBeginTime, fineTuneElapsedTime, fineTuneEndTime = 500;
     byte fineTuneTimingSwitch = 0; 
     
@@ -277,7 +258,7 @@ void RotateBaseTo(float endAngle){
                         frontLeftLight
                         frontRightLight
  */
-void CheckSquareState(){
+void ChessBot::CheckSquareState(){
     backRightLight = analogRead(backRightLightPin);
     backLeftLight = analogRead(backLeftLightPin);
     frontLeftLight = analogRead(frontLeftLightPin);
@@ -313,7 +294,7 @@ void CheckSquareState(){
                         integralOffsetL
                         prevAngle
  */
-void AccelTo(int endspeed){
+void ChessBot::AccelTo(int endspeed){
     int accelBy = (endspeed - velocityState)/abs(endspeed - velocityState);
     integralOffsetR = 0;
     integralOffsetL = 0;
@@ -358,7 +339,7 @@ void AccelTo(int endspeed){
  
  Global Vars effected:  velocityState
  */
-void HardStop(){
+void ChessBot::HardStop(){
     
     RotateWheels(-1*currentVelocityL,-1*currentVelocityR);
     delay(20);
@@ -372,7 +353,7 @@ void HardStop(){
  Description:           This method is used to calculate the velocity of each wheel so that a desired heading is achieved. It is basically
                         the implementation of a PID controller, with the motors being the actuators and the  heading angle being the variable
                         to be controlled. There is a special case when the desired heading is 180, in which case the control variable is disconinuous,
-                        wrapping back around to -180. After calculating what the velocities shoudl be, it calls the RotateWheels method. 
+                        wrapping back around to -180. After calculating what the velocities should be, it calls the RotateWheels method. 
  
  Methods Called by:     RotateBaseTo()
                         CrossSquares()
@@ -385,47 +366,35 @@ void HardStop(){
  Global Vars effected:  currentVelocityL
                         currentVelocityR
  */
-void SetWheelVelocities(float endAngle){
+void ChessBot::SetWheelVelocities(float endAngle){
     int setVelocityL, setVelocityR;
+    int minOffsetL, minOffsetR;
     my3IMU.getEuler(currentAngles); 
     
-    if(abs(endAngle) != 180)
-    {
-        integralOffsetR += (endAngle - currentAngles[0])/50;
-        integralOffsetL += (endAngle - currentAngles[0])/-50;
-        
-        proportionalOffSetR = 3*(endAngle - currentAngles[0]);
-        proportionalOffSetL = -3*(endAngle - currentAngles[0]);
-    }
+    integralOffsetR += (endAngle - currentAngles[0])/50;
+    integralOffsetL += (endAngle - currentAngles[0])/-50;
     
+    proportionalOffSetR = (endAngle - currentAngles[0]);
+    proportionalOffSetL = -(endAngle - currentAngles[0]);
+    
+    if(velocityState == 0)
+    {
+        minOffsetR = 60*(endAngle - currentAngles[0])/abs(endAngle - currentAngles[0]);
+        minOffsetL = -60*(endAngle - currentAngles[0])/abs(endAngle - currentAngles[0]);
+    }
     else
     {
-        if(currentAngles[0]>=0)
-        {
-            integralOffsetR += abs(endAngle - currentAngles[0])/50;
-            integralOffsetL += abs(endAngle - currentAngles[0])/-50;
-            
-            proportionalOffSetR = 3*abs(endAngle - currentAngles[0]);
-            proportionalOffSetL = -3*abs(endAngle - currentAngles[0]);
-        }
-        else
-        {
-            integralOffsetR += abs(endAngle - currentAngles[0])/-50;
-            integralOffsetL += abs(endAngle - currentAngles[0])/50;
-            
-            proportionalOffSetR = -3*abs(endAngle - currentAngles[0]);
-            proportionalOffSetL = 3*abs(endAngle - currentAngles[0]);
-            
-        }        
+        minOffsetR = 0;
+        minOffsetL = 0;
     }
     
-    derivativeOffsetR = -10*(currentAngles[0] - prevAngle);
-    derivativeOffsetL = 10*(currentAngles[0] - prevAngle);
+    derivativeOffsetR = -100*(currentAngles[0] - prevAngle);
+    derivativeOffsetL = 100*(currentAngles[0] - prevAngle);
     
     prevAngle = currentAngles[0];
     
-    setVelocityR = velocityState + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
-    setVelocityL = velocityState + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
+    setVelocityR = velocityState + minOffsetR + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
+    setVelocityL = velocityState + minOffsetL + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
     
     RotateWheels(setVelocityL, setVelocityR);
     
@@ -448,7 +417,7 @@ void SetWheelVelocities(float endAngle){
  Global Vars effected:  currentVelocityL
                         currentVelocityR
  */
-void RotateWheels(int angularSpeedL, int angularSpeedR){
+void ChessBot::RotateWheels(int angularSpeedL, int angularSpeedR){
     
     if(angularSpeedL > 255)
         angularSpeedL = 255;
@@ -492,11 +461,9 @@ void RotateWheels(int angularSpeedL, int angularSpeedR){
  void Setup()
  
  Description:           Sets encoder pins as inputs and turns on pullup resistors to allow for normal function of the encoder 
-                        circuits. Attaches interrupts to rising edge of the encoder output. Begins Serial communication at
-                        9600 BAUD. Begins I2C communication and initializes the gyroscope. Assigns motorpins as outputs. This
-                        method should only be called once in the setup() method of an arduino sketch and should not be used 
-                        anywhere else. 
- 
+                        circuits. Begins Serial communication at 9600 BAUD. Begins I2C communication and initializes the gyroscope. 
+                        Assigns motorpins as outputs. This method should only be called once in the setup() method of an arduino 
+                        sketch and should not be used anywhere else. 
  
  Methods Called by:     None
  Methods Called:        HandleRightMotorInterruptA
@@ -504,19 +471,17 @@ void RotateWheels(int angularSpeedL, int angularSpeedR){
  
  Global Vars effected:  None
 */
-void Setup(){
+void ChessBot::Setup(){
     
     pinMode(c_LeftEncoderPinA, INPUT);       
     digitalWrite(c_LeftEncoderPinA, LOW);  // turn on pullup resistors 
     pinMode(c_LeftEncoderPinB, INPUT);
     digitalWrite(c_LeftEncoderPinB, LOW);  // turn on pullup resistors
-    attachInterrupt(c_LeftEncoderInterrupt, HandleLeftMotorInterruptA, RISING); 
     
     pinMode(c_RightEncoderPinA, INPUT); 
     digitalWrite(c_RightEncoderPinA, LOW);  // turn on pullup resistors 
     pinMode(c_RightEncoderPinB, INPUT);
     digitalWrite(c_RightEncoderPinB, LOW);  // turn on pullup resistors 
-    attachInterrupt(c_RightEncoderInterrupt, HandleRightMotorInterruptA, RISING); 
     
     Serial.begin(9600); 
     Wire.begin();
@@ -553,7 +518,7 @@ void Setup(){
  Global Vars effected:  _LeftEncoderTicks
                         _RightEncoderTicks
  */
-void alignWithEdgeBlack(){
+void ChessBot::alignWithEdgeBlack(){
     
     AccelTo(70);
     
@@ -606,7 +571,7 @@ void alignWithEdgeBlack(){
  Global Vars effected:  _LeftEncoderTicks
                         _RightEncoderTicks
  */
-void alignWithEdgeWhite(){
+void ChessBot::alignWithEdgeWhite(){
     
     AccelTo(70);
     
@@ -653,7 +618,7 @@ void alignWithEdgeWhite(){
  Global Vars effected:  _LeftEncoderTicks
                         _LeftEncoderBSet
  */
-void HandleLeftMotorInterruptA(){
+void ChessBot::HandleLeftMotorInterruptA(){
     // Test transition; since the interrupt will only fire on 'rising' we don't need to read pin A 
     _LeftEncoderBSet = digitalReadFast(c_LeftEncoderPinB);   // read the input pin 
     
@@ -679,7 +644,7 @@ void HandleLeftMotorInterruptA(){
  Global Vars effected:  _RightEncoderTicks
                         _RightEncoderBSet
  */
-void HandleRightMotorInterruptA(){
+void ChessBot::HandleRightMotorInterruptA(){
     // Test transition; since the interrupt will only fire on 'rising' we don't need to read pin A 
     _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin 
     
@@ -690,3 +655,4 @@ void HandleRightMotorInterruptA(){
     _RightEncoderTicks += _RightEncoderBSet ? -1 : +1; 
 #endif
 }
+

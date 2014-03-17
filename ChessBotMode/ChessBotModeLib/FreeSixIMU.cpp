@@ -1,26 +1,3 @@
-/*
-FreeSixIMU.cpp - A libre and easy to use orientation sensing library for Arduino
-Copyright (C) 2011 Fabio Varesano <fabio at varesano dot net>
-
-Development of this code has been supported by the Department of Computer Science,
-Universita' degli Studi di Torino, Italy within the Piemonte Project
-http://www.piemonte.di.unito.it/
-
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 #include <inttypes.h>
 #include "FreeSixIMU.h"
 
@@ -44,9 +21,8 @@ void FreeSixIMU::reinit() {
     angleX = 0;
     angleY = 0;
     angleZ = 0;
-    lastUpdate = 0;
-    now = 0;
-    gyro.zeroCalibrate(128,5);
+    gyro.zeroCalibrate(200,5);
+    lastUpdate = micros();
 }
 
 void FreeSixIMU::init() {
@@ -76,48 +52,39 @@ void FreeSixIMU::init(int gyro_addr, bool fastmode) {
   
   // init ITG3200
   gyro.init(gyro_addr);
-  delay(1000);
+  //delay(500);
   // calibrate the ITG3200
-  gyro.zeroCalibrate(128,5);
+  gyro.zeroCalibrate(200,5);
   
 }
 
 void FreeSixIMU::getEuler(float * angles) {
     float val[3];
+    
     now = micros();
-    gyro.readGyro(&val[0]);
-    
-    gx = val[0];
-    gy = val[1];
-    gz = val[2];
-    
-    sampleFreq = 1.0 / ((now - lastUpdate) / 1000000.0);
-    lastUpdate = now;
-    
-    gx *= (1.0f / sampleFreq);  
-    gy *= (1.0f / sampleFreq);
-    gz *= (1.0f / sampleFreq);
-    
-    angleX += gx;
-    angleY += gy;
-    angleZ += gz;
-    
-    if(angleX > 180)
-        angleX = -180;
-    else if(angleX < -180)
-        angleX = 180;
-    
-    if(angleY > 180)
-        angleY = -180;
-    else if(angleY < -180)
-        angleY = 180;
-    
-    if(angleZ > 180)
-        angleZ = -180;
-    else if(angleZ < -180)
-        angleZ = 180;
+    if(now > lastUpdate)
+    {
+        gyro.readGyro(&val[0]);
+        
+        gx = val[0];
+        gy = val[1];
+        gz = val[2];
+        
+        sampleFreq = 1.0 / ((now - lastUpdate) / 1000000.0);
+        lastUpdate = now;
+        
+        gx *= (1.0f / sampleFreq);  
+        gy *= (1.0f / sampleFreq);
+        gz *= (1.0f / sampleFreq);
+        
+        angleX += gx;
+        angleY += gy;
+        angleZ += gz;
 
-    angles[0] = angleX;
-    angles[1] = angleY;
-    angles[2] = angleZ;
+        angles[2] = angleX;
+        angles[1] = angleY;
+        angles[0] = angleZ;
+    }
+    else
+        lastUpdate = now;
 }

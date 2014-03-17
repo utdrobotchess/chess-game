@@ -1,26 +1,3 @@
-/*
-FreeSixIMU.h - A libre and easy to use orientation sensing library for Arduino
-Copyright (C) 2011 Fabio Varesano <fabio at varesano dot net>
-
-Development of this code has been supported by the Department of Computer Science,
-Universita' degli Studi di Torino, Italy within the Piemonte Project
-http://www.piemonte.di.unito.it/
-
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 #define FIMU_ACC_ADDR ADXL345_ADDR_ALT_LOW // SDO connected to GND
 #include <FIMU_ITG3200.h>
 
