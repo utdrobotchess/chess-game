@@ -21,15 +21,15 @@ can easily convert this to radians per second using:
 where TOTAL_TICKS is the number of ticks per revolution, which is approximately 3000.
 
 Author: Ryan J. Marcotte
-Date: 15 March 2014
+Date: 18 March 2014
 */
 
 //#####SYSTEM ID PARAMETERS#######
 //#####MODIFY THESE FIELDS########
-#define TEST_PIN FORWARD_LEFT //the pin of the motor you are working with (options: FORWARD_RIGHT,
+#define TEST_PIN FORWARD_RIGHT //the pin of the motor you are working with (options: FORWARD_RIGHT,
                                   //FORWARD_LEFT, REVERSE_RIGHT, REVERSE_LEFT)
 const int TOTAL_VOL_COMS = 20; //the total number of voltage commands to be executed by the robot
-                               //if this is set too high, memory can become an issue
+                               //increasing beyond ~20, memory can become an issue
                                //if the board runs out of memory, it resets itself which can be 
                                //a challenging bug to diagnose
 const int MIN_COM_DUR = 5; //the minimum duration a command could be executed for
@@ -94,11 +94,11 @@ void setup(){
   velsSize = runtime / VELOCITY_INTERVAL;
   int vels[velsSize];
   int velsTimes[velsSize];
-  int velsCommandIndexes[velsSize];
+  int velsCommands[velsSize];
   
-  performTest(runtime, velsSize, vels, velsTimes, velsCommandIndexes, volComs, volComTimes);
+  performTest(runtime, velsSize, vels, velsTimes, velsCommands, volComs, volComTimes);
   outputSummary(runtime, volComs, volComTimes);
-  outputResults(velsSize, vels, velsTimes, velsCommandIndexes);
+  outputResults(velsSize, vels, velsTimes, velsCommands);
 }
 
 /*
@@ -140,16 +140,17 @@ void initializePins(){
  * the random number generator.
  */
 void generateCommandArrays(int volComs[], unsigned long volComTimes[]){
-  //randomSeed(analogRead(0));
+  randomSeed(analogRead(0));
   unsigned long min;
   unsigned long max;  
   
   for(int i = 0; i < TOTAL_VOL_COMS; i++){
     volComs[i] = random(256);
-    min = COM_DUR_RESOLUTION * MIN_COM_DUR;
-    max = COM_DUR_RESOLUTION * MAX_COM_DUR;
+    delay(5);
+    min = MIN_COM_DUR / COM_DUR_RESOLUTION;
+    max = MAX_COM_DUR / COM_DUR_RESOLUTION;
     volComTimes[i] = COM_DUR_RESOLUTION * random(min, max);
-  }  
+  }
 }
 
 /*
@@ -184,16 +185,16 @@ long determineRuntime(unsigned long volComTimes[]){
  * issue to be explored.
  */
 void performTest(const unsigned long RUNTIME, const int VELS_SIZE, int vels[], int velsTimes[], 
-                   int velsCommandIndexes[], const int VOL_COMS[], const unsigned long VOL_COM_TIMES[]){
+                   int velsCommands[], const int VOL_COMS[], const unsigned long VOL_COM_TIMES[]){
   int velsIndex = 0;
   int volComsIndex = 0;
   boolean commandNow = false;
   boolean measureNow = false;
-
+  
   const unsigned long BASE_TIME = millis();
   unsigned long currentTime = BASE_TIME;
   unsigned long lastCommandTime = currentTime;
-  unsigned long  lastMeasureTime = currentTime;
+  unsigned long lastMeasureTime = currentTime;
   
   analogWrite(TEST_PIN, VOL_COMS[volComsIndex]);
   
@@ -219,7 +220,7 @@ void performTest(const unsigned long RUNTIME, const int VELS_SIZE, int vels[], i
         
         lastMeasureTime = currentTime;
         velsTimes[velsIndex] = currentTime - BASE_TIME;
-        velsCommandIndexes[velsIndex++] = volComsIndex;
+        velsCommands[velsIndex++] = VOL_COMS[volComsIndex];
       }
     }
   }
@@ -287,14 +288,14 @@ String getPinName() {
  * Outputs the results of the measurements, including the time of the measurements and the index of the voltage
  * command being executed during that measurement.
  */
-void outputResults(const int VELS_SIZE, const int VELS[], const int VELS_TIMES[], const int VELS_COMMAND_INDEXES[]){  
+void outputResults(const int VELS_SIZE, const int VELS[], const int VELS_TIMES[], const int VELS_COMMANDS[]){  
   Serial.println("\n\nVelocity Measurements");
   delay(20);
   Serial.print("Elapsed Time   ");
   delay(20);
-  Serial.print("Command Index   ");
+  Serial.print("Command   ");
   delay(20);
-  Serial.print("Measurement");
+  Serial.print("Velocity");
   delay(20);
   
   for(int i = 0; i < VELS_SIZE; i++){
@@ -302,7 +303,7 @@ void outputResults(const int VELS_SIZE, const int VELS[], const int VELS_TIMES[]
     delay(5);
     Serial.print(" ");
     delay(5);
-    Serial.print(VELS_COMMAND_INDEXES[i]);
+    Serial.print(VELS_COMMANDS[i]);
     delay(5);
     Serial.print(" ");
     delay(5);
