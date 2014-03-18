@@ -105,32 +105,32 @@ void ChessBot::CrossSquares(int numOfSquares){
                 case 0:
                     if((squareState == "e") || (squareState == "1"))
                     {
-                        adjustAngle += -0.1;
+                        adjustAngle += -1;
                         break;
                     }
                     if((squareState == "d") || (squareState == "2"))
                     {
-                        adjustAngle += 0.1;
+                        adjustAngle += 1;
                         break;
                     }
                     
                     if((squareState == "c") || (squareState == "3"))
                     {
                         if(abs(angleState) == 45 || abs(angleState) == 135 || abs(angleState) == 225 || abs(angleState) == 315)
-                            lookForCrossingSwitch = 2;
-                        else
                             lookForCrossingSwitch = 1;
+                        else
+                            lookForCrossingSwitch = 2;
                     }       
                     break;
                 case 1:
-                    if((squareState == "d") || (squareState == "2"))
+                    if((squareState == "b") || (squareState == "4"))
                     {
-                        adjustAngle += -0.1;
+                        adjustAngle += -1;
                         break;
                     }
-                    if((squareState == "e") || (squareState == "1"))
+                    if((squareState == "7") || (squareState == "8"))
                     {
-                        adjustAngle += 0.1;
+                        adjustAngle += 1;
                         break;
                     }
                     if(startingSquare == squareState)
@@ -140,14 +140,14 @@ void ChessBot::CrossSquares(int numOfSquares){
                     }
                     break; 
                 case 2:
-                    if((squareState == "d") || (squareState == "2"))
+                    if((squareState == "b") || (squareState == "4"))
                     {
-                        adjustAngle += -0.1;
+                        adjustAngle += -1;
                         break;
                     }
-                    if((squareState == "e") || (squareState == "1"))
+                    if((squareState == "7") || (squareState == "8"))
                     {
-                        adjustAngle += 0.1;
+                        adjustAngle += 1;
                         break;
                     }
                     if((startingSquare == "f" && squareState == "0") || (startingSquare == "0" && squareState == "f"))
@@ -194,7 +194,7 @@ void ChessBot::CrossSquares(int numOfSquares){
                         angleState 
  */
 void ChessBot::RotateBaseTo(float endAngle){
-    float fineTuneBeginTime, fineTuneElapsedTime, fineTuneEndTime = 500;
+    float fineTuneBeginTime, fineTuneElapsedTime = 0, fineTuneEndTime = 500;
     byte fineTuneTimingSwitch = 0; 
     
     integralOffsetR = 0;
@@ -206,30 +206,32 @@ void ChessBot::RotateBaseTo(float endAngle){
     {
         my3IMU.reinit();
         my3IMU.getEuler(currentAngles);
-    } while(abs(currentAngles[0]) > 2);
+    } while(abs(currentAngles[0]) > 1);
     
     
-        while(fineTuneElapsedTime < fineTuneEndTime)
+    while(fineTuneElapsedTime<fineTuneEndTime)
+    {
+        
+        SetWheelVelocities(endAngle);
+        delay(10);
+        
+        if(abs(currentAngles[0]-endAngle)<1)
         {
-            
-            SetWheelVelocities(endAngle);
-            delay(10);
-            
-            if(abs(currentAngles[0]-endAngle)<1)
+            integralOffsetR = 0;
+            integralOffsetL = 0;
+            switch(fineTuneTimingSwitch)
             {
-                switch(fineTuneTimingSwitch)
-                {
-                    case 0:
-                        fineTuneBeginTime = millis();
-                        fineTuneTimingSwitch = 1;
-                        break;
-                    case 1:
-                        fineTuneElapsedTime = millis() - fineTuneBeginTime;
-                        break;
-                }
+                case 0:
+                    fineTuneBeginTime = millis();
+                    fineTuneTimingSwitch = 1;
+                    break;
+                case 1:
+                    fineTuneElapsedTime = millis() - fineTuneBeginTime;
+                    break;
             }
-            
         }
+
+    }
     
     HardStop();
     angleState += endAngle;
@@ -312,7 +314,7 @@ void ChessBot::AccelTo(int endspeed){
     {
         my3IMU.reinit();
         my3IMU.getEuler(currentAngles);
-    } while(abs(currentAngles[0]) > 2);
+    } while(abs(currentAngles[0]) > 1);
     
     
     
@@ -374,9 +376,9 @@ void ChessBot::SetWheelVelocities(float endAngle){
     integralOffsetR += (endAngle - currentAngles[0])/50;
     integralOffsetL += (endAngle - currentAngles[0])/-50;
     
-    proportionalOffSetR = (endAngle - currentAngles[0]);
-    proportionalOffSetL = -(endAngle - currentAngles[0]);
-    
+    proportionalOffSetR = 2*(endAngle - currentAngles[0]);
+    proportionalOffSetL = -2*(endAngle - currentAngles[0]);
+
     if(velocityState == 0)
     {
         minOffsetR = 60*(endAngle - currentAngles[0])/abs(endAngle - currentAngles[0]);
@@ -393,7 +395,7 @@ void ChessBot::SetWheelVelocities(float endAngle){
     
     prevAngle = currentAngles[0];
     
-    setVelocityR = velocityState + minOffsetR + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
+    setVelocityR = velocityState + minOffsetR  + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
     setVelocityL = velocityState + minOffsetL + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
     
     RotateWheels(setVelocityL, setVelocityR);

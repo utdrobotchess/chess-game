@@ -52,7 +52,6 @@ void FreeSixIMU::init(int gyro_addr, bool fastmode) {
   
   // init ITG3200
   gyro.init(gyro_addr);
-  //delay(500);
   // calibrate the ITG3200
   gyro.zeroCalibrate(200,5);
   
