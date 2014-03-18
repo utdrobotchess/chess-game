@@ -83,7 +83,8 @@ class ChessBot
         void CheckSquareState();
         void AccelTo(int endspeed);
         void HardStop();
-        void SetWheelVelocities(float endAngle);
+        void SetWheelVelocitiesStraight(float endAngle);
+        void SetWheelVelocitiesTurn(float endAngle);
         void RotateWheels(int angularSpeedL, int angularSpeedR);
         void Setup();
         void alignWithEdgeBlack();

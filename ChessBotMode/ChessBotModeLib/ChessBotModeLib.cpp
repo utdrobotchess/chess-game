@@ -80,7 +80,7 @@ void ChessBot::Center() {
  
  Methods Called:        CheckSquareState()
                         AccelTo()
-                        SetWheelVelocities()
+                        SetWheelVelocitiesStraight()
                         
  Global Vars effected:  None
  */
@@ -96,72 +96,101 @@ void ChessBot::CrossSquares(int numOfSquares){
     {
         startingSquare = squareState;
         AccelTo(crossingSpeed);
-        while(numOfCrossings < numOfSquares)
+        
+        if(abs(angleState) == 45 || abs(angleState) == 135 || abs(angleState) == 225 || abs(angleState) == 315)
         {
-            
-            CheckSquareState();
-            switch (lookForCrossingSwitch)
+            while(numOfCrossings < numOfSquares)
             {
-                case 0:
-                    if((squareState == "e") || (squareState == "1"))
-                    {
-                        adjustAngle += -1;
-                        break;
-                    }
-                    if((squareState == "d") || (squareState == "2"))
-                    {
-                        adjustAngle += 1;
-                        break;
-                    }
-                    
-                    if((squareState == "c") || (squareState == "3"))
-                    {
-                        if(abs(angleState) == 45 || abs(angleState) == 135 || abs(angleState) == 225 || abs(angleState) == 315)
+                
+                CheckSquareState();
+                switch (lookForCrossingSwitch)
+                {
+                    case 0:
+                        if((squareState == "e") || (squareState == "1"))
+                        {
+                            adjustAngle += 1.5f;
+                            break;
+                        }
+                        if((squareState == "d") || (squareState == "2"))
+                        {
+                            adjustAngle += -1.5f;
+                            break;
+                        }
+                        
+                        if((squareState == "c") || (squareState == "3"))
                             lookForCrossingSwitch = 1;
-                        else
-                            lookForCrossingSwitch = 2;
-                    }       
-                    break;
-                case 1:
-                    if((squareState == "b") || (squareState == "4"))
-                    {
-                        adjustAngle += -1;
                         break;
-                    }
-                    if((squareState == "7") || (squareState == "8"))
-                    {
-                        adjustAngle += 1;
-                        break;
-                    }
-                    if(startingSquare == squareState)
-                    {
-                        numOfCrossings++;
-                        lookForCrossingSwitch = 0;
-                    }
-                    break; 
-                case 2:
-                    if((squareState == "b") || (squareState == "4"))
-                    {
-                        adjustAngle += -1;
-                        break;
-                    }
-                    if((squareState == "7") || (squareState == "8"))
-                    {
-                        adjustAngle += 1;
-                        break;
-                    }
-                    if((startingSquare == "f" && squareState == "0") || (startingSquare == "0" && squareState == "f"))
-                    {
-                        numOfCrossings++;
-                        lookForCrossingSwitch = 0;
-                        startingSquare = squareState;
-                    }
-                    break;
+                    case 1:
+                        if((squareState == "b") || (squareState == "4"))
+                        {
+                            adjustAngle += -1.5f;
+                            break;
+                        }
+                        if((squareState == "7") || (squareState == "8"))
+                        {
+                            adjustAngle += 1.5f;
+                            break;
+                        }
+                        if(startingSquare == squareState)
+                        {
+                            numOfCrossings++;
+                            lookForCrossingSwitch = 0;
+                        }
+                        break; 
+                }
+                
+                SetWheelVelocitiesStraight(adjustAngle);
+                delay(10);
+                
             }
-            
-            SetWheelVelocities(adjustAngle);
-            delay(10);
-            
+        }
+        else
+        {
+            while(numOfCrossings < numOfSquares)
+            {
+                
+                CheckSquareState();
+                switch (lookForCrossingSwitch)
+                {
+                    case 0:
+                        if((squareState == "e") || (squareState == "1"))
+                        {
+                            adjustAngle += -1.5f;
+                            break;
+                        }
+                        if((squareState == "d") || (squareState == "2"))
+                        {
+                            adjustAngle += 1.5f;
+                            break;
+                        }
+                        
+                        if((squareState == "c") || (squareState == "3"))
+                            lookForCrossingSwitch = 1;
+                        break;
+                    case 1:
+                        if((squareState == "b") || (squareState == "4"))
+                        {
+                            adjustAngle += -1.5f;
+                            break;
+                        }
+                        if((squareState == "7") || (squareState == "8"))
+                        {
+                            adjustAngle += 1.5f;
+                            break;
+                        }
+                        if((startingSquare == "f" && squareState == "0") || (startingSquare == "0" && squareState == "f"))
+                        {
+                            numOfCrossings++;
+                            lookForCrossingSwitch = 0;
+                            startingSquare = squareState;
+                        }
+                        break;
+                }
+                
+                SetWheelVelocitiesStraight(adjustAngle);
+                delay(10);
+                
+            }
         }
     }
     else
@@ -178,7 +207,7 @@ void ChessBot::CrossSquares(int numOfSquares){
  void RotateBaseTo()
  
  Description:           This method is used to rotate the base of the ChessBot about its center. To do this, it first reinitializes the gyro until 
-                        it initializes around 0 degrees. Then, it continues to rotate the ChessBot using SetWheelVelocities() until the heading of 
+                        it initializes around 0 degrees. Then, it continues to rotate the ChessBot using SetWheelVelocitiesStraight() until the heading of 
                         the ChessBot is close enough to endAngle. At this point, it counts the number of milliseconds until fineTuneEndTime 
                         and then stops the motors. Finally, it updates the angleState by the amount of the endAngle.
  
@@ -212,7 +241,7 @@ void ChessBot::RotateBaseTo(float endAngle){
     while(fineTuneElapsedTime<fineTuneEndTime)
     {
         
-        SetWheelVelocities(endAngle);
+        SetWheelVelocitiesTurn(endAngle);
         delay(10);
         
         if(abs(currentAngles[0]-endAngle)<1)
@@ -282,7 +311,7 @@ void ChessBot::CheckSquareState(){
                         affect this one. Checks if desired speed is greater than 70 and sets the velocityState to 70, or checks if
                         it is less than -70 and sets the velocityState to -70 (this is because the motors usually don't move until
                         around an input of 80 or -80). Resets the gyroscope until the initialized gyroscope angle is close to 0. 
-                        Increments velocityState and calls SetWheelVelocities until the velocityState reaches the desired endspeed. 
+                        Increments velocityState and calls SetWheelVelocitiesStraight until the velocityState reaches the desired endspeed. 
                         
  
  Methods Called by:     CrossSquares()
@@ -321,7 +350,7 @@ void ChessBot::AccelTo(int endspeed){
     while(endspeed != velocityState)
     {
         velocityState += accelBy; 
-        SetWheelVelocities(0);
+        SetWheelVelocitiesStraight(0);
         delay(10);
     }
 }
@@ -350,7 +379,49 @@ void ChessBot::HardStop(){
 }
 
 /*
- void SetWheelVelocities()
+ void SetWheelVelocitiesStraight()
+ 
+ Description:           This method is used to calculate the velocity of each wheel so that a desired heading is achieved. It is basically
+                        the implementation of a PID controller, with the motors being the actuators and the  heading angle being the variable
+                        to be controlled. There is a special case when the desired heading is 180, in which case the control variable is disconinuous,
+                        wrapping back around to -180. After calculating what the velocities should be, it calls the RotateWheels method. 
+ 
+ Methods Called by:     CrossSquares()
+                        AccelTo()
+                        alignWithEdgeBlack()
+                        alignWithEdgeWhite()
+                        
+ Methods Called:        RotateWheels()
+ 
+ Global Vars effected:  currentVelocityL
+                        currentVelocityR
+ */
+void ChessBot::SetWheelVelocitiesStraight(float endAngle){
+    int setVelocityL, setVelocityR;
+    int minOffsetL, minOffsetR;
+    my3IMU.getEuler(currentAngles); 
+    
+    integralOffsetR += (endAngle - currentAngles[0])/25;
+    integralOffsetL += (endAngle - currentAngles[0])/-25;
+    
+    proportionalOffSetR = 6*(endAngle - currentAngles[0]);
+    proportionalOffSetL = -6*(endAngle - currentAngles[0]);
+    
+    derivativeOffsetR = -80*(currentAngles[0] - prevAngle);
+    derivativeOffsetL = 80*(currentAngles[0] - prevAngle);
+    
+    prevAngle = currentAngles[0];
+    
+    setVelocityR = velocityState + integralOffsetR + proportionalOffSetR + derivativeOffsetR; 
+    setVelocityL = velocityState + integralOffsetL + proportionalOffSetL + derivativeOffsetL;
+    
+    RotateWheels(setVelocityL, setVelocityR);
+    
+        
+} 
+
+/*
+ void SetWheelVelocitiesTurn()
  
  Description:           This method is used to calculate the velocity of each wheel so that a desired heading is achieved. It is basically
                         the implementation of a PID controller, with the motors being the actuators and the  heading angle being the variable
@@ -358,17 +429,13 @@ void ChessBot::HardStop(){
                         wrapping back around to -180. After calculating what the velocities should be, it calls the RotateWheels method. 
  
  Methods Called by:     RotateBaseTo()
-                        CrossSquares()
-                        AccelTo()
-                        alignWithEdgeBlack()
-                        alignWithEdgeWhite()
  
  Methods Called:        RotateWheels()
  
  Global Vars effected:  currentVelocityL
                         currentVelocityR
  */
-void ChessBot::SetWheelVelocities(float endAngle){
+void ChessBot::SetWheelVelocitiesTurn(float endAngle){
     int setVelocityL, setVelocityR;
     int minOffsetL, minOffsetR;
     my3IMU.getEuler(currentAngles); 
@@ -378,7 +445,7 @@ void ChessBot::SetWheelVelocities(float endAngle){
     
     proportionalOffSetR = 2*(endAngle - currentAngles[0]);
     proportionalOffSetL = -2*(endAngle - currentAngles[0]);
-
+    
     if(velocityState == 0)
     {
         minOffsetR = 60*(endAngle - currentAngles[0])/abs(endAngle - currentAngles[0]);
@@ -390,8 +457,8 @@ void ChessBot::SetWheelVelocities(float endAngle){
         minOffsetL = 0;
     }
     
-    derivativeOffsetR = -100*(currentAngles[0] - prevAngle);
-    derivativeOffsetL = 100*(currentAngles[0] - prevAngle);
+    derivativeOffsetR = -200*(currentAngles[0] - prevAngle);
+    derivativeOffsetL = 200*(currentAngles[0] - prevAngle);
     
     prevAngle = currentAngles[0];
     
@@ -400,7 +467,7 @@ void ChessBot::SetWheelVelocities(float endAngle){
     
     RotateWheels(setVelocityL, setVelocityR);
     
-        
+    
 } 
 
 /*
@@ -515,7 +582,7 @@ void ChessBot::Setup(){
  Methods Called:        CheckSquareState()
                         RotateWheels()
                         HardStop()
-                        SetWheelVelocities()
+                        SetWheelVelocitiesStraight()
  
  Global Vars effected:  _LeftEncoderTicks
                         _RightEncoderTicks
@@ -527,7 +594,7 @@ void ChessBot::alignWithEdgeBlack(){
     while(squareState == "f")
     {
         CheckSquareState();
-        SetWheelVelocities(0);
+        SetWheelVelocitiesStraight(0);
     }
     
     HardStop();
@@ -547,7 +614,7 @@ void ChessBot::alignWithEdgeBlack(){
     AccelTo(-70);
     
     while((abs(_LeftEncoderTicks) < 1400) && (abs(_RightEncoderTicks) < 1400))
-        SetWheelVelocities(0);
+        SetWheelVelocitiesStraight(0);
     
     HardStop();
     CheckSquareState();
@@ -568,7 +635,7 @@ void ChessBot::alignWithEdgeBlack(){
  Methods Called:        CheckSquareState()
                         RotateWheels()
                         HardStop()
-                        SetWheelVelocities()
+                        SetWheelVelocitiesStraight()
  
  Global Vars effected:  _LeftEncoderTicks
                         _RightEncoderTicks
@@ -580,7 +647,7 @@ void ChessBot::alignWithEdgeWhite(){
     while(squareState == "0")
     {
         CheckSquareState();
-        SetWheelVelocities(0);
+        SetWheelVelocitiesStraight(0);
     }
     
     HardStop();
@@ -600,7 +667,7 @@ void ChessBot::alignWithEdgeWhite(){
     AccelTo(-70);
     
     while((abs(_LeftEncoderTicks) < 1400) && (abs(_RightEncoderTicks) < 1400))
-        SetWheelVelocities(0);
+        SetWheelVelocitiesStraight(0);
     
     HardStop();
     CheckSquareState();
