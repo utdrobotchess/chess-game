@@ -200,8 +200,8 @@ void performTest(const unsigned long RUNTIME, const int VELS_SIZE, int vels[], i
   
   while(currentTime - BASE_TIME < RUNTIME){
     currentTime = millis();
-    commandNow = (currentTime - lastCommandTime >= VOL_COM_TIMES[volComsIndex] && lastCommandTime != currentTime) ? true : false;
-    measureNow = (currentTime - lastMeasureTime >= VELOCITY_INTERVAL && lastMeasureTime != currentTime) ? true : false;
+    commandNow = (currentTime - lastCommandTime >= VOL_COM_TIMES[volComsIndex] && lastCommandTime != currentTime);
+    measureNow = (currentTime - lastMeasureTime >= VELOCITY_INTERVAL && lastMeasureTime != currentTime);
     
     if(commandNow || measureNow){
       if(commandNow){
