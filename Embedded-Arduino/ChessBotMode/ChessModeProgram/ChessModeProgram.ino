@@ -2,7 +2,6 @@
 #include <ChessBotModeLib.h>
 
 ChessBot Bot = ChessBot();
-float currentAngles[3];
 
 void setup() 
 { 
