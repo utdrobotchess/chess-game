@@ -23,6 +23,8 @@ ChessBot::ChessBot(){
     prevAngle = 0;              
     angleState=0;                
     my3IMU = FreeSixIMU(); 
+	
+	botNumber = 0xff;
 }
 
 /*
@@ -565,6 +567,24 @@ void ChessBot::Setup(){
     
     pinMode(12, OUTPUT);
     digitalWrite(12, HIGH); 
+	
+	//obtain address
+	Serial.write("");
+	Serial.flush();
+	long startWaitTime = millis();
+	while(botNumber == 0xff)
+	{
+		if(Serial.available())
+		{
+			botNumber = Serial.read();
+		}
+		else if(millis() - startWaitTime >= 1000)//one second has elapsed
+		{
+			Serial.write("");
+			Serial.flush();
+			startWaitTime = millis();
+		}
+	}
 }
 
 /*

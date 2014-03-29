@@ -95,7 +95,9 @@ class ChessBot
         byte errorFlag; //For error detection. Can be 0 (no error), 1 (not fully within a square when asked to 
         //center or cross squares)
     
-        bool needToCenter; //For detecting whether centering is necessary before the next movement. 
+        byte botNumber;
+		
+		bool needToCenter; //For detecting whether centering is necessary before the next movement. 
     
         int backRightLight; //Used by CheckSquareState() to hold 
         int backLeftLight;  //photodiode value for determining position 
