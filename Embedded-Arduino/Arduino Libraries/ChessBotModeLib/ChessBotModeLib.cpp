@@ -567,24 +567,7 @@ void ChessBot::Setup(){
     
     pinMode(12, OUTPUT);
     digitalWrite(12, HIGH); 
-	
-	//obtain address
-	Serial.write("");
-	Serial.flush();
-	long startWaitTime = millis();
-	while(botNumber == 0xff)
-	{
-		if(Serial.available())
-		{
-			botNumber = Serial.read();
-		}
-		else if(millis() - startWaitTime >= 1000)//one second has elapsed
-		{
-			Serial.write("");
-			Serial.flush();
-			startWaitTime = millis();
-		}
-	}
+
 }
 
 /*
@@ -743,5 +726,26 @@ void ChessBot::HandleRightMotorInterruptA(){
 #else 
     _RightEncoderTicks += _RightEncoderBSet ? -1 : +1; 
 #endif
+}
+
+void ChessBot::ObtainAddress(){
+    
+	//obtain address
+	Serial.write("");
+	Serial.flush();
+	long startWaitTime = millis();
+	while(botNumber == 0xff)
+	{
+		if(Serial.available())
+		{
+			botNumber = Serial.read();
+		}
+		else if(millis() - startWaitTime >= 1000)//one second has elapsed
+		{
+			Serial.write("");
+			Serial.flush();
+			startWaitTime = millis();
+		}
+	}
 }
 

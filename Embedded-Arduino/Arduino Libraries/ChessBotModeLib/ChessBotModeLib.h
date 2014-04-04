@@ -91,6 +91,7 @@ class ChessBot
         void alignWithEdgeWhite();
         void HandleLeftMotorInterruptA();
         void HandleRightMotorInterruptA();
+        void ObtainAddress();
     
         byte errorFlag; //For error detection. Can be 0 (no error), 1 (not fully within a square when asked to 
         //center or cross squares)
