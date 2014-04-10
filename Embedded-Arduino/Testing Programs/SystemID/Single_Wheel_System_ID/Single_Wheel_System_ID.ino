@@ -16,7 +16,7 @@ Note that all time measurements are in milliseconds and the transmitted velocity
 are in encoder ticks per velocity interval, where the velocity interval is user-defined. One 
 can easily convert this to radians per second using:
 
-  w = 1000 * 2 * PI * MEASURED_TICKS / TOTAL_TICKS
+  w = 2 * PI * (MEASURED_TICKS / TOTAL_TICKS) * (1000 / VELOCITY_INTEVAL)
 
 where TOTAL_TICKS is the number of ticks per revolution, which is approximately 3000.
 
@@ -26,7 +26,7 @@ Date: 18 March 2014
 
 //#####SYSTEM ID PARAMETERS#######
 //#####MODIFY THESE FIELDS########
-#define TEST_PIN FORWARD_RIGHT //the pin of the motor you are working with (options: FORWARD_RIGHT,
+#define TEST_PIN FORWARD_LEFT//the pin of the motor you are working with (options: FORWARD_RIGHT,
                                   //FORWARD_LEFT, REVERSE_RIGHT, REVERSE_LEFT)
 const int TOTAL_VOL_COMS = 20; //the total number of voltage commands to be executed by the robot
                                //increasing beyond ~20, memory can become an issue
@@ -140,7 +140,7 @@ void initializePins(){
  * the random number generator.
  */
 void generateCommandArrays(int volComs[], unsigned long volComTimes[]){
-  randomSeed(analogRead(0));
+  //randomSeed(analogRead(0));
   unsigned long min;
   unsigned long max;  
   
@@ -295,7 +295,7 @@ void outputResults(const int VELS_SIZE, const int VELS[], const int VELS_TIMES[]
   delay(20);
   Serial.print("Command   ");
   delay(20);
-  Serial.print("Velocity");
+  Serial.println("Velocity");
   delay(20);
   
   for(int i = 0; i < VELS_SIZE; i++){

@@ -15,7 +15,7 @@ the onboard XBEE will transmit the results. Note that all time measurements are 
 and the transmitted velocity measurements are in encoder ticks per velocity interval, where the
 velocity interval is user-defined. One can easily convert this to radians per second using:
 
-  w = 1000 * 2 * PI * MEASURED_TICKS / TOTAL_TICKS
+  w = 2 * PI * (MEASURED_TICKS / TOTAL_TICKS) * (1000 / VELOCITY_INTERVAL)
 
 where TOTAL_TICKS is the number of ticks per revolution, which is approximately 3000.
 
