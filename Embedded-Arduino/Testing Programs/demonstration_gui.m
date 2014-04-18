@@ -22,7 +22,7 @@ function varargout = demonstration_gui(varargin)
 
 % Edit the above text to modify the response to help demonstration_gui
 
-% Last Modified by GUIDE v2.5 18-Apr-2014 15:11:23
+% Last Modified by GUIDE v2.5 18-Apr-2014 16:03:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,7 +72,7 @@ MAX_VELOCITY = 100;
 MIN_VELOCITY = 1;
 NUM_ROBOTS = 6;
 
-comPort = serial('/dev/tty.usbserial-A603HA9I');
+comPort = serial('COM7');
 fopen(comPort);
 selectedRobots = [0 0 0 0 0 0];
 rightDirection = 0;
@@ -379,3 +379,18 @@ function syncCheckbox_Callback(hObject, eventdata, handles)
 global syncState;
 
 syncState = mod((syncState + 1), 2);
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+
+global comPort;
+
+fclose(comPort);
+
+delete(hObject);
