@@ -72,7 +72,7 @@ MAX_VELOCITY = 100;
 MIN_VELOCITY = 1;
 NUM_ROBOTS = 6;
 
-comPort = serial('COM7');
+comPort = serial('/dev/tty.usbserial-A603HA9I');
 fopen(comPort);
 selectedRobots = [0 0 0 0 0 0];
 rightDirection = 0;
@@ -199,7 +199,6 @@ global rightVelocity;
 global comPort;
 
 for i=1:NUM_ROBOTS
-    disp(selectedRobots(i));
     if (selectedRobots(i) == 1)
         if leftDirection == 0
             secondByte = leftVelocity;
@@ -233,8 +232,9 @@ function stopButton_Callback(hObject, eventdata, handles)
 global NUM_ROBOTS;
 global comPort;
 
-for i=1:NUM_ROBOTS
-    disp('Stop');
+disp('Stop');
+
+for i=1:NUM_ROBOTS    
     fwrite(comPort, [i, 1, 1, 1, 1, 255]);
 end
 
@@ -254,9 +254,6 @@ else
     selectedRobots(1) = 1;
 end
 
-for i=1:6
-    disp(selectedRobots(i));
-end
 
 % --- Executes on button press in robot2Check.
 function robot2Check_Callback(hObject, eventdata, handles)
@@ -274,9 +271,6 @@ else
     selectedRobots(2) = 1;
 end
 
-for i=1:6
-    disp(selectedRobots(i));
-end
 
 % --- Executes on button press in robot3Check.
 function robot3Check_Callback(hObject, eventdata, handles)
@@ -294,9 +288,6 @@ else
     selectedRobots(3) = 1;
 end
 
-for i=1:6
-    disp(selectedRobots(i));
-end
 
 % --- Executes on button press in robot4Check.
 function robot4Check_Callback(hObject, eventdata, handles)
@@ -312,10 +303,6 @@ if (get(hObject, 'Value') == get(hObject, 'Min'))
     selectedRobots(4) = 0;
 else
     selectedRobots(4) = 1;
-end
-
-for i=1:6
-    disp(selectedRobots(i));
 end
 
 
@@ -335,10 +322,6 @@ else
     selectedRobots(5) = 1;
 end
 
-for i=1:6
-    disp(selectedRobots(i));
-end
-
 % --- Executes on button press in robot6Check.
 function robot6Check_Callback(hObject, eventdata, handles)
 % hObject    handle to robot6Check (see GCBO)
@@ -355,10 +338,6 @@ else
     selectedRobots(6) = 1;
 end
 
-for i=1:6
-    disp(selectedRobots(i));
-end
-
 
 % --- Executes when selected object is changed in RightDirection.
 function RightDirection_SelectionChangeFcn(hObject, eventdata, handles)
@@ -372,8 +351,6 @@ function RightDirection_SelectionChangeFcn(hObject, eventdata, handles)
 global rightDirection;
 
 rightDirection = mod(uint8(rightDirection) + 1, 2);
-
-disp(rightDirection);
 
 
 % --- Executes when selected object is changed in LeftDirection.
@@ -389,7 +366,6 @@ global leftDirection;
 
 leftDirection = mod(uint8(leftDirection)+1, 2);
 
-disp(leftDirection);
 
 
 % --- Executes on button press in syncCheckbox.
