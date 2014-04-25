@@ -68,11 +68,11 @@ global syncState;
 global rightSlider;
 global leftSlider;
 
-MAX_VELOCITY = 100;
+MAX_VELOCITY = 150;
 MIN_VELOCITY = 1;
 NUM_ROBOTS = 6;
 
-comPort = serial('COM7');
+comPort = serial('COM3');
 fopen(comPort);
 selectedRobots = [0 0 0 0 0 0];
 rightDirection = 0;
