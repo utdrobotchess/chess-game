@@ -13,7 +13,7 @@ public class ChessBoardBuilderTest {
     }
     
     @Test
-    private void testInteriorSquaresBuilt() {
+    public void testInteriorSquaresBuilt() {
         ChessBoard board = ChessBoard.generateChessBoard();
         
         for(int i = 0; i < 64; i++) {
@@ -24,7 +24,7 @@ public class ChessBoardBuilderTest {
     }
     
     @Test
-    private void testPerimeterSquaresBuilt() {
+    public void testPerimeterSquaresBuilt() {
         ChessBoard board = ChessBoard.generateChessBoard();
         
         for(int i =  64; i < 100; i++) {
@@ -35,7 +35,7 @@ public class ChessBoardBuilderTest {
     }
     
     @Test
-    private void testNorthNeighbors() {
+    public void testNorthNeighbors() {
         int[] expectedNorthNeighbors = {
             65, 66, 67, 68, 69, 70, 71, 72,  0,  1,
              2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
@@ -53,12 +53,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedNorthNeighbors[i], sq.getNeighborInDirection(0));
+            Square neighbor = sq.getNeighborInDirection(0);
+            String errorMessage = "Unexpected north neighbor at location " + i;
+            assertEquals(errorMessage, expectedNorthNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testNorthEastNeighbors() {
+    public void testNorthEastNeighbors() {
         int[] expectedNorthEastNeighbors = {
             66, 67, 68, 69, 70, 71, 72, 73,  1,  2,
              3,  4,  5,  6,  7, 75,  9, 10, 11, 12,
@@ -76,12 +78,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedNorthEastNeighbors[i], sq.getNeighborInDirection(1));
+            Square neighbor = sq.getNeighborInDirection(1);
+            String errorMessage = "Unexpected northeast neighbor at location " + i;
+            assertEquals(errorMessage, expectedNorthEastNeighbors[i], neighbor.getLocation());
         }        
     }
     
     @Test
-    private void testEastNeighbors() {
+    public void testEastNeighbors() {
         int[] expectedEastNeighbors = {
              1,  2,  3,  4,  5,  6,  7, 75,  9, 10,
             11, 12, 13, 14, 15, 77, 17, 18, 19, 20,
@@ -99,21 +103,24 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedEastNeighbors[i], sq.getNeighborInDirection(2));
+            Square neighbor = sq.getNeighborInDirection(2);
+            String errorMessage = "Unexpected east neighbor at location " + i;
+            assertEquals(errorMessage, expectedEastNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testSouthEastNeighbors() {
+    public void testSouthEastNeighbors() {
         int[] expectedSouthEastNeighbors = {
              9, 10, 11, 12, 13, 14, 15, 77, 17, 18,
             19, 20, 21, 22, 23, 79, 25, 26, 27, 28,
             29, 30, 31, 81, 33, 34, 35, 36, 37, 38,
             39, 83, 41, 42, 43, 44, 45, 46, 47, 85,
             49, 50, 51, 52, 53, 54, 55, 87, 57, 58,
-            59, 60, 61, 62, 63, 89,  0,  1,  2,  3,
-             4,  5,  6,  7, 75, -1,  8, -1, 16, -1,
-            24, -1, 32, -1, 40, -1, 48, -1, 56, -1,
+            59, 60, 61, 62, 63, 89, 92, 93, 94, 95,
+            96, 97, 98, 99,  0,  1,  2,  3,  4,  5,
+            6,  7,  75, -1,  8, -1, 16, -1, 24, -1,
+            32, -1, 40, -1, 48, -1, 56, -1, 91, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
         };
         
@@ -121,12 +128,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedSouthEastNeighbors[i], sq.getNeighborInDirection(3));
+            Square neighbor = sq.getNeighborInDirection(3);
+            String errorMessage = "Unexpected southeast neighbor at location " + i;
+            assertEquals(errorMessage, expectedSouthEastNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testSouthNeighbors() {
+    public void testSouthNeighbors() {
         int[] expectedSouthNeighbors = {
              8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
             18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -145,12 +154,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedSouthNeighbors[i], sq.getNeighborInDirection(4));
+            Square neighbor = sq.getNeighborInDirection(4);
+            String errorMessage = "Unexpected south neighbor at location " + i;
+            assertEquals(errorMessage, expectedSouthNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testSouthWestNeighbors() {
+    public void testSouthWestNeighbors() {
         int[] expectedSouthWestNeighbors = {
             76,  8,  9, 10, 11, 12, 13, 14, 78, 16,
             17, 18, 19, 20, 21, 22, 80, 24, 25, 26,
@@ -168,12 +179,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedSouthWestNeighbors[i], sq.getNeighborInDirection(5));
+            Square neighbor = sq.getNeighborInDirection(5);
+            String errorMessage = "Unexpected southwest neighbor at location " + i;
+            assertEquals(errorMessage, expectedSouthWestNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testWestNeighbors() {
+    public void testWestNeighbors() {
         int[] expectedWestNeighbors = {
             74,  0,  1,  2,  3,  4,  5,  6, 76,  8,
              9, 10, 11, 12, 13, 14, 78, 16, 17, 18,
@@ -191,12 +204,14 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedWestNeighbors[i], sq.getNeighborInDirection(6));
+            Square neighbor = sq.getNeighborInDirection(6);
+            String errorMessage = "Unexpected west neighbor at location " + i;
+            assertEquals(errorMessage, expectedWestNeighbors[i], neighbor.getLocation());
         }
     }
     
     @Test
-    private void testNorthWestNeighbors() {
+    public void testNorthWestNeighbors() {
         int[] expectedNorthWestNeighbors = {
             64, 65, 66, 67, 68, 69, 70, 71, 74,  0,
              1,  2,  3,  4,  5,  6, 76,  8,  9, 10,
@@ -214,7 +229,9 @@ public class ChessBoardBuilderTest {
         
         for(int i = 0; i < 100; i++) {
             Square sq = board.getSquareAt(i);
-            assertEquals(expectedNorthWestNeighbors[i], sq.getNeighborInDirection(7));
+            Square neighbor = sq.getNeighborInDirection(7);
+            String errorMessage = "Unexpected northwest neighbor at location" + i;
+            assertEquals(errorMessage, expectedNorthWestNeighbors[i], neighbor.getLocation());
         }
     }
     
