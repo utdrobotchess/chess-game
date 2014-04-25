@@ -53,7 +53,7 @@ const int REVERSE_RIGHT = 9;
 const int FORWARD_RIGHT = 8;
 
 //#####OTHER#########
-const byte ROBOT_ID = 1;
+const byte ROBOT_ID = 4;
 const int MAX_MOTOR_VALUE = 255;
 const int BUFFER_SIZE = 6;
 const int ROBOT_ID_CMD = 0;
@@ -88,7 +88,7 @@ void setup() {
   Serial.setTimeout(100);
   initializePins();
   initializeControllerValues();
-  Serial.println("Ready"); //testing
+  //Serial.println("Ready"); //testing
 }
 
 /*
@@ -240,11 +240,11 @@ void measureVelocities() {
   delay(TIME_INTERVAL);
   feedbackVelocities[LEFT] = abs(_LeftEncoderTicks - Prev_LeftEncoderTicks);
   feedbackVelocities[RIGHT] = abs(_RightEncoderTicks - Prev_RightEncoderTicks);
-  Serial.print(feedbackVelocities[LEFT]);
+  /*Serial.print(feedbackVelocities[LEFT]);
   delay(5);
   Serial.print("   ");
   delay(5);
-  Serial.println(feedbackVelocities[RIGHT]);
+  Serial.println(feedbackVelocities[RIGHT]);*/
 }
 
 //        DO NOT MODIFY BELOW THIS POINT
