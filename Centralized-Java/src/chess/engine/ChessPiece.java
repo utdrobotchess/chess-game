@@ -3,29 +3,29 @@ package chess.engine;
 import java.util.*;
 
 /**
- *
+ * Contains the methods and attributes common to all chess pieces
  * @author Ryan J. Marcotte
  */
 public abstract class ChessPiece {
-    private int itsLocation;
+    private Square itsLocation;
     private Team itsTeam;
     private int itsNumberOfPriorMoves;
     
-    protected int getLocation() {
-        return itsLocation;
+    protected int getIntegerLocation() {
+        return itsLocation.getLocation();
     }
     
     protected int getNumberOfPriorMoves() {
         return itsNumberOfPriorMoves;
     }
     
-    protected abstract ArrayList<Integer> getPossibleMoveLocations();
+    protected abstract ArrayList<Square> getPossibleMoveLocations();
     
     protected Team getTeam() {
         return itsTeam;
     }
     
-    protected void setLocation(int newLocation) {
+    protected void setLocation(Square newLocation) {
         itsLocation = newLocation;
     }
     
@@ -33,8 +33,8 @@ public abstract class ChessPiece {
         itsNumberOfPriorMoves = numberOfPriorMoves;
     }
     
-    protected void setTeamFromInitialLocation(int initialLocation) {
-        if(initialLocation < 32)
+    protected void setTeamFromInitialLocation(Square initialLocation) {
+        if(initialLocation.getLocation() < 32)
             itsTeam = Team.GREEN;
         else
             itsTeam = Team.ORANGE;
