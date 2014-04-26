@@ -1,19 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package chess.engine;
 
 /**
- *
+ * Static class to construct a chessboard from squares that are connected properly
+ * to each other.
  * @author Ryan J. Marcotte
  */
 public class ChessBoardBuilder {
     private static Square[] boardSquares;
-    private static int[][] mappingReferences = new int[100][8];
-    private static int[] locationToOccupantMapping = new int[100];
+    
+    //for each location on the chessboard, denotes its neighboring locations (prior to remapping)
+    private final static int[][] mappingReferences = new int[100][8];
+    
+    //denotes the indexes to which Squares ordered 0-99 should be mapped; inverse
+    //of occupantToLocationMapping
+    private final static int[] locationToOccupantMapping = new int[100];
+    
+    //denotes the Square that occupies each index; inverse of locationToOccupantMapping
     private final static int[] occupantToLocationMapping = {
         64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
         74,  0,  1,  2,  3,  4,  5,  6,  7, 75, 
@@ -27,30 +29,29 @@ public class ChessBoardBuilder {
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
     };
     
-    public static void main(String[] args) {
-        ChessBoard board = ChessBoard.generateChessBoard();
-    }
-    
     protected static void build(ChessBoard board) {
         boardSquares = board.getAllSquares();
         buildSquares();
         assignMappingReferences();
-        remap();
+        applyMappingReferencesToBoard();
     }
     
     private static void buildSquares() {
         for(int i = 0; i < 100; i++) {
-            if(i < 64) {
+            if(i < 64)
                 boardSquares[i] = InteriorSquare.generateInteriorSquareAt(i);
-            } else {
+            else
                 boardSquares[i] = PerimeterSquare.generatePerimeterSquareAt(i);
-            }
         }
     }
     
     private static void assignMappingReferences() {
         mapLocationsToOccupants();
         initializeMappingReferences();
+        
+        //each type of mapping reference has a unique rule that maps a location
+        //to its directional neighbor; we apply these rules, skipping rows and 
+        //columns that do not have a particular directional neighbor
         assignNorthMappingReferences();
         assignNorthEastMappingReferences();
         assignEastMappingReferences();
@@ -62,74 +63,73 @@ public class ChessBoardBuilder {
     }
     
     private static void mapLocationsToOccupants() {
-        for(int i = 0; i < 100; i++) {
+        //from the hard-coded locationToOccupantMapping array, we define the 
+        //inverse locationToOccupantMapping array
+        for(int i = 0; i < 100; i++)
             locationToOccupantMapping[occupantToLocationMapping[i]] = i;
-        }
     }
     
     private static void initializeMappingReferences() {
-        for(int i = 0; i < 100; i++) {
-            for(int j = 0; j < 8; j++) {
+        for(int i = 0; i < 100; i++)
+            for(int j = 0; j < 8; j++)
                 mappingReferences[i][j] = -1;
-            }
-        }
     }
     
     private static void assignNorthMappingReferences() {
-        for(int i = 10; i < 100; i++) {
+        //skip the first row
+        for(int i = 10; i < 100; i++)
             mappingReferences[i][0] = i - 10;
-        }
     }
     
     private static void assignNorthEastMappingReferences() {
-        for(int i = 10; i < 100; i++) {
+        //skip the first row and last column
+        for(int i = 10; i < 100; i++)
             if(i % 10 != 9)
                 mappingReferences[i][1] = i - 9;
-        }
     }
     
     private static void assignEastMappingReferences() {
-        for(int i = 0; i < 100; i++) {
+        //skip the last column
+        for(int i = 0; i < 100; i++)
             if(i % 10 != 9)
                 mappingReferences[i][2] = i + 1;
-        }
     }
     
     private static void assignSouthEastMappingReferences() {
-        for(int i = 0; i < 90; i++) {
+        //skip the last row and last column
+        for(int i = 0; i < 90; i++)
             if(i % 10 != 9)
                 mappingReferences[i][3] = i + 11;
-        }
     }
     
     private static void assignSouthMappingReferences() {
-        for(int i = 0; i < 90; i++) {
+        //skip the last row
+        for(int i = 0; i < 90; i++)
             mappingReferences[i][4] = i + 10;
-        }
     }
     
     private static void assignSouthWestMappingReferences() {
-        for(int i = 0; i < 90; i++) {
+        //skip the last row and first column
+        for(int i = 0; i < 90; i++)
             if(i % 10 != 0)
                 mappingReferences[i][5] = i + 9;
-        }
     }
     
     private static void assignWestMappingReferences() {
-        for(int i = 0; i < 100; i++) {
+        //skip the first column
+        for(int i = 0; i < 100; i++)
             if(i % 10 != 0)
                 mappingReferences[i][6] = i - 1;
-        }
     }
     
     private static void assignNorthWestMappingReferences() {
-        for(int i = 10; i < 100; i++) {
+        //skip the first row and first column
+        for(int i = 10; i < 100; i++) 
             if(i % 10 != 0)
                 mappingReferences[i][7] = i - 11;
-        }
     }
     
-    private static void remap() {        
+    private static void applyMappingReferencesToBoard() {        
         for(int i = 0; i < 100; i++) {
             Square sq = boardSquares[i];
             
