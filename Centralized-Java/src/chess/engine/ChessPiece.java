@@ -11,8 +11,38 @@ public abstract class ChessPiece {
     private Team itsTeam;
     private int itsNumberOfPriorMoves;
     
+    protected void addPossibleMoveLocationsInDirection(
+            ArrayList<Square> possibleMoveLocations, int direction, int depth) {
+        Square testSquare = itsLocation;
+        
+        for(int i = 0; i < depth; i++) {
+            testSquare = testSquare.getNeighborInDirection(direction);
+            
+            if(testSquare instanceof PerimeterSquare)
+                break;
+            
+            if(testSquare.isOccupied()) {
+                ChessPiece occupant = testSquare.getOccupant();
+                
+                if(occupant.getTeam() == itsTeam) {
+                    break;
+                } else {
+                    possibleMoveLocations.add(testSquare);
+                    break;
+                }
+            } else {
+                possibleMoveLocations.add(testSquare);
+            }
+            
+        }
+    }
+    
     protected int getIntegerLocation() {
         return itsLocation.getLocation();
+    }
+    
+    protected Square getLocation() {
+        return itsLocation;
     }
     
     protected int getNumberOfPriorMoves() {
@@ -27,6 +57,7 @@ public abstract class ChessPiece {
     
     protected void setLocation(Square newLocation) {
         itsLocation = newLocation;
+        itsLocation.setOccupant(this);
     }
     
     protected void setNumberOfPriorMoves(int numberOfPriorMoves) {
@@ -41,6 +72,15 @@ public abstract class ChessPiece {
     }
     
     protected enum Team {
-        ORANGE, GREEN
+        ORANGE(-1), GREEN(1);
+        
+        private final int directionalValue;
+        private Team(int value) {
+            directionalValue = value;
+        }
+        
+        public int getDirectionalValue() {
+            return directionalValue;
+        }
     }
 }
