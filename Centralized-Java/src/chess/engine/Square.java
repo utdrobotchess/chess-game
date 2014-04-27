@@ -5,7 +5,7 @@ package chess.engine;
  * basis for all location-based logic in the chess engine.
  * @author Ryan J. Marcotte
  */
-public abstract class Square {
+public abstract class Square implements Comparable<Square> {
     private int itsLocation;
     
     /* Directional neighbors defined as follows:
@@ -18,6 +18,15 @@ public abstract class Square {
     
     protected void assignNeighborInDirection(Square newNeighbor, int direction) {
         itsNeighbors[direction] = newNeighbor;
+    }
+    
+    public int compareTo(Square secondSquare) {
+        if(itsLocation < secondSquare.getLocation())
+            return -1;
+        else if(itsLocation == secondSquare.getLocation())
+            return 0;
+        else
+            return 1;
     }
     
     protected int getLocation() {
