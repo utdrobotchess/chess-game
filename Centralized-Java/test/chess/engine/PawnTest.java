@@ -25,15 +25,15 @@ public class PawnTest {
     
     @Test
     public void testSpawn() {
-        Pawn p1 = Pawn.spawnPawnAt(8);
-        Pawn p2 = Pawn.spawnPawnAt(12);
-        Pawn p3 = Pawn.spawnPawnAt(50);
-        Pawn p4 = Pawn.spawnPawnAt(53);
+        Pawn p1 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(8));
+        Pawn p2 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(12));
+        Pawn p3 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(50));
+        Pawn p4 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(53));
         
-        assertEquals(p1.getLocation(), 8);
-        assertEquals(p2.getLocation(), 12);
-        assertEquals(p3.getLocation(), 50);
-        assertEquals(p4.getLocation(), 53);
+        assertEquals(p1.getIntegerLocation(), 8);
+        assertEquals(p2.getIntegerLocation(), 12);
+        assertEquals(p3.getIntegerLocation(), 50);
+        assertEquals(p4.getIntegerLocation(), 53);
         
         assertEquals(p1.getTeam(), ChessPiece.Team.GREEN);
         assertEquals(p2.getTeam(), ChessPiece.Team.GREEN);
@@ -45,18 +45,63 @@ public class PawnTest {
     
     @Test
     public void testPossibleOpeningMoves() {
-        Pawn p1 = Pawn.spawnPawnAt(9);
-        Pawn p2 = Pawn.spawnPawnAt(51);
+        ChessBoard board = ChessBoard.generateChessBoard();
+        Pawn p1 = Pawn.spawnPawnAt(board.getSquareAt(8));
+        Pawn p2 = Pawn.spawnPawnAt(board.getSquareAt(54));
         
-        ArrayList<Integer> p1ExpectedMoveLocations = new ArrayList<>();
-        p1ExpectedMoveLocations.add(17);
-        p1ExpectedMoveLocations.add(25);
+        ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
+        ArrayList<Square> p2ActualPossibleMoveLocations = p2.getPossibleMoveLocations();
         
-        ArrayList<Integer> p2ExpectedMoveLocations = new ArrayList<>();
-        p2ExpectedMoveLocations.add(35);
-        p2ExpectedMoveLocations.add(43);
+        assertEquals(2, p1ActualPossibleMoveLocations.size());
+        assertEquals(16, p1ActualPossibleMoveLocations.get(0).getLocation());
+        assertEquals(24, p1ActualPossibleMoveLocations.get(1).getLocation());
+        assertEquals(2, p2ActualPossibleMoveLocations.size());
+        assertEquals(38, p2ActualPossibleMoveLocations.get(0).getLocation());
+        assertEquals(46, p2ActualPossibleMoveLocations.get(1).getLocation());
+    }
+    
+    @Test
+    public void testPossibleOpeningMovesWithObstructions() {
+        ChessBoard board = ChessBoard.generateChessBoard();
+        Pawn p1 = Pawn.spawnPawnAt(board.getSquareAt(10));
+        Pawn p2 = Pawn.spawnPawnAt(board.getSquareAt(26));
+        Pawn p3 = Pawn.spawnPawnAt(board.getSquareAt(53));
+        Pawn p4 = Pawn.spawnPawnAt(board.getSquareAt(45));
         
-        assertEquals(p1.getPossibleMoveLocations(), p1ExpectedMoveLocations);
-        assertEquals(p2.getPossibleMoveLocations(), p2ExpectedMoveLocations);
+        ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
+        ArrayList<Square> p3ActualPossibleMoveLocations = p3.getPossibleMoveLocations();
+        
+        assertEquals(1, p1ActualPossibleMoveLocations.size());
+        assertEquals(18, p1ActualPossibleMoveLocations.get(0).getLocation());
+        assertEquals(0, p3ActualPossibleMoveLocations.size());
+    }
+    
+    @Test
+    public void testPossibleCapturingMoves() {
+        ChessBoard board = ChessBoard.generateChessBoard();
+        Pawn greenPawn1 = Pawn.spawnPawnAt(board.getSquareAt(10));
+        Pawn greenPawn2 = Pawn.spawnPawnAt(board.getSquareAt(11));
+        Pawn greenPawn3 = Pawn.spawnPawnAt(board.getSquareAt(12));
+        Pawn orangePawn1 = Pawn.spawnPawnAt(board.getSquareAt(50));
+        Pawn orangePawn2 = Pawn.spawnPawnAt(board.getSquareAt(51));
+        
+        orangePawn2.setLocation(board.getSquareAt(17));
+        greenPawn2.setLocation(board.getSquareAt(41));
+        greenPawn3.setLocation(board.getSquareAt(43));
+        
+        ArrayList<Square> greenPawn1ActualPossibleMoveLocations = greenPawn1.getPossibleMoveLocations();
+        ArrayList<Square> orangePawn1ActualPossibleMoveLocations = orangePawn1.getPossibleMoveLocations();
+        
+        int[] greenPawn1ExpectedMoveLocations = {17, 18, 26};
+        int[] orangePawn1ExpectedMoveLocations = {34, 41, 42, 43};
+        
+        assertEquals(3, greenPawn1ActualPossibleMoveLocations.size());
+        assertEquals(4, orangePawn1ActualPossibleMoveLocations.size());
+        
+        for(int i = 0; i < 3; i++)
+            assertEquals(greenPawn1ExpectedMoveLocations[i], greenPawn1ActualPossibleMoveLocations.get(i).getLocation());
+        
+        for(int i = 0; i < 4; i++)
+            assertEquals(orangePawn1ExpectedMoveLocations[i], orangePawn1ActualPossibleMoveLocations.get(i).getLocation());
     }
 }
