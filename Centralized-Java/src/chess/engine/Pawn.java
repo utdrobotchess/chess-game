@@ -3,15 +3,17 @@ package chess.engine;
 import java.util.*;
 
 /**
- *
+ * Defines the behavior and movement unique to a pawn
  * @author Ryan J. Marcotte
  */
 public class Pawn extends ChessPiece {
+    private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
+    
     private Pawn() {
         super();
     }
     
-    protected static Pawn spawnPawnAt(int location) {
+    protected static Pawn spawnPawnAt(Square location) {
         Pawn p = new Pawn();
         p.setLocation(location);
         p.setTeamFromInitialLocation(location);
@@ -20,29 +22,50 @@ public class Pawn extends ChessPiece {
     }
     
     @Override
-    protected ArrayList<Integer> getPossibleMoveLocations() {
-        ArrayList<Integer> possibleMoveLocations = new ArrayList<>();
+    protected ArrayList<Square> getPossibleMoveLocations() {        
+        addPossibleForwardMoves();
+        addPossibleCapturingMoves();
         
-        if(getNumberOfPriorMoves() == 0) {
-            possibleMoveLocations = getPossibleOpeningMoves();
-        }
+        //TODO removeLocationsThatResultInCheck(possibleMoveLocations);
         
         Collections.sort(possibleMoveLocations);
         
         return possibleMoveLocations;
     }
     
-    private ArrayList<Integer> getPossibleOpeningMoves() {
-        ArrayList<Integer> possibleOpeningMoves = new ArrayList<>();
+    private void addPossibleForwardMoves() {
+        int possibleNumberOfForwardSquares = 1;
         
-        if(getTeam() == ChessPiece.Team.GREEN) {
-            possibleOpeningMoves.add(getLocation() + 8);
-            possibleOpeningMoves.add(getLocation() + 16);
-        } else {
-            possibleOpeningMoves.add(getLocation() - 8);
-            possibleOpeningMoves.add(getLocation() - 16);
+        if(getNumberOfPriorMoves() == 0)
+            possibleNumberOfForwardSquares = 2;
+        
+        addPossibleMoveLocationsInDirection(possibleMoveLocations, 
+                determineForwardDirectionFromTeam(), possibleNumberOfForwardSquares);
+    }
+    
+    private void addPossibleCapturingMoves() {
+        Square currentLocation = getLocation();
+        int forwardDirection = determineForwardDirectionFromTeam();
+        
+        Square[] possibleCaptureSquares = {currentLocation.getNeighborInDirection(forwardDirection + 1),
+            currentLocation.getNeighborInDirection((forwardDirection + 7) % 8)};
+        
+        for(int i = 0; i < possibleCaptureSquares.length; i++) {
+            Square testSquare = possibleCaptureSquares[i];
+            
+            if(testSquare.isOccupied()) {
+                ChessPiece occupant = testSquare.getOccupant();
+                
+                if(occupant.getTeam() != getTeam())
+                    possibleMoveLocations.add(testSquare);
+            }
         }
-        
-        return possibleOpeningMoves;
+    }
+    
+    private int determineForwardDirectionFromTeam() {
+        if(getTeam() == ChessPiece.Team.GREEN)
+            return 4;
+        else
+            return 0;
     }
 }
