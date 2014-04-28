@@ -12,8 +12,8 @@ public class Pawn extends ChessPiece {
     private Pawn() {
         super();
     }
-    
-    protected static Pawn spawnPawnAt(Square location) {
+   
+    protected static Pawn spawnAt(Square location) {
         Pawn p = new Pawn();
         p.setLocation(location);
         p.setTeamFromInitialLocation(location);
@@ -36,7 +36,7 @@ public class Pawn extends ChessPiece {
     private void addPossibleForwardMoves() {
         int possibleNumberOfForwardSquares = 1;
         
-        if(getNumberOfPriorMoves() == 0)
+        if(hasNotMoved())
             possibleNumberOfForwardSquares = 2;
         
         addPossibleMoveLocationsInDirection(possibleMoveLocations, 
