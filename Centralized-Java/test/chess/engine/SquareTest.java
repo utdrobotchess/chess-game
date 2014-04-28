@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package chess.engine;
 
 import org.junit.Test;
@@ -55,5 +49,18 @@ public class SquareTest {
         assertEquals(interSq.getNeighborInDirection(2), perimSq);
         assertEquals(perimSq.getNeighborInDirection(6), interSq);
         assertEquals(perimSq.getNeighborInDirection(2), nullSq);
+    }
+    
+    @Test
+    public void testOccupancy() {
+        Square interSq = InteriorSquare.generateInteriorSquareAt(8);
+        
+        assert(!interSq.isOccupied());
+        assert(interSq.getOccupant() instanceof NullChessPiece);
+        
+        interSq.setOccupant(Pawn.spawnAt(interSq));
+        
+        assert(interSq.isOccupied());
+        assert(interSq.getOccupant() instanceof Pawn);
     }
 }
