@@ -24,11 +24,11 @@ public class PawnTest {
     }
     
     @Test
-    public void testSpawn() {
-        Pawn p1 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(8));
-        Pawn p2 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(12));
-        Pawn p3 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(50));
-        Pawn p4 = Pawn.spawnPawnAt(InteriorSquare.generateInteriorSquareAt(53));
+    public void testSpawnPawnAt() {
+        Pawn p1 = Pawn.spawnAt(InteriorSquare.generateInteriorSquareAt(8));
+        Pawn p2 = Pawn.spawnAt(InteriorSquare.generateInteriorSquareAt(12));
+        Pawn p3 = Pawn.spawnAt(InteriorSquare.generateInteriorSquareAt(50));
+        Pawn p4 = Pawn.spawnAt(InteriorSquare.generateInteriorSquareAt(53));
         
         assertEquals(p1.getIntegerLocation(), 8);
         assertEquals(p2.getIntegerLocation(), 12);
@@ -46,8 +46,8 @@ public class PawnTest {
     @Test
     public void testPossibleOpeningMoves() {
         ChessBoard board = ChessBoard.generateChessBoard();
-        Pawn p1 = Pawn.spawnPawnAt(board.getSquareAt(8));
-        Pawn p2 = Pawn.spawnPawnAt(board.getSquareAt(54));
+        Pawn p1 = Pawn.spawnAt(board.getSquareAt(8));
+        Pawn p2 = Pawn.spawnAt(board.getSquareAt(54));
         
         ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
         ArrayList<Square> p2ActualPossibleMoveLocations = p2.getPossibleMoveLocations();
@@ -63,10 +63,10 @@ public class PawnTest {
     @Test
     public void testPossibleOpeningMovesWithObstructions() {
         ChessBoard board = ChessBoard.generateChessBoard();
-        Pawn p1 = Pawn.spawnPawnAt(board.getSquareAt(10));
-        Pawn p2 = Pawn.spawnPawnAt(board.getSquareAt(26));
-        Pawn p3 = Pawn.spawnPawnAt(board.getSquareAt(53));
-        Pawn p4 = Pawn.spawnPawnAt(board.getSquareAt(45));
+        Pawn p1 = Pawn.spawnAt(board.getSquareAt(10));
+        Pawn p2 = Pawn.spawnAt(board.getSquareAt(26));
+        Pawn p3 = Pawn.spawnAt(board.getSquareAt(53));
+        Pawn p4 = Pawn.spawnAt(board.getSquareAt(45));
         
         ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
         ArrayList<Square> p3ActualPossibleMoveLocations = p3.getPossibleMoveLocations();
@@ -79,11 +79,11 @@ public class PawnTest {
     @Test
     public void testPossibleCapturingMoves() {
         ChessBoard board = ChessBoard.generateChessBoard();
-        Pawn greenPawn1 = Pawn.spawnPawnAt(board.getSquareAt(10));
-        Pawn greenPawn2 = Pawn.spawnPawnAt(board.getSquareAt(11));
-        Pawn greenPawn3 = Pawn.spawnPawnAt(board.getSquareAt(12));
-        Pawn orangePawn1 = Pawn.spawnPawnAt(board.getSquareAt(50));
-        Pawn orangePawn2 = Pawn.spawnPawnAt(board.getSquareAt(51));
+        Pawn greenPawn1 = Pawn.spawnAt(board.getSquareAt(10));
+        Pawn greenPawn2 = Pawn.spawnAt(board.getSquareAt(11));
+        Pawn greenPawn3 = Pawn.spawnAt(board.getSquareAt(12));
+        Pawn orangePawn1 = Pawn.spawnAt(board.getSquareAt(50));
+        Pawn orangePawn2 = Pawn.spawnAt(board.getSquareAt(51));
         
         orangePawn2.setLocation(board.getSquareAt(17));
         greenPawn2.setLocation(board.getSquareAt(41));
