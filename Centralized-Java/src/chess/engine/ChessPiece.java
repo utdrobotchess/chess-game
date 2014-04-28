@@ -55,6 +55,10 @@ public abstract class ChessPiece {
         return itsTeam;
     }
     
+    protected boolean hasNotMoved() {
+        return itsNumberOfPriorMoves == 0;
+    }
+    
     protected void setLocation(Square newLocation) {
         itsLocation = newLocation;
         itsLocation.setOccupant(this);
