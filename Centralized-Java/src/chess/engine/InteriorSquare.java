@@ -12,7 +12,8 @@ public class InteriorSquare extends Square {
     protected static InteriorSquare generateInteriorSquareAt(int location) {
         InteriorSquare interSq = new InteriorSquare();
         interSq.setLocation(location);
-        interSq.setOccupant(NullChessPiece.spawnAt(interSq));
+		interSq.setOccupancy(false);
+		interSq.setOccupyingTeam(Team.NEUTRAL);
         return interSq;
     }
 }
