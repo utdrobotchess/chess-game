@@ -38,8 +38,8 @@ public class QueenTest {
         ChessPiece orangePawn2 = Pawn.spawnAt(board.getSquareAt(41));
         ChessPiece orangePawn3 = Pawn.spawnAt(board.getSquareAt(47));
         
-        ArrayList<Square> greenQueenActualPossibleMoveLocations = greenQueen.getPossibleMoveLocations();
-        ArrayList<Square> orangeQueenActualPossibleMoveLocations = orangeQueen.getPossibleMoveLocations();
+        ArrayList<Square> greenQueenActualPossibleMoveLocations = greenQueen.generatePossibleMoveLocations();
+        ArrayList<Square> orangeQueenActualPossibleMoveLocations = orangeQueen.generatePossibleMoveLocations();
         
         int[] greenQueenExpectedMoveLocations = {1, 2, 3, 5, 6, 7, 11, 12, 13, 18, 20, 22, 25, 28, 32, 36, 44};
         int[] orangeQueenExpectedMoveLocations = {4, 12, 20, 23, 28, 30, 36, 37, 42, 43, 45, 46, 51, 52, 53, 58, 60, 62};

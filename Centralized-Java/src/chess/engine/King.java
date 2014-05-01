@@ -6,9 +6,7 @@ import java.util.*;
  * Defines the behavior and movement unique to a king
  * @author Ryan J. Marcotte
  */
-public class King extends ChessPiece {
-    private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
-    
+public class King extends ChessPiece {    
     private King() {
         super();
     }
@@ -22,21 +20,23 @@ public class King extends ChessPiece {
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {
+    protected ArrayList<Square> generatePossibleMoveLocations() {
+        ArrayList<Square> possibleMoveLocations = new ArrayList<>();
+        
         for(int i = 0; i < 8; i++)
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 1);
         
-        addPossibleCastlingMoves();
+        addPossibleCastlingMoves(possibleMoveLocations);
         
         Collections.sort(possibleMoveLocations);
         
         return possibleMoveLocations;
     }
     
-    private void addPossibleCastlingMoves() {
+    private void addPossibleCastlingMoves(ArrayList<Square> possibleMoveLocations) {
         if(hasNotMoved()) {
-            addPossibleEastCastling();
-            addPossibleWestCastling();
+            addPossibleEastCastling(possibleMoveLocations);
+            addPossibleWestCastling(possibleMoveLocations);
         }
     }
     
@@ -44,7 +44,7 @@ public class King extends ChessPiece {
     * In the case of green team, looks for castling with rook in square 7
     * In the case of orange team, looks for castling with rook in square 63
     */
-    private void addPossibleEastCastling() {
+    private void addPossibleEastCastling(ArrayList<Square> possibleMoveLocations) {
         Square testSquare = getLocation();
         ChessPiece testPiece;
         
@@ -63,7 +63,7 @@ public class King extends ChessPiece {
             possibleMoveLocations.add(testSquare.getNeighborInDirection(6));
     }
     
-    private void addPossibleWestCastling() {
+    private void addPossibleWestCastling(ArrayList<Square> possibleMoveLocations) {
         Square testSquare = getLocation();
         ChessPiece testPiece;
         

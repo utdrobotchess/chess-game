@@ -7,8 +7,6 @@ import java.util.*;
  * @author Ryan J. Marcotte
  */
 public class Queen extends ChessPiece {
-    private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
-    
     private Queen() {
         super();
     }
@@ -22,7 +20,9 @@ public class Queen extends ChessPiece {
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {
+    protected ArrayList<Square> generatePossibleMoveLocations() {
+        ArrayList<Square> possibleMoveLocations = new ArrayList<>();
+        
         for(int i = 0; i < 8; i++)
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 8);
         

@@ -6,9 +6,7 @@ import java.util.*;
  *
  * @author Ryan J. Marcotte
  */
-public class Rook extends ChessPiece {
-    private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
-    
+public class Rook extends ChessPiece {   
     private Rook() {
         super();
     }
@@ -22,7 +20,9 @@ public class Rook extends ChessPiece {
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {
+    protected ArrayList<Square> generatePossibleMoveLocations() {
+        ArrayList<Square> possibleMoveLocations = new ArrayList<>();
+        
         for(int i = 0; i < 8; i += 2)
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 8);
         

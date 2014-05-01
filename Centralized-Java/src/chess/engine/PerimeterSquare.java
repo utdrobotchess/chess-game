@@ -12,7 +12,7 @@ public class PerimeterSquare extends Square {
     protected static PerimeterSquare generatePerimeterSquareAt(int location) {
         PerimeterSquare perimSq = new PerimeterSquare();
         perimSq.setLocation(location);
-        perimSq.setOccupant(NullChessPiece.spawnNullChessPieceAt(perimSq));
+        perimSq.setOccupant(NullChessPiece.spawnAt(perimSq));
         return perimSq;
     }
 }

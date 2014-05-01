@@ -9,9 +9,6 @@ import static org.junit.Assert.*;
  */
 public class ChessBoardBuilderTest {
     
-    public ChessBoardBuilderTest() {
-    }
-    
     @Test
     public void testInteriorSquaresBuilt() {
         ChessBoard board = ChessBoard.generateChessBoard();

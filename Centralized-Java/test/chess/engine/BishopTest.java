@@ -41,8 +41,8 @@ public class BishopTest {
         ChessPiece greenPawn = Pawn.spawnAt(board.getSquareAt(25));
         ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(61));
         
-        ArrayList<Square> greenBishopActualPossibleMoveLocations = greenBishop.getPossibleMoveLocations();
-        ArrayList<Square> orangeBishopActualPossibleMoveLocations = orangeBishop.getPossibleMoveLocations();
+        ArrayList<Square> greenBishopActualPossibleMoveLocations = greenBishop.generatePossibleMoveLocations();
+        ArrayList<Square> orangeBishopActualPossibleMoveLocations = orangeBishop.generatePossibleMoveLocations();
         
         int[] greenBishopExpectedMoveLocations = {2, 4, 18, 20, 29, 38, 47};
         int[] orangeBishopExpectedMoveLocations = {11, 20, 29, 38, 54};

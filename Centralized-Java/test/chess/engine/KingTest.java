@@ -35,8 +35,8 @@ public class KingTest {
         ChessPiece greenPawn = Pawn.spawnAt(board.getSquareAt(29));
         ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(44));
         
-        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.getPossibleMoveLocations();
-        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.getPossibleMoveLocations();
+        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.generatePossibleMoveLocations();
+        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.generatePossibleMoveLocations();
         
         int[] greenKingExpectedMoveLocations = {19, 20, 21, 27, 35, 36, 37};
         int[] orangeKingExpectedMoveLocations = {27, 28, 29, 35, 37, 43, 45};
@@ -57,7 +57,7 @@ public class KingTest {
         ChessPiece greenRook1 = Rook.spawnAt(board.getSquareAt(0));
         ChessPiece greenRook2 = Rook.spawnAt(board.getSquareAt(7));
         
-        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.getPossibleMoveLocations();
+        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.generatePossibleMoveLocations();
         
         int[] greenKingExpectedMoveLocations = {1, 3, 5, 6, 11, 12, 13};
         
@@ -76,7 +76,7 @@ public class KingTest {
         
         orangeRook1.setNumberOfPriorMoves(1);
         
-        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.getPossibleMoveLocations();
+        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.generatePossibleMoveLocations();
         
         int[] orangeKingExpectedMoveLocations = {51, 52, 53, 59, 61, 62};
         
@@ -95,7 +95,7 @@ public class KingTest {
         
         orangeKing.setNumberOfPriorMoves(1);
         
-        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.getPossibleMoveLocations();
+        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.generatePossibleMoveLocations();
         
         int[] orangeKingExpectedMoveLocations = {51, 52, 53, 59, 61};
         
@@ -115,7 +115,7 @@ public class KingTest {
         ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(45));
         orangePawn.setLocation(board.getSquareAt(6));
         
-        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.getPossibleMoveLocations();
+        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.generatePossibleMoveLocations();
         
         int[] greenKingExpectedMoveLocations = {3, 5, 11, 12, 13};
         

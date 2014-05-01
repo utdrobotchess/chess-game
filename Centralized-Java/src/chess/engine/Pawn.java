@@ -22,7 +22,7 @@ public class Pawn extends ChessPiece {
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {        
+    protected ArrayList<Square> generatePossibleMoveLocations() {        
         addPossibleForwardMoves();
         addPossibleCapturingMoves();
         

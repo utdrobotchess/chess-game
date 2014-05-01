@@ -11,6 +11,7 @@ public class NullSquare extends Square {
     
     protected static NullSquare generateNullSquare() {
         NullSquare nullSq = new NullSquare();
+        nullSq.setOccupant(NullChessPiece.spawnAt(nullSq));
         nullSq.setLocation(-1);
         return nullSq;
     }

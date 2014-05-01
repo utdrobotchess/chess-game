@@ -49,8 +49,8 @@ public class PawnTest {
         Pawn p1 = Pawn.spawnAt(board.getSquareAt(8));
         Pawn p2 = Pawn.spawnAt(board.getSquareAt(54));
         
-        ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
-        ArrayList<Square> p2ActualPossibleMoveLocations = p2.getPossibleMoveLocations();
+        ArrayList<Square> p1ActualPossibleMoveLocations = p1.generatePossibleMoveLocations();
+        ArrayList<Square> p2ActualPossibleMoveLocations = p2.generatePossibleMoveLocations();
         
         assertEquals(2, p1ActualPossibleMoveLocations.size());
         assertEquals(16, p1ActualPossibleMoveLocations.get(0).getLocation());
@@ -68,8 +68,8 @@ public class PawnTest {
         Pawn p3 = Pawn.spawnAt(board.getSquareAt(53));
         Pawn p4 = Pawn.spawnAt(board.getSquareAt(45));
         
-        ArrayList<Square> p1ActualPossibleMoveLocations = p1.getPossibleMoveLocations();
-        ArrayList<Square> p3ActualPossibleMoveLocations = p3.getPossibleMoveLocations();
+        ArrayList<Square> p1ActualPossibleMoveLocations = p1.generatePossibleMoveLocations();
+        ArrayList<Square> p3ActualPossibleMoveLocations = p3.generatePossibleMoveLocations();
         
         assertEquals(1, p1ActualPossibleMoveLocations.size());
         assertEquals(18, p1ActualPossibleMoveLocations.get(0).getLocation());
@@ -89,8 +89,8 @@ public class PawnTest {
         greenPawn2.setLocation(board.getSquareAt(41));
         greenPawn3.setLocation(board.getSquareAt(43));
         
-        ArrayList<Square> greenPawn1ActualPossibleMoveLocations = greenPawn1.getPossibleMoveLocations();
-        ArrayList<Square> orangePawn1ActualPossibleMoveLocations = orangePawn1.getPossibleMoveLocations();
+        ArrayList<Square> greenPawn1ActualPossibleMoveLocations = greenPawn1.generatePossibleMoveLocations();
+        ArrayList<Square> orangePawn1ActualPossibleMoveLocations = orangePawn1.generatePossibleMoveLocations();
         
         int[] greenPawn1ExpectedMoveLocations = {17, 18, 26};
         int[] orangePawn1ExpectedMoveLocations = {34, 41, 42, 43};

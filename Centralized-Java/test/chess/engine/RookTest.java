@@ -14,7 +14,7 @@ public class RookTest {
     }
 
     @Test
-    public void testSpawnRookAt() {
+    public void testSpawnAt() {
         ChessPiece greenRook1 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(0));
         ChessPiece greenRook2 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(7));
         ChessPiece orangeRook1 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(56));
@@ -30,7 +30,7 @@ public class RookTest {
         assertEquals(orangeRook1.getTeam(), ChessPiece.Team.ORANGE);
         assertEquals(orangeRook2.getTeam(), ChessPiece.Team.ORANGE);
         
-        assertEquals(greenRook1.getNumberOfPriorMoves(), 0);
+        assert(greenRook1.hasNotMoved());
         
     }
     
@@ -43,8 +43,8 @@ public class RookTest {
         ChessPiece greenPawn2 = Pawn.spawnAt(board.getSquareAt(4));
         ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(56));
         
-        ArrayList<Square> greenRookActualPossibleMoveLocations = greenRook.getPossibleMoveLocations();
-        ArrayList<Square> orangeRookActualPossibleMoveLocations = orangeRook.getPossibleMoveLocations();
+        ArrayList<Square> greenRookActualPossibleMoveLocations = greenRook.generatePossibleMoveLocations();
+        ArrayList<Square> orangeRookActualPossibleMoveLocations = orangeRook.generatePossibleMoveLocations();
         
         int[] greenRookExpectedMoveLocations = {12, 21, 22, 23, 28, 36, 44, 52, 60};
         int[] orangeRookExpectedMoveLocations = {20, 28, 36, 44, 52, 57, 58, 59, 61, 62, 63};

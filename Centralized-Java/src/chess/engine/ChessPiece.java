@@ -6,10 +6,11 @@ import java.util.*;
  * Contains the methods and attributes common to all chess pieces
  * @author Ryan J. Marcotte
  */
-public abstract class ChessPiece {
+public abstract class ChessPiece implements Comparable<ChessPiece> {
     private Square itsLocation;
     private Team itsTeam;
     private int itsNumberOfPriorMoves;
+    private ArrayList<Square> itsPossibleMoveLocations;
     
     protected void addPossibleMoveLocationsInDirection(
             ArrayList<Square> possibleMoveLocations, int direction, int depth) {
@@ -49,7 +50,11 @@ public abstract class ChessPiece {
         return itsNumberOfPriorMoves;
     }
     
-    protected abstract ArrayList<Square> getPossibleMoveLocations();
+    protected ArrayList<Square> getPossibleMoveLocations() {
+        return itsPossibleMoveLocations;
+    }
+    
+    protected abstract ArrayList<Square> generatePossibleMoveLocations();
     
     protected Team getTeam() {
         return itsTeam;
@@ -68,11 +73,25 @@ public abstract class ChessPiece {
         itsNumberOfPriorMoves = numberOfPriorMoves;
     }
     
+    protected void setPossibleMoveLocations(ArrayList<Square> possibleMoveLocations) {
+        itsPossibleMoveLocations = possibleMoveLocations;
+    }
+    
     protected void setTeamFromInitialLocation(Square initialLocation) {
-        if(initialLocation.getLocation() < 32)
+        if(getIntegerLocation() < 32)
             itsTeam = Team.GREEN;
         else
             itsTeam = Team.ORANGE;
+    }
+    
+    @Override
+    public int compareTo(ChessPiece secondPiece) {
+        if(getIntegerLocation() < secondPiece.getIntegerLocation())
+            return -1;
+        else if (getIntegerLocation() == secondPiece.getIntegerLocation())
+            return 0;
+        else
+            return 1;
     }
     
     protected enum Team {

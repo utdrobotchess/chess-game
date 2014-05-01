@@ -22,7 +22,7 @@ public class Knight extends ChessPiece{
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {
+    protected ArrayList<Square> generatePossibleMoveLocations() {
         for(int i = 0; i < 8; i += 2)
             addPossibleMovesInLateralDirection(possibleMoveLocations, i);
         

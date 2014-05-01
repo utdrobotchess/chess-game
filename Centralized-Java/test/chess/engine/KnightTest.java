@@ -35,8 +35,8 @@ public class KnightTest {
         ChessPiece greenPawn = Pawn.spawnAt(board.getSquareAt(13));
         ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(53));
         
-        ArrayList<Square> greenKnightActualPossibleMoveLocations = greenKnight.getPossibleMoveLocations();
-        ArrayList<Square> orangeKnightActualPossibleMoveLocations = orangeKnight.getPossibleMoveLocations();
+        ArrayList<Square> greenKnightActualPossibleMoveLocations = greenKnight.generatePossibleMoveLocations();
+        ArrayList<Square> orangeKnightActualPossibleMoveLocations = orangeKnight.generatePossibleMoveLocations();
         
         int[] greenKnightExpectedMoveLocations = {11, 18, 22, 34, 38, 43, 45};
         int[] orangeKnightExpectedMoveLocations = {21, 23, 28, 44, 55};

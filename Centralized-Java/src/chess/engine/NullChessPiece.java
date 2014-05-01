@@ -12,14 +12,14 @@ public class NullChessPiece extends ChessPiece {
         super();
     }
     
-    protected static NullChessPiece spawnNullChessPieceAt(Square location) {
+    protected static NullChessPiece spawnAt(Square location) {
         NullChessPiece piece = new NullChessPiece();
         piece.setLocation(location);
         return piece;
     }
     
     @Override
-    protected ArrayList<Square> getPossibleMoveLocations() {
+    protected ArrayList<Square> generatePossibleMoveLocations() {
         return new ArrayList<>();
     }
 }
