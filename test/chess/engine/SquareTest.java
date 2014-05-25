@@ -4,11 +4,31 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests the basic functionalities of a Square, including assigning locations,
+ * neighbors, and occupants.
  * @author Ryan J. Marcotte
  */
 public class SquareTest {
-    
+
+   /*
+	* Ensures that the numerical locations of the different types of Squares
+	* are properly assigned and can be accessed.
+	*/	
+	@Test
+	public void testNumericalLocations() {
+		Square interSq = InteriorSquare.generateInteriorSquareAt(8);
+		Square perimSq = PerimeterSquare.generatePerimeterSquareAt(69);
+		Square nullSq = NullSquare.generateNullSquare();
+
+		assertEquals(8, interSq.getNumericalLocation());
+		assertEquals(69, perimSq.getNumericalLocation());
+		assertEquals(-1, nullSq.getNumericalLocation());		
+	}
+		
+	/*
+	 * Ensures that neighbors can be assigned in all directions and then can
+	 * be accessed.
+	 */
     @Test
     public void testAssignNeighborInDirection() {
         Square interSq1 = InteriorSquare.generateInteriorSquareAt(21);
@@ -33,6 +53,10 @@ public class SquareTest {
         assertEquals(interSq6.getNeighborInDirection(5), interSq5);
     }
     
+	/*
+	 * Ensures that the functionality of assigning and obtaining neighbors
+	 * is not limited by the specific type of Square being used.
+	 */
     @Test
     public void testMixedAssignNeighborInDirection() {
         Square interSq = InteriorSquare.generateInteriorSquareAt(7);
@@ -48,16 +72,26 @@ public class SquareTest {
         assertEquals(perimSq.getNeighborInDirection(2), nullSq);
     }
     
+	/*
+	 * Ensures that a Square is unoccupied when generated and then shows the 
+	 * proper occupancy behavior as ChessPieces are spawned and moved.
+	 */
     @Test
     public void testOccupancy() {
-        Square interSq = InteriorSquare.generateInteriorSquareAt(8);
-        
-        assert(!interSq.isOccupied());
-        assertEquals(Team.NEUTRAL, interSq.getOccupyingTeam());
-        
-        Pawn.spawnAt(interSq);
+        Square interSq1 = InteriorSquare.generateInteriorSquareAt(8);
+        Square interSq2 = InteriorSquare.generateInteriorSquareAt(9);
 
-        assert(interSq.isOccupied());
-        assertEquals(Team.GREEN, interSq.getOccupyingTeam());
+        assert(!interSq1.isOccupied());
+        assertEquals(Team.NEUTRAL, interSq1.getOccupyingTeam());
+        
+        ChessPiece pawn = Pawn.spawnAt(interSq1);
+
+        assert(interSq1.isOccupied());
+        assertEquals(Team.GREEN, interSq1.getOccupyingTeam());
+
+		pawn.setLocation(interSq2);
+
+		assert(!interSq1.isOccupied());
+		assertEquals(Team.NEUTRAL, interSq1.getOccupyingTeam());
     }
 }
