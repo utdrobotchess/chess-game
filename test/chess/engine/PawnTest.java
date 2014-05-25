@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package chess.engine;
 
 import org.junit.After;
@@ -16,7 +10,7 @@ import java.util.*;
 
 /**
  *
- * @author Owner
+ * @author Ryan J. Marcotte 
  */
 public class PawnTest {
     
@@ -35,10 +29,10 @@ public class PawnTest {
         assertEquals(p3.getIntegerLocation(), 50);
         assertEquals(p4.getIntegerLocation(), 53);
         
-        assertEquals(p1.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(p2.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(p3.getTeam(), ChessPiece.Team.ORANGE);
-        assertEquals(p4.getTeam(), ChessPiece.Team.ORANGE);
+        assertEquals(p1.getTeam(), Team.GREEN);
+        assertEquals(p2.getTeam(), Team.GREEN);
+        assertEquals(p3.getTeam(), Team.ORANGE);
+        assertEquals(p4.getTeam(), Team.ORANGE);
         
         assertEquals(p1.getNumberOfPriorMoves(), 0);
     }
