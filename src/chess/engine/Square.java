@@ -7,8 +7,8 @@ package chess.engine;
  */
 public abstract class Square implements Comparable<Square> {
     private int itsLocation;
-	private boolean itsOccupancy;
-	private Team itsOccupyingTeam;
+    private boolean itsOccupancy;
+    private Team itsOccupyingTeam;
     
     /* Directional neighbors defined as follows:
     *  7   0   1
@@ -30,7 +30,7 @@ public abstract class Square implements Comparable<Square> {
         else
             return 1;
     }
-    
+
     protected int getLocation() {
         return itsLocation;
     }
@@ -43,9 +43,9 @@ public abstract class Square implements Comparable<Square> {
         return itsOccupancy;
     }
     
-	protected Team getOccupyingTeam() {
-		return itsOccupyingTeam;
-	}
+    protected Team getOccupyingTeam() {
+    	return itsOccupyingTeam;
+    }
 
     protected void setLocation(int location) {
         itsLocation = location;
@@ -55,7 +55,7 @@ public abstract class Square implements Comparable<Square> {
         itsOccupancy = occupancy;
     }
 
-	protected void setOccupyingTeam(Team occupyingTeam) {
-		itsOccupyingTeam =  occupyingTeam;
-	}
+    protected void setOccupyingTeam(Team occupyingTeam) {
+	itsOccupyingTeam = occupyingTeam;
+    }
 }

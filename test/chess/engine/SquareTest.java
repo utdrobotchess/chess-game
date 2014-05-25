@@ -9,9 +9,6 @@ import static org.junit.Assert.*;
  */
 public class SquareTest {
     
-    public SquareTest() {
-    }
-
     @Test
     public void testAssignNeighborInDirection() {
         Square interSq1 = InteriorSquare.generateInteriorSquareAt(21);
@@ -56,11 +53,11 @@ public class SquareTest {
         Square interSq = InteriorSquare.generateInteriorSquareAt(8);
         
         assert(!interSq.isOccupied());
-        assert(interSq.getOccupant() instanceof NullChessPiece);
+        assertEquals(Team.NEUTRAL, interSq.getOccupyingTeam());
         
-        interSq.setOccupant(Pawn.spawnAt(interSq));
-        
+        Pawn.spawnAt(interSq);
+
         assert(interSq.isOccupied());
-        assert(interSq.getOccupant() instanceof Pawn);
+        assertEquals(Team.GREEN, interSq.getOccupyingTeam());
     }
 }

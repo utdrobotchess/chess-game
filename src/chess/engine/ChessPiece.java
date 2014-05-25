@@ -23,9 +23,7 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
                 break;
             
             if(testSquare.isOccupied()) {
-                ChessPiece occupant = testSquare.getOccupant();
-                
-                if(occupant.getTeam() == itsTeam) {
+                if(testSquare.getOccupyingTeam() == itsTeam) {
                     break;
                 } else {
                     possibleMoveLocations.add(testSquare);
@@ -49,7 +47,7 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
     protected int getNumberOfPriorMoves() {
         return itsNumberOfPriorMoves;
     }
-    
+
     protected ArrayList<Square> getPossibleMoveLocations() {
         return itsPossibleMoveLocations;
     }
@@ -65,10 +63,11 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
     }
     
     protected void setLocation(Square newLocation) {
-        itsLocation = newLocation;
-        itsLocation.setOccupant(this);
+    	itsLocation = newLocation;
+	itsLocation.setOccupancy(true);
+        itsLocation.setOccupyingTeam(itsTeam);
     }
-    
+
     protected void setNumberOfPriorMoves(int numberOfPriorMoves) {
         itsNumberOfPriorMoves = numberOfPriorMoves;
     }
@@ -78,7 +77,7 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
     }
     
     protected void setTeamFromInitialLocation(Square initialLocation) {
-        if(getIntegerLocation() < 32)
+        if(initialLocation.getLocation() < 32)
             itsTeam = Team.GREEN;
         else
             itsTeam = Team.ORANGE;
@@ -92,18 +91,5 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
             return 0;
         else
             return 1;
-    }
-    
-    protected enum Team {
-        ORANGE(-1), GREEN(1);
-        
-        private final int directionalValue;
-        private Team(int value) {
-            directionalValue = value;
-        }
-        
-        public int getDirectionalValue() {
-            return directionalValue;
-        }
     }
 }

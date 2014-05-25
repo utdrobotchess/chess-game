@@ -15,8 +15,8 @@ public class Pawn extends ChessPiece {
    
     protected static Pawn spawnAt(Square location) {
         Pawn p = new Pawn();
-        p.setLocation(location);
         p.setTeamFromInitialLocation(location);
+	p.setLocation(location);
         p.setNumberOfPriorMoves(0);
         return p;
     }
@@ -54,16 +54,14 @@ public class Pawn extends ChessPiece {
             Square testSquare = possibleCaptureSquares[i];
             
             if(testSquare.isOccupied()) {
-                ChessPiece occupant = testSquare.getOccupant();
-                
-                if(occupant.getTeam() != getTeam())
+                if(testSquare.getOccupyingTeam() != getTeam())
                     possibleMoveLocations.add(testSquare);
             }
         }
     }
     
     private int determineForwardDirectionFromTeam() {
-        if(getTeam() == ChessPiece.Team.GREEN)
+        if(getTeam() == Team.GREEN)
             return 4;
         else
             return 0;
