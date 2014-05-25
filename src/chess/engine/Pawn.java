@@ -16,8 +16,7 @@ public class Pawn extends ChessPiece {
     protected static Pawn spawnAt(Square location) {
         Pawn p = new Pawn();
         p.setTeamFromInitialLocation(location);
-	p.setLocation(location);
-        p.setNumberOfPriorMoves(0);
+		p.setLocation(location);
         return p;
     }
     

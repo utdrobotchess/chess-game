@@ -9,9 +9,13 @@ import java.util.*;
 public abstract class ChessPiece implements Comparable<ChessPiece> {
     private Square itsLocation;
     private Team itsTeam;
-    private int itsNumberOfPriorMoves;
+    private int itsNumberOfPriorMoves = 0;
     private ArrayList<Square> itsPossibleMoveLocations;
-    
+   
+	/*
+	 * Explores a Squares in a particular direction up to a particular depth. Searches
+	 * until it reaches the edge of the board, an occupied square, or the specified depth.
+	 */	
     protected void addPossibleMoveLocationsInDirection(
             ArrayList<Square> possibleMoveLocations, int direction, int depth) {
         Square testSquare = itsLocation;
@@ -20,34 +24,30 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
             testSquare = testSquare.getNeighborInDirection(direction);
             
             if(testSquare instanceof PerimeterSquare)
-                break;
+                break; //search has reached the edge of the board
             
             if(testSquare.isOccupied()) {
                 if(testSquare.getOccupyingTeam() == itsTeam) {
-                    break;
+                    break; //cannot move through square occupied by teammate -- end search
                 } else {
                     possibleMoveLocations.add(testSquare);
-                    break;
+                    break; //can capture opponent -- add location, end search
                 }
             } else {
-                possibleMoveLocations.add(testSquare);
+                possibleMoveLocations.add(testSquare); //unoccupied interior square
             }
             
         }
     }
     
-    protected int getIntegerLocation() {
-        return itsLocation.getLocation();
+    protected int getNumericalLocation() {
+        return itsLocation.getNumericalLocation();
     }
     
     protected Square getLocation() {
         return itsLocation;
     }
     
-    protected int getNumberOfPriorMoves() {
-        return itsNumberOfPriorMoves;
-    }
-
     protected ArrayList<Square> getPossibleMoveLocations() {
         return itsPossibleMoveLocations;
     }
@@ -61,33 +61,40 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
     protected boolean hasNotMoved() {
         return itsNumberOfPriorMoves == 0;
     }
+
+	protected void incrementNumberOfPriorMoves() {
+		itsNumberOfPriorMoves++;
+	}
     
     protected void setLocation(Square newLocation) {
-    	itsLocation = newLocation;
-	itsLocation.setOccupancy(true);
+    	if(itsLocation != null) {
+			//if it already occupied a square, reset the occupancy of that old square
+			itsLocation.setOccupancy(false);
+			itsLocation.setOccupyingTeam(Team.NEUTRAL);
+		}
+
+		itsLocation = newLocation;
+		itsLocation.setOccupancy(true);
         itsLocation.setOccupyingTeam(itsTeam);
     }
 
-    protected void setNumberOfPriorMoves(int numberOfPriorMoves) {
-        itsNumberOfPriorMoves = numberOfPriorMoves;
-    }
-    
     protected void setPossibleMoveLocations(ArrayList<Square> possibleMoveLocations) {
         itsPossibleMoveLocations = possibleMoveLocations;
     }
     
     protected void setTeamFromInitialLocation(Square initialLocation) {
-        if(initialLocation.getLocation() < 32)
+		//if initial location is in top half of board (0-31), team is green
+		if(initialLocation.getNumericalLocation() < 32)
             itsTeam = Team.GREEN;
-        else
+        else //otherwise, team is orange
             itsTeam = Team.ORANGE;
     }
     
     @Override
     public int compareTo(ChessPiece secondPiece) {
-        if(getIntegerLocation() < secondPiece.getIntegerLocation())
+        if(getNumericalLocation() < secondPiece.getNumericalLocation())
             return -1;
-        else if (getIntegerLocation() == secondPiece.getIntegerLocation())
+        else if (getNumericalLocation() == secondPiece.getNumericalLocation())
             return 0;
         else
             return 1;
