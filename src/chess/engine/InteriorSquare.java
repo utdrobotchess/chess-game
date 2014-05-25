@@ -11,9 +11,9 @@ public class InteriorSquare extends Square {
     
     protected static InteriorSquare generateInteriorSquareAt(int location) {
         InteriorSquare interSq = new InteriorSquare();
-        interSq.setLocation(location);
-	interSq.setOccupancy(false);
-	interSq.setOccupyingTeam(Team.NEUTRAL);
+        interSq.setNumericalLocation(location);
+		interSq.setOccupancy(false);
+		interSq.setOccupyingTeam(Team.NEUTRAL);
         return interSq;
     }
 }

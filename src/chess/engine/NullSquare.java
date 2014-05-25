@@ -11,7 +11,7 @@ public class NullSquare extends Square {
     
     protected static NullSquare generateNullSquare() {
         NullSquare nullSq = new NullSquare();
-        nullSq.setLocation(-1);
+        nullSq.setNumericalLocation(-1);
         nullSq.setOccupancy(false);
 		nullSq.setOccupyingTeam(Team.NEUTRAL);
 		return nullSq;

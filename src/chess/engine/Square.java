@@ -6,7 +6,7 @@ package chess.engine;
  * @author Ryan J. Marcotte
  */
 public abstract class Square implements Comparable<Square> {
-    private int itsLocation;
+    private int itsNumericalLocation;
     private boolean itsOccupancy;
     private Team itsOccupyingTeam;
     
@@ -20,19 +20,23 @@ public abstract class Square implements Comparable<Square> {
     protected void assignNeighborInDirection(Square newNeighbor, int direction) {
         itsNeighbors[direction] = newNeighbor;
     }
-    
+   
+	/*
+	 * Allows for comparisons and sorting of Squares based on the numberical value
+	 * of their location.
+	 */ 
     @Override
     public int compareTo(Square secondSquare) {
-        if(itsLocation < secondSquare.getLocation())
+        if(itsNumericalLocation < secondSquare.getNumericalLocation())
             return -1;
-        else if(itsLocation == secondSquare.getLocation())
+        else if(itsNumericalLocation == secondSquare.getNumericalLocation())
             return 0;
         else
             return 1;
     }
 
-    protected int getLocation() {
-        return itsLocation;
+    protected int getNumericalLocation() {
+        return itsNumericalLocation;
     }
     
     protected Square getNeighborInDirection(int direction) {
@@ -47,8 +51,8 @@ public abstract class Square implements Comparable<Square> {
     	return itsOccupyingTeam;
     }
 
-    protected void setLocation(int location) {
-        itsLocation = location;
+    protected void setNumericalLocation(int location) {
+        itsNumericalLocation = location;
     }
     
     protected void setOccupancy(boolean occupancy) {

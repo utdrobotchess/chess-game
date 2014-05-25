@@ -11,7 +11,7 @@ public class PerimeterSquare extends Square {
     
     protected static PerimeterSquare generatePerimeterSquareAt(int location) {
         PerimeterSquare perimSq = new PerimeterSquare();
-        perimSq.setLocation(location);
+        perimSq.setNumericalLocation(location);
         perimSq.setOccupancy(false);
 		perimSq.setOccupyingTeam(Team.NEUTRAL);
 		return perimSq;
