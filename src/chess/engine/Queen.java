@@ -13,10 +13,9 @@ public class Queen extends ChessPiece {
     
     protected static Queen spawnAt(Square location) {
         Queen q = new Queen();
-        q.setLocation(location);
         q.setTeamFromInitialLocation(location);
-        q.setNumberOfPriorMoves(0);
-        return q;
+        q.setLocation(location);
+		return q;
     }
     
     @Override

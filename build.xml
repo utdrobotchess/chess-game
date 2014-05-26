@@ -1,0 +1,105 @@
+<project name="chess-engine" default="dist" basedir=".">
+
+	<!-- set global properties for this build -->
+	<property file="build.properties" />
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="deploy"/>
+	<property name="src.test" location="test" />
+	<property name="junit.results" value="test-results" />
+
+	<!-- set library variables -->
+	<property name="lib.dir" location="${dist}/lib" />
+
+	<!-- build the CLASSPATH -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${junit.home}" includes="${junit.jar}" />
+	</path>
+
+	<path id="classpath.test">
+		<path refid="classpath"/>
+		<pathelement location="${build}"/>
+	</path>
+
+	<!--
+		 Initialize the environment
+	-->
+	<target name="init">
+		<tstamp/>
+		<mkdir dir="${build}"/>
+	</target>
+
+	<!--
+		 Compile source code
+	-->
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} and ${src.test} into ${build} -->
+		<javac destdir="${build}" >
+			<src path="${src}" />
+			<src path="${src.test}" />
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+
+	<!--
+		 Compile source code with Debug turned on for JProbe
+	-->
+	<target name="compile.debug" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} and ${src.test} into ${build} -->
+		<javac debug="on" destdir="${build}" >
+			<src path="${src}" />
+			<src path="${src.test}" />
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+
+	<!--
+		 Perform a clean distribution build
+	-->
+	<target name="dist-clean">
+		<antcall target="clean" />
+		<antcall target="dist" />
+	</target>
+
+	<!--
+		 Build the distribution files
+	-->
+	<target name="dist" depends="test,compile" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/lib/ChessEngine.jar" >
+			<fileset dir="${build}">
+				<exclude name="**/*Test*" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!--
+		 Execute Unit Tests
+	-->
+	<target name="test" depends="compile" description="Run unit tests">
+		<delete dir="${junit.results}"/>
+		<mkdir dir="${junit.results}"/>
+		<junit fork="no" errorProperty="test.failed" failureProperty="test.failed" >
+			<classpath refid="classpath.test" />
+			<formatter type="plain" usefile="false" />
+			<formatter type="xml" />
+			<batchtest todir="${junit.results}">
+				<fileset dir="${build}" includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+		<fail message="Tests failed. Please see test reports" if="test.failed" />
+	</target>
+
+	<!--
+		 Clean up the environment
+	-->
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>

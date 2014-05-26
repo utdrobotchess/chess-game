@@ -17,8 +17,8 @@ public class InteriorSquareTest {
         Square sq1 = InteriorSquare.generateInteriorSquareAt(8);
         Square sq2 = InteriorSquare.generateInteriorSquareAt(42);
         
-        assertEquals(sq1.getLocation(), 8);
-        assertEquals(sq2.getLocation(), 42);
+        assertEquals(sq1.getNumericalLocation(), 8);
+        assertEquals(sq2.getNumericalLocation(), 42);
     }
     
 }

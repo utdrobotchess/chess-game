@@ -1,7 +1,7 @@
 package chess.engine;
 
 import java.util.*;
-import chess.engine.ChessPiece.Team;
+import chess.engine.Team;
 
 /**
  *
@@ -12,14 +12,12 @@ public class ChessGame {
     private ChessBoard board;
     private Team activeTeam;
     
-    private ChessGame() {
-        
-    }
+    private ChessGame() { }
     
     public static ChessGame setupGame() {
         ChessGame game = new ChessGame();
         
- //       ChessGameBuilder.build(game);
+        ChessGameBuilder.build(game);
         
         return game;
     }
@@ -51,31 +49,7 @@ public class ChessGame {
     }
     
     private void updatePositions(int origin, int destination) {
-        ChessPiece pieceBeingMoved = board.getSquareAt(origin).getOccupant();
-        
-        pieceBeingMoved.setLocation(board.getSquareAt(destination));
-        
-        if(board.getSquareAt(destination).isOccupied()) {
-            ChessPiece capturedPiece = board.getSquareAt(destination).getOccupant();
-            
-            for(int i = 64; i < 100; i++) {
-                Square possibleCapturedDestination = board.getSquareAt(i);
-                if(!possibleCapturedDestination.isOccupied()) {
-                    capturedPiece.setLocation(possibleCapturedDestination);
-                    break;
-                }
-            }  
-        }
-    }
-    
-    private Square getNextAvailablePerimeterSquare() {
-        for(int i = 64; i < 100; i++) {
-            Square possibleAvailablePerimeterSquare = board.getSquareAt(i);
- //           if(!possibleCaptured)
-				
-        }
 
-		return board.getSquareAt(64);
     }
     
     private void prepareForNextTurn() {
@@ -91,32 +65,8 @@ public class ChessGame {
     }
     
     private void removeMovesThatResultInCheck(ChessPiece moveLocationsPiece, ArrayList<Square> possibleMoveLocations) {
-        Square moveLocationInQuestion;
-        ChessPiece testPiece;
-        ArrayList<Square> enemyMoveLocations;
-        Square currentLocation = moveLocationsPiece.getLocation();
-        
-        
-        for(int i = 0; i < possibleMoveLocations.size(); i++) {
-            moveLocationInQuestion = possibleMoveLocations.get(i);
-            moveLocationsPiece.setLocation(moveLocationInQuestion);
-            
-            for(int j = 0; j < chessPieces.size(); j++) {
-                testPiece = chessPieces.get(j);
-                
-                if(testPiece.getTeam() != moveLocationsPiece.getTeam()) {
-                    enemyMoveLocations = testPiece.generatePossibleMoveLocations();
-                    
-                    for(int k = 0; k < enemyMoveLocations.size(); k++) {
-                        if(enemyMoveLocations.get(i).getOccupant() instanceof King)
-                            possibleMoveLocations.remove(moveLocationInQuestion);
-                    }
-                }
-            }
-        }
-        
-        moveLocationsPiece.setLocation(currentLocation);
-    }
+
+	}
     
     protected void setActiveTeam(Team team) {
         activeTeam = team;

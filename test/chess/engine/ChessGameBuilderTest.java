@@ -9,9 +9,6 @@ import static org.junit.Assert.*;
  */
 public class ChessGameBuilderTest {
     
-    public ChessGameBuilderTest() {
-    }
-
     @Test
     public void testPiecePlacement() {
         ChessGame game = ChessGame.setupGame();
@@ -26,21 +23,26 @@ public class ChessGameBuilderTest {
                                         51, 52, 53, 54, 55};
         
         for(int i = 0; i < 4; i++) {
-            assert(board.getSquareAt(expectedRookLocations[i]).getOccupant() instanceof Rook);
-            assert(board.getSquareAt(expectedKnightLocations[i]).getOccupant() instanceof Knight);
-            assert(board.getSquareAt(expectedBishopLocations[i]).getOccupant() instanceof Bishop);
+            assert(board.getSquareAt(expectedRookLocations[i]).isOccupied());
+            assert(board.getSquareAt(expectedKnightLocations[i]).isOccupied());
+            assert(board.getSquareAt(expectedBishopLocations[i]).isOccupied());
         }
         
         for(int i = 0; i < 2; i++) {
-            assert(board.getSquareAt(expectedQueenLocations[i]).getOccupant() instanceof Queen);
-            assert(board.getSquareAt(expectedKingLocations[i]).getOccupant() instanceof King);
+            assert(board.getSquareAt(expectedQueenLocations[i]).isOccupied());
+            assert(board.getSquareAt(expectedKingLocations[i]).isOccupied());
         }
         
         for(int i = 0; i < 16; i++)
-            assert(board.getSquareAt(expectedPawnLocations[i]).getOccupant() instanceof Pawn);
+            assert(board.getSquareAt(expectedPawnLocations[i]).isOccupied());
         
         for(int i = 16; i < 48; i++)
-            assert(board.getSquareAt(i).getOccupant() instanceof NullChessPiece);
+            assert(!board.getSquareAt(i).isOccupied());
+
+		for(int i = 0; i < 16; i++) {
+			assertEquals(Team.GREEN, board.getSquareAt(i).getOccupyingTeam());
+			assertEquals(Team.ORANGE, board.getSquareAt(i+48).getOccupyingTeam());
+		}
     }
     
 }

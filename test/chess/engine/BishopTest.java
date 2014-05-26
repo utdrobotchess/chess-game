@@ -20,17 +20,17 @@ public class BishopTest {
         ChessPiece orangeBishop1 = Bishop.spawnAt(InteriorSquare.generateInteriorSquareAt(58));
         ChessPiece orangeBishop2 = Bishop.spawnAt(InteriorSquare.generateInteriorSquareAt(61));
         
-        assertEquals(greenBishop1.getIntegerLocation(), 2);
-        assertEquals(greenBishop2.getIntegerLocation(), 5);
-        assertEquals(orangeBishop1.getIntegerLocation(), 58);
-        assertEquals(orangeBishop2.getIntegerLocation(), 61);
+        assertEquals(greenBishop1.getNumericalLocation(), 2);
+        assertEquals(greenBishop2.getNumericalLocation(), 5);
+        assertEquals(orangeBishop1.getNumericalLocation(), 58);
+        assertEquals(orangeBishop2.getNumericalLocation(), 61);
         
-        assertEquals(greenBishop1.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(greenBishop2.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(orangeBishop1.getTeam(), ChessPiece.Team.ORANGE);
-        assertEquals(orangeBishop2.getTeam(), ChessPiece.Team.ORANGE);
+        assertEquals(greenBishop1.getTeam(), Team.GREEN);
+        assertEquals(greenBishop2.getTeam(), Team.GREEN);
+        assertEquals(orangeBishop1.getTeam(), Team.ORANGE);
+        assertEquals(orangeBishop2.getTeam(), Team.ORANGE);
         
-        assertEquals(greenBishop1.getNumberOfPriorMoves(), 0);
+        assert(greenBishop1.hasNotMoved());
     }
     
     @Test
@@ -51,9 +51,9 @@ public class BishopTest {
         assertEquals(5, orangeBishopActualPossibleMoveLocations.size());
         
         for(int i = 0; i < 7; i++)
-            assertEquals(greenBishopExpectedMoveLocations[i], greenBishopActualPossibleMoveLocations.get(i).getLocation());
+            assertEquals(greenBishopExpectedMoveLocations[i], greenBishopActualPossibleMoveLocations.get(i).getNumericalLocation());
         
         for(int i = 0; i < 5; i++)
-            assertEquals(orangeBishopExpectedMoveLocations[i], orangeBishopActualPossibleMoveLocations.get(i).getLocation());
+            assertEquals(orangeBishopExpectedMoveLocations[i], orangeBishopActualPossibleMoveLocations.get(i).getNumericalLocation());
     }
 }

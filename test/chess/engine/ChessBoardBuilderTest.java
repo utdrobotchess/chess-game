@@ -16,7 +16,7 @@ public class ChessBoardBuilderTest {
         for(int i = 0; i < 64; i++) {
             Square actualSquare = board.getSquareAt(i);
             assert(actualSquare instanceof InteriorSquare);
-            assertEquals(i, actualSquare.getLocation());
+            assertEquals(i, actualSquare.getNumericalLocation());
         }
     }
     
@@ -27,7 +27,7 @@ public class ChessBoardBuilderTest {
         for(int i =  64; i < 100; i++) {
             Square actualSquare = board.getSquareAt(i);
             assert(actualSquare instanceof PerimeterSquare);
-            assertEquals(i, actualSquare.getLocation());
+            assertEquals(i, actualSquare.getNumericalLocation());
         }
     }
     
@@ -52,7 +52,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(0);
             String errorMessage = "Unexpected north neighbor at location " + i;
-            assertEquals(errorMessage, expectedNorthNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedNorthNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -77,7 +77,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(1);
             String errorMessage = "Unexpected northeast neighbor at location " + i;
-            assertEquals(errorMessage, expectedNorthEastNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedNorthEastNeighbors[i], neighbor.getNumericalLocation());
         }        
     }
     
@@ -102,7 +102,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(2);
             String errorMessage = "Unexpected east neighbor at location " + i;
-            assertEquals(errorMessage, expectedEastNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedEastNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -127,7 +127,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(3);
             String errorMessage = "Unexpected southeast neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthEastNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedSouthEastNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -153,7 +153,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(4);
             String errorMessage = "Unexpected south neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedSouthNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -178,7 +178,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(5);
             String errorMessage = "Unexpected southwest neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthWestNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedSouthWestNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -203,7 +203,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(6);
             String errorMessage = "Unexpected west neighbor at location " + i;
-            assertEquals(errorMessage, expectedWestNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedWestNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     
@@ -228,7 +228,7 @@ public class ChessBoardBuilderTest {
             Square sq = board.getSquareAt(i);
             Square neighbor = sq.getNeighborInDirection(7);
             String errorMessage = "Unexpected northwest neighbor at location" + i;
-            assertEquals(errorMessage, expectedNorthWestNeighbors[i], neighbor.getLocation());
+            assertEquals(errorMessage, expectedNorthWestNeighbors[i], neighbor.getNumericalLocation());
         }
     }
     

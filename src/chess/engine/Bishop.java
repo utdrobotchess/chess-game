@@ -13,10 +13,9 @@ public class Bishop extends ChessPiece {
     
     protected static Bishop spawnAt(Square location) {
         Bishop b = new Bishop();
-        b.setLocation(location);
         b.setTeamFromInitialLocation(location);
-        b.setNumberOfPriorMoves(0);
-        return b;
+        b.setLocation(location);
+		return b;
     }
     
     @Override

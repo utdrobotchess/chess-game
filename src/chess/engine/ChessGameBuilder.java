@@ -15,14 +15,12 @@ public class ChessGameBuilder {
     private final static int[] PAWN_LOCATIONS = {8, 9, 10, 11, 12, 13, 14, 15, 
                                                 48, 49, 50, 51, 52, 53, 54, 55};
     
-    private ChessGameBuilder() {
-        
-    }
+    private ChessGameBuilder() { }
     
     protected static void build(ChessGame game) {
         board = ChessBoard.generateChessBoard();
         game.addBuiltChessBoard(board);
-        game.setActiveTeam(ChessPiece.Team.GREEN);
+        game.setActiveTeam(Team.GREEN);
         
         addPieces(game);
     }

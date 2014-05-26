@@ -21,7 +21,7 @@ public class NullSquareTest {
     @Test
     public void testGenerateNullSquare() {
         NullSquare nullSq = NullSquare.generateNullSquare();
-        assertEquals(nullSq.getLocation(), -1);
+        assertEquals(nullSq.getNumericalLocation(), -1);
     }
     
 }

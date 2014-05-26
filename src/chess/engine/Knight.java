@@ -15,9 +15,8 @@ public class Knight extends ChessPiece{
     
     protected static Knight spawnAt(Square location) {
         Knight k = new Knight();
-        k.setLocation(location);
         k.setTeamFromInitialLocation(location);
-        k.setNumberOfPriorMoves(0);
+		k.setLocation(location);
         return k;
     }
     
@@ -53,11 +52,8 @@ public class Knight extends ChessPiece{
             if(testSquares[j] instanceof PerimeterSquare)
                 continue;
             
-            if(testSquares[j].isOccupied()) {
-                ChessPiece occupant = testSquares[j].getOccupant();
-                
-                if(occupant.getTeam() == getTeam())
-                    continue;
+            if(testSquares[j].getOccupyingTeam() == getTeam()) {
+	            continue;
             }
                 
             possibleMoveLocations.add(testSquares[j]);

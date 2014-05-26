@@ -5,14 +5,16 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests the functionality of a Rook, including spawning and determining possible
+ * move locations.
  * @author Ryan J. Marcotte
  */
 public class RookTest {
     
-    public RookTest() {
-    }
-
+	/*
+	 * Ensures that a Rook spawns correctly, with the proper location, team, and number of 
+	 * initial moves.
+	 */
     @Test
     public void testSpawnAt() {
         ChessPiece greenRook1 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(0));
@@ -20,20 +22,22 @@ public class RookTest {
         ChessPiece orangeRook1 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(56));
         ChessPiece orangeRook2 = Rook.spawnAt(InteriorSquare.generateInteriorSquareAt(63));
         
-        assertEquals(greenRook1.getIntegerLocation(), 0);
-        assertEquals(greenRook2.getIntegerLocation(), 7);
-        assertEquals(orangeRook1.getIntegerLocation(), 56);
-        assertEquals(orangeRook2.getIntegerLocation(), 63);
+        assertEquals(greenRook1.getNumericalLocation(), 0);
+        assertEquals(greenRook2.getNumericalLocation(), 7);
+        assertEquals(orangeRook1.getNumericalLocation(), 56);
+        assertEquals(orangeRook2.getNumericalLocation(), 63);
         
-        assertEquals(greenRook1.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(greenRook2.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(orangeRook1.getTeam(), ChessPiece.Team.ORANGE);
-        assertEquals(orangeRook2.getTeam(), ChessPiece.Team.ORANGE);
+        assertEquals(greenRook1.getTeam(), Team.GREEN);
+        assertEquals(greenRook2.getTeam(), Team.GREEN);
+        assertEquals(orangeRook1.getTeam(), Team.ORANGE);
+        assertEquals(orangeRook2.getTeam(), Team.ORANGE);
         
         assert(greenRook1.hasNotMoved());
-        
     }
     
+	/*
+	 * Ensures that a Rook can correctly determine the possible locations to which it can move
+	 */
     @Test
     public void testPossibleMoveLocations() {
         ChessBoard board = ChessBoard.generateChessBoard();
@@ -52,10 +56,16 @@ public class RookTest {
         assertEquals(9, greenRookActualPossibleMoveLocations.size());
         assertEquals(11, orangeRookActualPossibleMoveLocations.size());
         
-        for(int i = 0; i < 9; i++)
-            assertEquals(greenRookExpectedMoveLocations[i], greenRookActualPossibleMoveLocations.get(i).getLocation());
-        
-        for(int i = 0; i < 11; i++)
-            assertEquals(orangeRookExpectedMoveLocations[i], orangeRookActualPossibleMoveLocations.get(i).getLocation());
-    }
+		Square actualMoveLocation;
+
+        for(int i = 0; i < 9; i++) {
+			actualMoveLocation = greenRookActualPossibleMoveLocations.get(i);
+			assertEquals(greenRookExpectedMoveLocations[i], actualMoveLocation.getNumericalLocation());
+		}
+
+        for(int i = 0; i < 11; i++) {
+			actualMoveLocation = orangeRookActualPossibleMoveLocations.get(i);
+			assertEquals(orangeRookExpectedMoveLocations[i], actualMoveLocation.getNumericalLocation());
+		}
+	}
 }

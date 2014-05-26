@@ -13,9 +13,8 @@ public class Rook extends ChessPiece {
     
     protected static Rook spawnAt(Square location) {
         Rook r = new Rook();
-        r.setLocation(location);
         r.setTeamFromInitialLocation(location);
-        r.setNumberOfPriorMoves(0);
+		r.setLocation(location);
         return r;
     }
     

@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  *
- * @author Owner
+ * @author Ryan J. Marcotte 
  */
 public class QueenTest {
     
@@ -18,13 +18,13 @@ public class QueenTest {
         ChessPiece greenQueen = Queen.spawnAt(InteriorSquare.generateInteriorSquareAt(3));
         ChessPiece orangeQueen = Queen.spawnAt(InteriorSquare.generateInteriorSquareAt(59));
         
-        assertEquals(greenQueen.getIntegerLocation(), 3);
-        assertEquals(orangeQueen.getIntegerLocation(), 59);
+        assertEquals(greenQueen.getNumericalLocation(), 3);
+        assertEquals(orangeQueen.getNumericalLocation(), 59);
         
-        assertEquals(greenQueen.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(orangeQueen.getTeam(), ChessPiece.Team.ORANGE);
+        assertEquals(greenQueen.getTeam(), Team.GREEN);
+        assertEquals(orangeQueen.getTeam(), Team.ORANGE);
         
-        assertEquals(greenQueen.getNumberOfPriorMoves(), 0);
+        assert(greenQueen.hasNotMoved());
     }
     
     @Test
@@ -47,10 +47,16 @@ public class QueenTest {
         assertEquals(17, greenQueenActualPossibleMoveLocations.size());
         assertEquals(18, orangeQueenActualPossibleMoveLocations.size());
         
-        for(int i = 0; i < 17; i++)
-            assertEquals(greenQueenExpectedMoveLocations[i], greenQueenActualPossibleMoveLocations.get(i).getLocation());
+		Square actualLocation;
+
+        for(int i = 0; i < 17; i++) {
+			actualLocation = greenQueenActualPossibleMoveLocations.get(i);
+		 	assertEquals(greenQueenExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
         
-        for(int i = 0; i < 18; i++)
-            assertEquals(orangeQueenExpectedMoveLocations[i], orangeQueenActualPossibleMoveLocations.get(i).getLocation());
+        for(int i = 0; i < 18; i++) {
+			actualLocation = orangeQueenActualPossibleMoveLocations.get(i);
+		 	assertEquals(orangeQueenExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
     }
 }

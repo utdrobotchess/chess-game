@@ -9,20 +9,17 @@ import java.util.*;
  * @author Ryan J. Marcotte
  */
 public class KnightTest {
-    
-    public KnightTest() {
-    }
 
     @Test
     public void testSpawnAt() {
         ChessPiece greenKnight = Knight.spawnAt(InteriorSquare.generateInteriorSquareAt(1));
         ChessPiece orangeKnight = Knight.spawnAt(InteriorSquare.generateInteriorSquareAt(62));
         
-        assertEquals(greenKnight.getIntegerLocation(), 1);
-        assertEquals(orangeKnight.getIntegerLocation(), 62);
+        assertEquals(greenKnight.getNumericalLocation(), 1);
+        assertEquals(orangeKnight.getNumericalLocation(), 62);
         
-        assertEquals(greenKnight.getTeam(), ChessPiece.Team.GREEN);
-        assertEquals(orangeKnight.getTeam(), ChessPiece.Team.ORANGE);
+        assertEquals(greenKnight.getTeam(), Team.GREEN);
+        assertEquals(orangeKnight.getTeam(), Team.ORANGE);
         
         assert(greenKnight.hasNotMoved());
     }
@@ -44,10 +41,16 @@ public class KnightTest {
         assertEquals(7, greenKnightActualPossibleMoveLocations.size());
         assertEquals(5, orangeKnightActualPossibleMoveLocations.size());
         
-        for(int i = 0; i < 7; i++)
-            assertEquals(greenKnightExpectedMoveLocations[i], greenKnightActualPossibleMoveLocations.get(i).getLocation());
+		Square actualLocation;
+
+        for(int i = 0; i < 7; i++) {
+			actualLocation = greenKnightActualPossibleMoveLocations.get(i);
+		 	assertEquals(greenKnightExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
         
-        for(int i = 0; i < 5; i++)
-            assertEquals(orangeKnightExpectedMoveLocations[i], orangeKnightActualPossibleMoveLocations.get(i).getLocation());
+        for(int i = 0; i < 5; i++) {
+			actualLocation = orangeKnightActualPossibleMoveLocations.get(i);
+		 	assertEquals(orangeKnightExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
     }
 }
