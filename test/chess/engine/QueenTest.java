@@ -5,14 +5,12 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 /**
- *
+ * Tests the functionality of a queen, including generation and determination of 
+ * possible move locations
  * @author Ryan J. Marcotte 
  */
 public class QueenTest {
     
-    public QueenTest() {
-    }
-
     @Test
     public void testSpawnAt() {
         ChessPiece greenQueen = Queen.spawnAt(InteriorSquare.generateInteriorSquareAt(3));

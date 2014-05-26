@@ -5,7 +5,8 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 /**
- *
+ * Tests the functionality of a knight, including generation and determination
+ * of possible move locations
  * @author Ryan J. Marcotte
  */
 public class KnightTest {

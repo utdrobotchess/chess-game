@@ -5,13 +5,11 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 /**
- *
+ * Tests the functionality of a king, including generation and determination of 
+ * move locations
  * @author Ryan J. Marcotte
  */
 public class KingTest {
-    
-    public KingTest() {
-    }
 
     @Test
     public void testSpawn() {
@@ -54,95 +52,4 @@ public class KingTest {
             assertEquals(orangeKingExpectedMoveLocations[i], actualLocation.getNumericalLocation());
         }
     }
-    
-    @Test
-    public void testCastling1() {
-/*        ChessBoard board = ChessBoard.generateChessBoard();
-        ChessPiece greenKing = King.spawnAt(board.getSquareAt(4));
-        ChessPiece greenRook1 = Rook.spawnAt(board.getSquareAt(0));
-        ChessPiece greenRook2 = Rook.spawnAt(board.getSquareAt(7));
-        
-        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.generatePossibleMoveLocations();
-        
-        int[] greenKingExpectedMoveLocations = {1, 3, 5, 6, 11, 12, 13};
-        
-        assertEquals(7, greenKingActualPossibleMoveLocations.size());
-        
-		Square actualLocation;
-
-        for(int i = 0; i < 7; i++) {
-			actualLocation = greenKingActualPossibleMoveLocations.get(i);
-			assertEquals(greenKingExpectedMoveLocations[i], actualLocation.getNumericalLocation());
-		}*/
-    }
-    
-    @Test
-    public void testCasting2() {
-/*        ChessBoard board = ChessBoard.generateChessBoard();
-        ChessPiece orangeKing = King.spawnAt(board.getSquareAt(60));
-        ChessPiece orangeRook1 = Rook.spawnAt(board.getSquareAt(56));
-        ChessPiece orangeRook2 = Rook.spawnAt(board.getSquareAt(63));
-        
-        orangeRook1.incrementNumberOfPriorMoves();
-        
-        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.generatePossibleMoveLocations();
-        
-        int[] orangeKingExpectedMoveLocations = {51, 52, 53, 59, 61, 62};
-        
-        assertEquals(6, orangeKingActualPossibleMoveLocations.size());
-        
-		Square actualLocation;
-
-        for(int i = 0; i < 6; i++) {
-			actualLocation = orangeKingActualPossibleMoveLocations.get(i);
-		 	assertEquals(orangeKingExpectedMoveLocations[i], actualLocation.getNumericalLocation());
-		}*/
-    }
-    
-    @Test
-    public void testCasting3() {
-/*        ChessBoard board = ChessBoard.generateChessBoard();
-        ChessPiece orangeKing = King.spawnAt(board.getSquareAt(60));
-        ChessPiece orangeRook1 = Rook.spawnAt(board.getSquareAt(56));
-        ChessPiece orangeRook2 = Rook.spawnAt(board.getSquareAt(63));
-        
-        orangeKing.incrementNumberOfPriorMoves();
-        
-        ArrayList<Square> orangeKingActualPossibleMoveLocations = orangeKing.generatePossibleMoveLocations();
-        
-        int[] orangeKingExpectedMoveLocations = {51, 52, 53, 59, 61};
-        
-        assertEquals(5, orangeKingActualPossibleMoveLocations.size());
-        
-		Square actualLocation;
-
-        for(int i = 0; i < 5; i++) {
-			actualLocation = orangeKingActualPossibleMoveLocations.get(i);
-		 	assertEquals(orangeKingExpectedMoveLocations[i], actualLocation.getNumericalLocation());
-		}*/
-    }
-    
-    @Test
-    public void testCasting4() {
-/*        ChessBoard board = ChessBoard.generateChessBoard();
-        ChessPiece greenKing = King.spawnAt(board.getSquareAt(4));
-        ChessPiece greenRook1 = Rook.spawnAt(board.getSquareAt(0));
-        ChessPiece greenRook2 = Rook.spawnAt(board.getSquareAt(7));
-        ChessPiece greenPawn = Pawn.spawnAt(board.getSquareAt(2));
-        ChessPiece orangePawn = Pawn.spawnAt(board.getSquareAt(45));
-        orangePawn.setLocation(board.getSquareAt(6));
-        
-        ArrayList<Square> greenKingActualPossibleMoveLocations = greenKing.generatePossibleMoveLocations();
-        
-        int[] greenKingExpectedMoveLocations = {3, 5, 11, 12, 13};
-        
-        assertEquals(5, greenKingActualPossibleMoveLocations.size());
-        
-		Square actualLocation;
-
-        for(int i = 0; i < 5; i++) {
-			actualLocation = greenKingActualPossibleMoveLocations.get(i);
-		 	assertEquals(greenKingExpectedMoveLocations[i], actualLocation.getNumericalLocation());
-		}*/
-	} 
 }

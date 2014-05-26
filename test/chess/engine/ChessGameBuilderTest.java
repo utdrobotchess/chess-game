@@ -4,7 +4,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests the functionality of the chess game builder, including the placement
+ * of pieces.
  * @author Ryan J. Marcotte
  */
 public class ChessGameBuilderTest {

@@ -17,5 +17,4 @@ public class PerimeterSquareTest {
         assertEquals(perimSq1.getNumericalLocation(), 75);
         assertEquals(perimSq2.getNumericalLocation(), 95);
     }
-    
 }
