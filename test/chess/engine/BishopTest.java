@@ -5,14 +5,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Owner
+ * Tests the functionality of a bishop, including spawning and determining possible move locations
+ * @author Ryan J. Marcotte
  */
 public class BishopTest {
-    
-    public BishopTest() {
-    }
 
+	/*
+	 * Ensures that a Bishop is generated correctly, with the proper location, team, and prior move status
+	 */
     @Test
     public void testSpawnBishopAt() {
         ChessPiece greenBishop1 = Bishop.spawnAt(InteriorSquare.generateInteriorSquareAt(2));
@@ -33,6 +33,10 @@ public class BishopTest {
         assert(greenBishop1.hasNotMoved());
     }
     
+	/*
+	 * Ensures that a Bishop can correctly determine the list of moves available to it, including cases of
+	 * encountering the edge of the board, a teammate, and an opposing piece
+	 */
     @Test
     public void testPossibleMoveLocations() {
         ChessBoard board = ChessBoard.generateChessBoard();
@@ -50,10 +54,16 @@ public class BishopTest {
         assertEquals(7, greenBishopActualPossibleMoveLocations.size());
         assertEquals(5, orangeBishopActualPossibleMoveLocations.size());
         
-        for(int i = 0; i < 7; i++)
-            assertEquals(greenBishopExpectedMoveLocations[i], greenBishopActualPossibleMoveLocations.get(i).getNumericalLocation());
-        
-        for(int i = 0; i < 5; i++)
-            assertEquals(orangeBishopExpectedMoveLocations[i], orangeBishopActualPossibleMoveLocations.get(i).getNumericalLocation());
+		Square actualLocation;
+
+        for(int i = 0; i < 7; i++) {
+            actualLocation = greenBishopActualPossibleMoveLocations.get(i);
+			assertEquals(greenBishopExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
+
+        for(int i = 0; i < 5; i++) {
+			actualLocation = orangeBishopActualPossibleMoveLocations.get(i);
+			assertEquals(orangeBishopExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		}
     }
 }
