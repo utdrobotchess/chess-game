@@ -6,9 +6,9 @@ package chess.engine;
  */
 
 public enum Team {
-	//the orange pieces start at the higher numbered squares, so moving forward
-	//for them implies moving in a negative direction; the opposite is true for 
-	//the green pieces
+	/*the orange pieces start at the higher numbered squares, so moving forward
+	for them implies moving in a negative direction; the opposite is true for
+	the green pieces */
 	ORANGE(-1), NEUTRAL(0), GREEN(1);
 
 	private final int directionalValue;
