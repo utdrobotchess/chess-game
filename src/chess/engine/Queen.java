@@ -1,14 +1,17 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-/**
- * Defines the behavior and movement unique to a queen
- * @author Ryan J. Marcotte
- */
 public class Queen extends ChessPiece {
     private static final Logger logger = ChessLogger.getInstance().logger;
+    private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
+    private static final int BOARD_WIDTH = 8;
 
     private Queen() {
         super();
@@ -29,8 +32,9 @@ public class Queen extends ChessPiece {
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
 
-        for(int i = 0; i < 8; i++)
-            addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 8);
+        for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i++) {
+            addPossibleMoveLocationsInDirection(possibleMoveLocations, i, BOARD_WIDTH);
+        }
 
         Collections.sort(possibleMoveLocations);
 

@@ -1,16 +1,16 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the functionality of a queen, including generation and determination of
- * possible move locations
- * @author Ryan J. Marcotte
- */
 public class QueenTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
 
@@ -36,6 +36,12 @@ public class QueenTest {
     public void testPossibleMoveLocations() {
         logger.log(Level.WARNING, "Begin testPossibleMoveLocations() - QueenTest");
 
+        int[] greenQueenExpectedMoveLocations = {1, 2, 3, 5, 6, 7, 11, 12, 13, 18,
+                                                 20, 22, 25, 28, 32, 36, 44};
+        int[] orangeQueenExpectedMoveLocations = {4, 12, 20, 23, 28, 30, 36, 37, 42,
+                                                  43, 45, 46, 51, 52, 53, 58, 60, 62};
+		Square actualLocation;
+
         ChessBoard board = ChessBoard.generateChessBoard();
         ChessPiece greenQueen = Queen.spawnAt(board.getSquareAt(4));
         ChessPiece orangeQueen = Queen.spawnAt(board.getSquareAt(44));
@@ -48,22 +54,23 @@ public class QueenTest {
         ArrayList<Square> greenQueenActualPossibleMoveLocations = greenQueen.generatePossibleMoveLocations();
         ArrayList<Square> orangeQueenActualPossibleMoveLocations = orangeQueen.generatePossibleMoveLocations();
 
-        int[] greenQueenExpectedMoveLocations = {1, 2, 3, 5, 6, 7, 11, 12, 13, 18, 20, 22, 25, 28, 32, 36, 44};
-        int[] orangeQueenExpectedMoveLocations = {4, 12, 20, 23, 28, 30, 36, 37, 42, 43, 45, 46, 51, 52, 53, 58, 60, 62};
 
-        assertEquals(17, greenQueenActualPossibleMoveLocations.size());
-        assertEquals(18, orangeQueenActualPossibleMoveLocations.size());
 
-		Square actualLocation;
+        assertEquals(greenQueenExpectedMoveLocations.length, greenQueenActualPossibleMoveLocations.size());
+        assertEquals(orangeQueenExpectedMoveLocations.length, orangeQueenActualPossibleMoveLocations.size());
 
-        for(int i = 0; i < 17; i++) {
+
+
+        for (int i = 0; i < greenQueenExpectedMoveLocations.length; i++) {
 			actualLocation = greenQueenActualPossibleMoveLocations.get(i);
-		 	assertEquals(greenQueenExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		 	assertEquals(greenQueenExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
-        for(int i = 0; i < 18; i++) {
+        for (int i = 0; i < orangeQueenExpectedMoveLocations.length; i++) {
 			actualLocation = orangeQueenActualPossibleMoveLocations.get(i);
-		 	assertEquals(orangeQueenExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		 	assertEquals(orangeQueenExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
         logger.log(Level.WARNING, "End tesetPossibleMoveLocations() - QueenTest");

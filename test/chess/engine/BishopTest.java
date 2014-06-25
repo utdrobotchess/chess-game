@@ -1,15 +1,16 @@
-package chess.engine;
-
-import java.util.ArrayList;
-import java.util.logging.*;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-/**
- * Tests the functionality of a bishop, including spawning and determining possible move locations
+/*
+ *
  * @author Ryan J. Marcotte
  */
+
+package chess.engine;
+
+import java.util.*;
+import java.util.logging.*;
+
+import org.junit.*;
+import static org.junit.Assert.*;
+
 public class BishopTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
 
@@ -48,6 +49,11 @@ public class BishopTest {
     public void testPossibleMoveLocations() {
         logger.log(Level.WARNING, "Begin testPossibleMoveLocations() - BishopTest");
 
+        int[] greenBishopExpectedMoveLocations = {2, 4, 18, 20, 29, 38, 47};
+        int[] orangeBishopExpectedMoveLocations = {11, 20, 29, 38, 54};
+
+		Square actualLocation;
+
         ChessBoard board = ChessBoard.generateChessBoard();
         ChessPiece greenBishop = Bishop.spawnAt(board.getSquareAt(11));
         ChessPiece orangeBishop = Bishop.spawnAt(board.getSquareAt(47));
@@ -57,22 +63,21 @@ public class BishopTest {
         ArrayList<Square> greenBishopActualPossibleMoveLocations = greenBishop.generatePossibleMoveLocations();
         ArrayList<Square> orangeBishopActualPossibleMoveLocations = orangeBishop.generatePossibleMoveLocations();
 
-        int[] greenBishopExpectedMoveLocations = {2, 4, 18, 20, 29, 38, 47};
-        int[] orangeBishopExpectedMoveLocations = {11, 20, 29, 38, 54};
+        assertEquals(greenBishopExpectedMoveLocations.length,
+                     greenBishopActualPossibleMoveLocations.size());
+        assertEquals(orangeBishopExpectedMoveLocations.length,
+                     orangeBishopActualPossibleMoveLocations.size());
 
-        assertEquals(7, greenBishopActualPossibleMoveLocations.size());
-        assertEquals(5, orangeBishopActualPossibleMoveLocations.size());
-
-		Square actualLocation;
-
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < greenBishopExpectedMoveLocations.length; i++) {
             actualLocation = greenBishopActualPossibleMoveLocations.get(i);
-			assertEquals(greenBishopExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+			assertEquals(greenBishopExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < orangeBishopExpectedMoveLocations.length; i++) {
 			actualLocation = orangeBishopActualPossibleMoveLocations.get(i);
-			assertEquals(orangeBishopExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+			assertEquals(orangeBishopExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
         logger.log(Level.WARNING, "End testPossibleMoveLications() - BishopTest");

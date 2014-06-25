@@ -1,12 +1,12 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-/**
- * Encompasses three types of squares: interior, perimeter, and null. Used as the
- * basis for all location-based logic in the chess engine.
- * @author Ryan J. Marcotte
- */
 public abstract class Square implements Comparable<Square> {
     private static final Logger logger = ChessLogger.getInstance().logger;
     private int itsNumericalLocation;
@@ -33,12 +33,13 @@ public abstract class Square implements Comparable<Square> {
 	 */
     @Override
     public int compareTo(Square secondSquare) {
-        if(itsNumericalLocation < secondSquare.getNumericalLocation())
+        if (itsNumericalLocation < secondSquare.getNumericalLocation()) {
             return -1;
-        else if(itsNumericalLocation == secondSquare.getNumericalLocation())
+        } else if(itsNumericalLocation == secondSquare.getNumericalLocation()) {
             return 0;
-        else
+        } else {
             return 1;
+        }
     }
 
     protected int getNumericalLocation() {

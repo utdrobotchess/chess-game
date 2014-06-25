@@ -1,12 +1,16 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-/**
+/*
  * An imaginary chess piece that is used as the occupant of a square when a real
  * chess piece does not occupy that square
- * @author Ryan J. Marcotte
  */
 public class NullChessPiece extends ChessPiece {
     private static final Logger logger = ChessLogger.getInstance().logger;

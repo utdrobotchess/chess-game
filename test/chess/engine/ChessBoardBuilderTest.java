@@ -1,21 +1,23 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
 package chess.engine;
 
 import java.util.logging.*;
 
-import org.junit.Test;
-import org.junit.Before;
+import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the functionality of the ChessBoardBuilder, including the building of all
- * Squares in the proper places and properly assigning actualNeighbors in all directions
- * @author Ryan J. Marcotte
- */
 public class ChessBoardBuilderTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
+    private static final int NUM_INTERIOR_SQUARES = 64;
+    private static final int NUM_PERIMETER_SQUARES = 36;
+    private static final int TOTAL_SQUARES = 100;
     private ChessBoard board;
 	private String errorMessage;
-	private Square testSquare, actualNeighbor;
+	private Square testSquare;
+    private Square actualNeighbor;
 
 	@Before
 	public void initialize() {
@@ -31,7 +33,7 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testInteriorSquaresBuilt() - ChessBoardBuilderTest");
 
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < NUM_INTERIOR_SQUARES; i++) {
             actualSquare = board.getSquareAt(i);
             assert(actualSquare instanceof InteriorSquare);
             assertEquals(i, actualSquare.getNumericalLocation());
@@ -49,7 +51,7 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testPerimeterSquaresBuilt() - ChessBoardBuilderTest");
 
-        for(int i =  64; i < 100; i++) {
+        for (int i =  TOTAL_SQUARES - NUM_PERIMETER_SQUARES; i < TOTAL_SQUARES; i++) {
             actualSquare = board.getSquareAt(i);
             assert(actualSquare instanceof PerimeterSquare);
             assertEquals(i, actualSquare.getNumericalLocation());
@@ -76,11 +78,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testNorthNeighbors() - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(0);
             errorMessage = "Unexpected north neighbor at location " + i;
-            assertEquals(errorMessage, expectedNorthNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedNorthNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testNorthNeighbors() - ChessBoardBuilderTest");
@@ -103,11 +106,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testNorthEastNeighbors - ChessBoard BuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(1);
             errorMessage = "Unexpected northeast neighbor at location " + i;
-            assertEquals(errorMessage, expectedNorthEastNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedNorthEastNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testNorthEastNeighbors - ChessBoardBuilderTest");
@@ -130,11 +134,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testEastNeighbors - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(2);
             errorMessage = "Unexpected east neighbor at location " + i;
-            assertEquals(errorMessage, expectedEastNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedEastNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testEastNeighbors - ChessBoardBuilderTest");
@@ -157,11 +162,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testSouthEastNeighbors() - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(3);
             errorMessage = "Unexpected southeast neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthEastNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedSouthEastNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testSouthEastNeighbors() - ChessBoardBuilderTest");
@@ -184,11 +190,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testSouthNeighbors() - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(4);
             errorMessage = "Unexpected south neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedSouthNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testSouthNeighbors() - ChessBoardBuilderTest");
@@ -211,11 +218,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testSouthWestNeighbors() - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(5);
             errorMessage = "Unexpected southwest neighbor at location " + i;
-            assertEquals(errorMessage, expectedSouthWestNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedSouthWestNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testSouthWestNeighborst() - ChessBoardBuilderTest");
@@ -238,11 +246,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testWestNeighbors() - ChessBoardBuilderTest");
 
-		for(int i = 0; i < 100; i++) {
+		for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(6);
             errorMessage = "Unexpected west neighbor at location " + i;
-            assertEquals(errorMessage, expectedWestNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedWestNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testWestNeighborst() - ChessBoardBuilderTest");
@@ -265,11 +274,12 @@ public class ChessBoardBuilderTest {
 
         logger.log(Level.WARNING, "Begin testNorthWestNeighbors() - ChessBoardBuilderTest");
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < TOTAL_SQUARES; i++) {
             testSquare = board.getSquareAt(i);
             actualNeighbor = testSquare.getNeighborInDirection(7);
             errorMessage = "Unexpected northwest neighbor at location" + i;
-            assertEquals(errorMessage, expectedNorthWestNeighbors[i], actualNeighbor.getNumericalLocation());
+            assertEquals(errorMessage, expectedNorthWestNeighbors[i],
+                         actualNeighbor.getNumericalLocation());
         }
 
         logger.log(Level.WARNING, "End testNorthWestNeighbors() - ChessBoardBuilderTest");

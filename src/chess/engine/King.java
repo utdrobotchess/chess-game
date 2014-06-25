@@ -1,14 +1,16 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-/**
- * Defines the behavior and movement unique to a king
- * @author Ryan J. Marcotte
- */
 public class King extends ChessPiece {
-    private final static Logger logger = ChessLogger.getInstance().logger;
+    private static final Logger logger = ChessLogger.getInstance().logger;
+    private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
     private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
 
     private King() {
@@ -30,8 +32,9 @@ public class King extends ChessPiece {
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
 
-        for(int i = 0; i < 8; i++)
+        for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i++) {
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 1);
+        }
 
         Collections.sort(possibleMoveLocations);
 

@@ -1,3 +1,8 @@
+/*
+ * XXX Very incomplete as of 6/25/14
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
@@ -5,10 +10,6 @@ import java.util.logging.*;
 
 import chess.engine.Team;
 
-/**
- *
- * @author Ryan J. Marcotte
- */
 public class ChessGame {
     private static final Logger logger = ChessLogger.getInstance().logger;
     private ArrayList<ChessPiece> itsChessPieces = new ArrayList<>();
@@ -65,7 +66,7 @@ public class ChessGame {
 
         toggleActiveTeam();
 
-        for(int i = 0; i < itsChessPieces.size(); i++) {
+        for (int i = 0; i < itsChessPieces.size(); i++) {
             possibleMoveLocations = new ArrayList<>();
             piece = itsChessPieces.get(i);
             possibleMoveLocations = piece.generatePossibleMoveLocations();
@@ -74,7 +75,8 @@ public class ChessGame {
         }
     }
 
-    private void removeMovesThatResultInCheck(ChessPiece moveLocationsPiece, ArrayList<Square> possibleMoveLocations) {
+    private void removeMovesThatResultInCheck(ChessPiece moveLocationsPiece,
+                                              ArrayList<Square> possibleMoveLocations) {
 
 	}
 
@@ -84,10 +86,11 @@ public class ChessGame {
     }
 
     protected void toggleActiveTeam() {
-        if(itsActiveTeam == Team.GREEN)
+        if (itsActiveTeam == Team.GREEN) {
             itsActiveTeam = Team.ORANGE;
-        else
+        } else {
             itsActiveTeam = Team.GREEN;
+        }
 
         logger.log(Level.FINER, "Active team toggled to {0}", itsActiveTeam);
     }

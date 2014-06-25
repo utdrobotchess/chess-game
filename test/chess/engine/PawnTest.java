@@ -1,3 +1,8 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
@@ -6,10 +11,6 @@ import java.util.logging.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the functionality of a Pawn, including
- * @author Ryan J. Marcotte
- */
 public class PawnTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
 
@@ -91,6 +92,12 @@ public class PawnTest {
     public void testPossibleCapturingMoves() {
         logger.log(Level.WARNING, "Begin testPossibleCapturingMoves() - PawnTest");
 
+		//should be able to capture at 17 or move forward to 18 or 26
+        int[] greenPawn1ExpectedMoveLocations = {17, 18, 26};
+
+		//should be able to capture at 41 or 42 or move forward to 42 or 34
+        int[] orangePawn1ExpectedMoveLocations = {34, 41, 42, 43};
+
         ChessBoard board = ChessBoard.generateChessBoard();
         Pawn greenPawn1 = Pawn.spawnAt(board.getSquareAt(10));
         Pawn greenPawn2 = Pawn.spawnAt(board.getSquareAt(11));
@@ -106,25 +113,23 @@ public class PawnTest {
         ArrayList<Square> greenPawn1ActualPossibleMoveLocations = greenPawn1.generatePossibleMoveLocations();
         ArrayList<Square> orangePawn1ActualPossibleMoveLocations = orangePawn1.generatePossibleMoveLocations();
 
-		//should be able to capture at 17 or move forward to 18 or 26
-        int[] greenPawn1ExpectedMoveLocations = {17, 18, 26};
-
-		//should be able to capture at 41 or 42 or move forward to 42 or 34
-        int[] orangePawn1ExpectedMoveLocations = {34, 41, 42, 43};
-
-        assertEquals(3, greenPawn1ActualPossibleMoveLocations.size());
-        assertEquals(4, orangePawn1ActualPossibleMoveLocations.size());
+        assertEquals(greenPawn1ExpectedMoveLocations.length,
+                     greenPawn1ActualPossibleMoveLocations.size());
+        assertEquals(orangePawn1ExpectedMoveLocations.length,
+                     orangePawn1ActualPossibleMoveLocations.size());
 
 		Square actualSquareLocation;
 
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < greenPawn1ExpectedMoveLocations.length; i++) {
 			actualSquareLocation = greenPawn1ActualPossibleMoveLocations.get(i);
-            assertEquals(greenPawn1ExpectedMoveLocations[i], actualSquareLocation.getNumericalLocation());
+            assertEquals(greenPawn1ExpectedMoveLocations[i],
+                         actualSquareLocation.getNumericalLocation());
 		}
 
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < orangePawn1ExpectedMoveLocations.length; i++) {
 			actualSquareLocation = orangePawn1ActualPossibleMoveLocations.get(i);
-			assertEquals(orangePawn1ExpectedMoveLocations[i], actualSquareLocation.getNumericalLocation());
+			assertEquals(orangePawn1ExpectedMoveLocations[i],
+                         actualSquareLocation.getNumericalLocation());
 		}
 
         logger.log(Level.WARNING, "End testPossibleCaptureingMoves() - PawnTest");

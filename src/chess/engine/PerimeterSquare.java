@@ -1,10 +1,14 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-/**
+/*
  * Makes up the 36 spaces that border and surround a normal chessboard
- * @author Ryan J. Marcotte
  */
 public class PerimeterSquare extends Square {
     private static final Logger logger = ChessLogger.getInstance().logger;

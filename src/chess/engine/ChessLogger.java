@@ -1,3 +1,8 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
@@ -13,6 +18,7 @@ public class ChessLogger {
     private static final int FILE_COUNT = 10;
     private static final boolean APPEND = false;
 
+    /* Enforces singleton property of the logger */
     public static ChessLogger getInstance() {
         if (instance == null) {
             prepareLogger();
@@ -35,6 +41,5 @@ public class ChessLogger {
         } catch (IOException ex) {
             System.err.println("Error in creating log file");
         }
-
     }
 }

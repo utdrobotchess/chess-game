@@ -1,12 +1,13 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-/**
- * Defines the behavior and movement unique to a pawn
- * @author Ryan J. Marcotte
- */
 public class Pawn extends ChessPiece {
     private final static Logger logger = ChessLogger.getInstance().logger;
     private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
@@ -43,7 +44,8 @@ public class Pawn extends ChessPiece {
             possibleNumberOfForwardSquares = 2;
 
         addPossibleMoveLocationsInDirection(possibleMoveLocations,
-                determineForwardDirectionFromTeam(), possibleNumberOfForwardSquares);
+                                            determineForwardDirectionFromTeam(),
+                                            possibleNumberOfForwardSquares);
     }
 
     private void addPossibleCapturingMoves() {
@@ -51,23 +53,25 @@ public class Pawn extends ChessPiece {
         int forwardDirection = determineForwardDirectionFromTeam();
 
         Square[] possibleCaptureSquares = {currentLocation.getNeighborInDirection(forwardDirection + 1),
-            currentLocation.getNeighborInDirection((forwardDirection + 7) % 8)};
+                                           currentLocation.getNeighborInDirection((forwardDirection + 7) % 8)};
 
-        for(int i = 0; i < possibleCaptureSquares.length; i++) {
+        for (int i = 0; i < possibleCaptureSquares.length; i++) {
             Square testSquare = possibleCaptureSquares[i];
 
-            if(testSquare.isOccupied()) {
-                if(testSquare.getOccupyingTeam() != getTeam())
+            if (testSquare.isOccupied()) {
+                if (testSquare.getOccupyingTeam() != getTeam()) {
                     possibleMoveLocations.add(testSquare);
+                }
             }
         }
     }
 
     private int determineForwardDirectionFromTeam() {
-        if(getTeam() == Team.GREEN)
+        if (getTeam() == Team.GREEN) {
             return 4;
-        else
+        } else {
             return 0;
+        }
     }
 
     @Override

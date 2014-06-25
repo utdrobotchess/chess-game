@@ -1,15 +1,15 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the basic functionalities of a Square, including assigning locations,
- * neighbors, and occupants.
- * @author Ryan J. Marcotte
- */
 public class SquareTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
 
@@ -54,12 +54,12 @@ public class SquareTest {
         interSq5.assignNeighborInDirection(interSq6, 1);
         interSq6.assignNeighborInDirection(interSq5, 5);
 
-        assertEquals(interSq1.getNeighborInDirection(2), interSq2);
-        assertEquals(interSq2.getNeighborInDirection(6), interSq1);
-        assertEquals(interSq3.getNeighborInDirection(4), interSq4);
-        assertEquals(interSq4.getNeighborInDirection(0), interSq3);
-        assertEquals(interSq5.getNeighborInDirection(1), interSq6);
-        assertEquals(interSq6.getNeighborInDirection(5), interSq5);
+        assertEquals(interSq2, interSq1.getNeighborInDirection(2));
+        assertEquals(interSq1, interSq2.getNeighborInDirection(6));
+        assertEquals(interSq4, interSq3.getNeighborInDirection(4));
+        assertEquals(interSq3, interSq4.getNeighborInDirection(0));
+        assertEquals(interSq6, interSq5.getNeighborInDirection(1));
+        assertEquals(interSq5, interSq6.getNeighborInDirection(5));
 
         logger.log(Level.WARNING, "End testAssignNeighborInDirection() - SquareTest");
     }
@@ -80,9 +80,9 @@ public class SquareTest {
         perimSq.assignNeighborInDirection(interSq, 6);
         perimSq.assignNeighborInDirection(nullSq, 2);
 
-        assertEquals(interSq.getNeighborInDirection(2), perimSq);
-        assertEquals(perimSq.getNeighborInDirection(6), interSq);
-        assertEquals(perimSq.getNeighborInDirection(2), nullSq);
+        assertEquals(perimSq, interSq.getNeighborInDirection(2));
+        assertEquals(interSq, perimSq.getNeighborInDirection(6));
+        assertEquals(nullSq, perimSq.getNeighborInDirection(2));
 
         logger.log(Level.WARNING, "End testMixedAssignNeighborInDirection() - SquareTest");
     }

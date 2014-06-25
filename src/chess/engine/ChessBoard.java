@@ -1,11 +1,12 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-/**
- *
- * @author Ryan J. Marcotte
- */
 public class ChessBoard {
     private static final Logger logger = ChessLogger.getInstance().logger;
     private Square[] itsSquares = new Square[100];

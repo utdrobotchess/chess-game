@@ -1,14 +1,15 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the functionality of an InteriorSquare, including generation
- * @author Ryan J. Marcotte
- */
 public class InteriorSquareTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
 

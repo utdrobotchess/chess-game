@@ -1,14 +1,17 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-/**
- * Defines the behavior and movement unique to a rook
- * @author Ryan J. Marcotte
- */
 public class Rook extends ChessPiece {
     private final static Logger logger = ChessLogger.getInstance().logger;
+    private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
+    private static final int BOARD_WIDTH = 8;
 
     private Rook() {
         super();
@@ -29,8 +32,10 @@ public class Rook extends ChessPiece {
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
 
-        for(int i = 0; i < 8; i += 2)
-            addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 8);
+        /* Explore all of the even-numbered directions (horizontal and vertical) */
+        for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i += 2) {
+            addPossibleMoveLocationsInDirection(possibleMoveLocations, i, BOARD_WIDTH);
+        }
 
         Collections.sort(possibleMoveLocations);
 

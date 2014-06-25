@@ -1,11 +1,12 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.logging.*;
 
-/**
- * Makes up the 64 squares of a normal chessboard
- * @author Ryan J. Marcotte
- */
 public class InteriorSquare extends Square {
     private static final Logger logger = ChessLogger.getInstance().logger;
 

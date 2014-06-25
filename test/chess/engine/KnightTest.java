@@ -1,18 +1,19 @@
+/*
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package chess.engine;
 
 import java.util.*;
 import java.util.logging.*;
 
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
-/**
- * Tests the functionality of a knight, including generation and determination
- * of possible move locations
- * @author Ryan J. Marcotte
- */
 public class KnightTest {
     private static final Logger logger = ChessLogger.getInstance().logger;
+
     @Test
     public void testSpawnAt() {
         logger.log(Level.WARNING, "Begin testSpawnAt() - KnightTest");
@@ -35,6 +36,11 @@ public class KnightTest {
     public void testPossibleMoveLocations() {
         logger.log(Level.WARNING, "Begin testPossibleMoveLocations() - KnightTest");
 
+        int[] greenKnightExpectedMoveLocations = {11, 18, 22, 34, 38, 43, 45};
+        int[] orangeKnightExpectedMoveLocations = {21, 23, 28, 44, 55};
+
+		Square actualLocation;
+
         ChessBoard board = ChessBoard.generateChessBoard();
         ChessPiece greenKnight = Knight.spawnAt(board.getSquareAt(28));
         ChessPiece orangeKnight = Knight.spawnAt(board.getSquareAt(38));
@@ -44,22 +50,22 @@ public class KnightTest {
         ArrayList<Square> greenKnightActualPossibleMoveLocations = greenKnight.generatePossibleMoveLocations();
         ArrayList<Square> orangeKnightActualPossibleMoveLocations = orangeKnight.generatePossibleMoveLocations();
 
-        int[] greenKnightExpectedMoveLocations = {11, 18, 22, 34, 38, 43, 45};
-        int[] orangeKnightExpectedMoveLocations = {21, 23, 28, 44, 55};
+        assertEquals(greenKnightExpectedMoveLocations.length,
+                     greenKnightActualPossibleMoveLocations.size());
+        assertEquals(orangeKnightExpectedMoveLocations.length,
+                     orangeKnightActualPossibleMoveLocations.size());
 
-        assertEquals(7, greenKnightActualPossibleMoveLocations.size());
-        assertEquals(5, orangeKnightActualPossibleMoveLocations.size());
 
-		Square actualLocation;
-
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < greenKnightExpectedMoveLocations.length; i++) {
 			actualLocation = greenKnightActualPossibleMoveLocations.get(i);
-		 	assertEquals(greenKnightExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		 	assertEquals(greenKnightExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < orangeKnightExpectedMoveLocations.length; i++) {
 			actualLocation = orangeKnightActualPossibleMoveLocations.get(i);
-		 	assertEquals(orangeKnightExpectedMoveLocations[i], actualLocation.getNumericalLocation());
+		 	assertEquals(orangeKnightExpectedMoveLocations[i],
+                         actualLocation.getNumericalLocation());
 		}
 
         logger.log(Level.WARNING, "End testPossibleMoveLocations() - KnightTest");
