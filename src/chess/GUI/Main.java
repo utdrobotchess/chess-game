@@ -248,15 +248,15 @@ public class Main {
     	/*
     	 * For testing purposes, let's make this possibleMoves random. 
     	 */
-    	System.out.println(possibleMoves);
-    	System.out.println(possibleMoves[0]);
-    	System.out.println(possibleMoves[1]);
-    	System.out.println(possibleMoves[3]);
+    	//System.out.println(possibleMoves);
+    	//System.out.println(possibleMoves[0]);
+    	//System.out.println(possibleMoves[1]);
+    	//System.out.println(possibleMoves[3]);
     	int random;
     	Random r = new Random();
     	random = r.nextInt(10);
     	moveListSize=random;
-System.out.println("Random number is size which is: " +random);
+      //System.out.println("Random number is size which is: " +random);
     	
 		for(int x=0;x<random;x++){
     		int random2;
@@ -264,12 +264,12 @@ System.out.println("Random number is size which is: " +random);
     		random2 = r2.nextInt(64);
 
     		possibleMoves[x]=random2;
-System.out.println("possibleMoves square should match random2: " +possibleMoves[x]);    		
+         //System.out.println("possibleMoves square should match random2: " +possibleMoves[x]);    		
     	}
-System.out.println("I should print out a zero here: " +possibleMoves[random]);
+      //System.out.println("I should print out a zero here: " +possibleMoves[random]);
     	
     	
-System.out.println("I have " +random +" as my size, so I can move to " +random +" different squares");
+      //System.out.println("I have " +random +" as my size, so I can move to " +random +" different squares");
     	for(int x =0; x<random; x++){
     		square[possibleMoves[x]].setBackground(new Color(242,240,205));
     	}
@@ -281,8 +281,8 @@ System.out.println("I have " +random +" as my size, so I can move to " +random +
     	//What do I want to happen when a button is clicked on? DONE
     	//Display square number DONE
     	//Display piece (if there's a piece)DONE
-    		//If there's a piece, highlight squares and stuff
-    	//Move piece from square a to square b
+    		//If there's a piece, highlight squares and stuff DONE
+    	//Move piece from square a to square b DONE
 		@Override
 		public void actionPerformed(ActionEvent e) {
 //////////////////////////////////////////////////////////////ORIGIN SQUARE PICK///////////////////////////////////////////////////////	
@@ -313,7 +313,7 @@ System.out.println("I have " +random +" as my size, so I can move to " +random +
 						
 						//highlight legal moves: Call the highlightMoves function located above the action listener function 
 						//For testing purposes, fill the possibleMoves array with random numbers. When Ryan gives you specifications, set a piece's possible moves = possibleMoves array
-highlightSquares(possibleMoves);
+                  highlightSquares(possibleMoves);
 						clickNumber=2;	//Next time I click on a square, it'll be the destination square, and I'll go into the else statement below 
 						break;	//You've chosen an appropriate origin, let's break and loop and pick an appropriate destination 
 					}
@@ -325,46 +325,45 @@ highlightSquares(possibleMoves);
 				for(int x=0;x<64;x++){/*Make sure the destination square is legal before continuing with this else statement*/
 					if(e.getSource()==square[x]){
 						
-System.out.println("Checking to see if possibleMoves returned properly as an array");
-for(int i=0;i<moveListSize;i++){
-	System.out.println(possibleMoves[i]);
-}
-System.out.println("EEEEENNNNDDDD of check!!!!!!!!!!!!!!!!!!!!");
-boolean legalMove = false;
-destinationSquare = x;
+                  //System.out.println("Checking to see if possibleMoves returned properly as an array");
+                  for(int i=0;i<moveListSize;i++){
+	                  //System.out.println(possibleMoves[i]);
+                  }
+                  //System.out.println("EEEEENNNNDDDD of check!!!!!!!!!!!!!!!!!!!!");
+                  boolean legalMove = false;
+                  destinationSquare = x;
 
-System.out.println("Checking to see if possibleMoves length returned properly: " +moveListSize);
-for(int i=0;i<moveListSize;i++){
-	if(possibleMoves[i]==destinationSquare){
-		legalMove=true;
-		break;
-	}
-}
+                  //System.out.println("Checking to see if possibleMoves length returned properly: " +moveListSize);
+                  for(int i=0;i<moveListSize;i++){
+	                  if(possibleMoves[i]==destinationSquare){
+		                  legalMove=true;
+		                  break;
+	                  }
+                  }
 						
-if(legalMove==false){			/*if(illegal move basically if destinationSquare !=one of the integers from the return highlightMoves array...){
+                  if(legalMove==false){			/*if(illegal move basically if destinationSquare !=one of the integers from the return highlightMoves array...){
 						 								* "Illegal Move. Reselect origin and destination squares"
 						 								* clickNumber=1;
 						 								* break;
 						 								* }
 						 								*/																			
-	messageText.append("Illegal move on square " +x +". Reselect origin and destination");
-	possibleMoves=new int[64]; //clear the array. 
-	clickNumber=1;
-	reColorSquares(); //removes the highlighting of legal moves
-	break;	//You have an illegal move. Break out of the main for loop and repick your origin and destination 
-}
+	                  messageText.append("Illegal move on square " +x +". Reselect origin and destination");
+	                  possibleMoves=new int[64];  //clear the array so the next selected piece's moves can be stored in it.
+	                  clickNumber=1;
+	                  reColorSquares(); //removes the highlighting of legal moves
+	                  break;	//You have an illegal move. Break out of the main for loop and repick your origin and destination 
+                  }
 						
 					
 					
 						//You passed the above checks. You have a legal move.
-					
 						messageText.append("Clicked on destination square " +x +". Previously contained: " +square[x].getIcon() +"\n");
 						
 						//move the chess piece. Call Move function located above the action listener function 
 						movePiece(originSquare, destinationSquare);
 						
-possibleMoves=new int[64];	//clear the array so the next selected piece's moves can be stored in it. No you can't do possibleMoves= null (Recall possibleMoves is the address of where the array starts. If you set it = null, you're array basically has a nonexistent address... sort of.  You'll end up getting highlightSquares(null) which will mess up program.
-System.out.println("Checking to see if my possibleMoves are cleared: " +possibleMoves);
+                  possibleMoves=new int[64];	//clear the array so the next selected piece's moves can be stored in it. No you can't do possibleMoves= null (Recall possibleMoves is the address of where the array starts. If you set it = null, you're array basically has a nonexistent address... sort of.  You'll end up getting highlightSquares(null) which will mess up program.
+                  //System.out.println("Checking to see if my possibleMoves are cleared: " +possibleMoves);
 					
 						clickNumber=1;	//reset number of clicks so we can go back to choosing a origin square
 						
