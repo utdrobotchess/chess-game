@@ -21,6 +21,7 @@ public class NullChessPiece extends ChessPiece {
 
     protected static NullChessPiece spawnAt(Square location) {
         NullChessPiece piece = new NullChessPiece();
+
         piece.setLocation(location);
 
         logger.log(Level.FINE, "Null chess piece spawned at location {0}",

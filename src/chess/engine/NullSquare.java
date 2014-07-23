@@ -9,17 +9,23 @@ import java.util.logging.*;
 
 public class NullSquare extends Square {
     private static final Logger logger = ChessLogger.getInstance().logger;
+    private static NullSquare instance = null;
 
     private NullSquare() {  }
 
     protected static NullSquare generateNullSquare() {
-        NullSquare nullSq = new NullSquare();
-        nullSq.setNumericalLocation(-1);
-        nullSq.setOccupancy(false);
-		nullSq.setOccupyingTeam(Team.NEUTRAL);
+        if (instance == null) {
+            instance = new NullSquare();
+            instance.setNumericalLocation(-1);
+            instance.setOccupant(NullChessPiece.spawnAt(instance));
+
+            for (int i = 0; i < 8; i++) {
+                instance.assignNeighborInDirection(instance, i);
+            }
+        }
 
         logger.log(Level.FINE, "Null square generated");
 
-		return nullSq;
+		return instance;
     }
 }

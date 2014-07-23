@@ -9,9 +9,8 @@ import java.util.logging.*;
 
 public abstract class Square implements Comparable<Square> {
     private static final Logger logger = ChessLogger.getInstance().logger;
+    private ChessPiece itsOccupant;
     private int itsNumericalLocation;
-    private boolean itsOccupancy;
-    private Team itsOccupyingTeam;
 
     /* Directional neighbors defined as follows:
     *  7   0   1
@@ -50,12 +49,16 @@ public abstract class Square implements Comparable<Square> {
         return itsNeighbors[direction];
     }
 
-    protected boolean isOccupied() {
-        return itsOccupancy;
+    protected ChessPiece getOccupant() {
+        return itsOccupant;
     }
 
-    protected Team getOccupyingTeam() {
-    	return itsOccupyingTeam;
+    protected boolean isOccupied() {
+        if (itsOccupant instanceof NullChessPiece) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     protected void setNumericalLocation(int location) {
@@ -65,18 +68,11 @@ public abstract class Square implements Comparable<Square> {
                    new Object[] {this, location});
     }
 
-    protected void setOccupancy(boolean occupancy) {
-        itsOccupancy = occupancy;
+    protected void setOccupant(ChessPiece occupant) {
+        itsOccupant = occupant;
 
-        logger.log(Level.FINER, "{0} occupancy set to {1}",
-                   new Object[] {this, occupancy});
-    }
-
-    protected void setOccupyingTeam(Team occupyingTeam) {
-    	itsOccupyingTeam = occupyingTeam;
-
-        logger.log(Level.FINER, "{0} occupying team set to {1}",
-                   new Object[] {this, occupyingTeam});
+        logger.log(Level.FINER, "{0} occupant set to {1}",
+                   new Object[] {this, occupant});
     }
 
     @Override

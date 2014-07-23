@@ -20,8 +20,7 @@ public class PerimeterSquare extends Square {
     protected static PerimeterSquare generatePerimeterSquareAt(int location) {
         PerimeterSquare perimSq = new PerimeterSquare();
         perimSq.setNumericalLocation(location);
-        perimSq.setOccupancy(false);
-		perimSq.setOccupyingTeam(Team.NEUTRAL);
+        perimSq.setOccupant(NullChessPiece.spawnAt(perimSq));
 
         logger.log(Level.FINE, "Perimeter square generated at {0}", location);
 

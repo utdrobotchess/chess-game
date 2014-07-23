@@ -25,7 +25,7 @@ public class ChessGameBuilder {
     protected static void build(ChessGame game) {
         board = ChessBoard.generateChessBoard();
         game.addBuiltChessBoard(board);
-        game.setActiveTeam(Team.GREEN);
+        game.setState(GameState.generateInitialState());
 
         addPieces(game);
 

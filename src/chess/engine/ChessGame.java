@@ -14,11 +14,11 @@ public class ChessGame {
     private static final Logger logger = ChessLogger.getInstance().logger;
     private ArrayList<ChessPiece> itsChessPieces = new ArrayList<>();
     private ChessBoard itsBoard;
-    private Team itsActiveTeam;
+    private GameState itsState;
 
     private ChessGame() { }
 
-    public static ChessGame setupGame() {
+    protected static ChessGame setupGame() {
         ChessGame game = new ChessGame();
 
         ChessGameBuilder.build(game);
@@ -38,60 +38,136 @@ public class ChessGame {
         logger.log(Level.FINE, "{0} added to chess game", piece);
     }
 
-    protected Team getActiveTeam() {
-        return itsActiveTeam;
-    }
-
     protected ChessBoard getBoard() {
         return itsBoard;
     }
 
-    protected void makeMove(int origin, int destination) {
-        validateMove(origin, destination);
-        updatePositions(origin, destination);
-        prepareForNextTurn();
+    protected GameState getState() {
+        return itsState;
     }
 
-    private void validateMove(int origin, int destination) {
-
+    protected void setState(GameState state) {
+        itsState = state;
     }
 
-    private void updatePositions(int origin, int destination) {
 
+    public GameState updateStateFromUserSelection(int selectionLocation) {
+        Square selectionSquare = itsBoard.getSquareAt(selectionLocation);
+        ChessPiece occupant = selectionSquare.getOccupant();
+        ArrayList<Square> possibleMoveLocations = new ArrayList<>();
+
+        itsState.clearMovePairs();
+
+        updatePossibleMoveLocations();
+
+        if (occupant.getTeam() == itsState.getActiveTeam()) {
+            itsState.setSelectedPieceIndex(selectionLocation);
+
+            possibleMoveLocations = occupant.getPossibleMoveLocations();
+            //if piece is king, check for castling
+            //remove moves that result in check
+
+            itsState.setPossibleMoveIndexes(possibleMoveLocations);
+        } else if (itsState.getSelectedPieceIndex() != -1) {
+            if (itsState.getPossibleMoveIndexes().contains(selectionLocation)) {
+                ArrayList<Integer> movePairs = new ArrayList<>();
+                movePairs = addMovePairs(selectionLocation);
+
+                //check for en passant
+                //check for castling
+                itsState.setMovePairs(movePairs);
+
+                for (int i = 0; i < movePairs.size(); i += 2) {
+                    movePiece(movePairs.get(i), movePairs.get(i+1));
+                }
+
+                updatePossibleMoveLocations();
+                testForCheck();
+                //test for checkmate
+                itsState.toggleActiveTeam();
+            }
+
+            itsState.setSelectedPieceIndex(-1);
+            itsState.clearPossibleMoveIndexes();
+        }
+
+        return itsState;
     }
 
-    private void prepareForNextTurn() {
-        ArrayList<Square> possibleMoveLocations;
-        ChessPiece piece;
+    private ArrayList<Integer> addMovePairs(int destination) {
+        ArrayList<Integer> movePairs = new ArrayList<>();
+        Square destinationSquare = itsBoard.getSquareAt(destination);
 
-        toggleActiveTeam();
+        if (destinationSquare.isOccupied()) {
+            movePairs.add(destination);
+            movePairs.add(-1);
+        }
+
+        movePairs.add(itsState.getSelectedPieceIndex());
+        movePairs.add(destination);
+
+        return movePairs;
+    }
+
+    private void movePiece(int origin, int destination) {
+        final int FIRST_PERIM_INDEX = 64;
+        final int FINAL_PERIM_INDEX = 100;
+
+        Square originSquare = itsBoard.getSquareAt(origin);
+        Square destinationSquare = NullSquare.generateNullSquare();
+        ChessPiece movingPiece = originSquare.getOccupant();
+
+        if (destination == -1) {
+            for (int i = FIRST_PERIM_INDEX; i < FINAL_PERIM_INDEX; i++) {
+                if (!itsBoard.getSquareAt(i).isOccupied()) {
+                    destinationSquare = itsBoard.getSquareAt(i);
+                    break;
+                }
+            }
+        } else {
+            destinationSquare = itsBoard.getSquareAt(destination);
+        }
+
+        movingPiece.setLocation(destinationSquare);
+    }
+
+    private void updatePossibleMoveLocations() {
+        for (int i = 0; i < itsChessPieces.size(); i++) {
+            ChessPiece piece = itsChessPieces.get(i);
+            piece.setPossibleMoveLocations(piece.generatePossibleMoveLocations());
+        }
+    }
+
+    private void testForCheck() {
+        int kingLocation = getKingLocation();
 
         for (int i = 0; i < itsChessPieces.size(); i++) {
-            possibleMoveLocations = new ArrayList<>();
-            piece = itsChessPieces.get(i);
-            possibleMoveLocations = piece.generatePossibleMoveLocations();
-            removeMovesThatResultInCheck(piece, possibleMoveLocations);
-            piece.setPossibleMoveLocations(possibleMoveLocations);
-        }
-    }
+            ChessPiece piece = itsChessPieces.get(i);
 
-    private void removeMovesThatResultInCheck(ChessPiece moveLocationsPiece,
-                                              ArrayList<Square> possibleMoveLocations) {
+            if (piece.getTeam() == itsState.getActiveTeam()) {
+                ArrayList<Square> moveLocations = piece.getPossibleMoveLocations();
 
-	}
-
-    protected void setActiveTeam(Team team) {
-        itsActiveTeam = team;
-        logger.log(Level.FINER, "Active team set to {0}", team);
-    }
-
-    protected void toggleActiveTeam() {
-        if (itsActiveTeam == Team.GREEN) {
-            itsActiveTeam = Team.ORANGE;
-        } else {
-            itsActiveTeam = Team.GREEN;
+                for (int j = 0; j < moveLocations.size(); j++) {
+                    if (moveLocations.get(j).getNumericalLocation() == kingLocation) {
+                        itsState.setCheck(true);
+                        return;
+                    }
+                }
+            }
         }
 
-        logger.log(Level.FINER, "Active team toggled to {0}", itsActiveTeam);
+        itsState.setCheck(false);
+    }
+
+    private int getKingLocation() {
+        for (int i = 0; i < itsChessPieces.size(); i++) {
+            ChessPiece piece = itsChessPieces.get(i);
+
+            if (piece.getTeam() != itsState.getActiveTeam() && piece instanceof King) {
+                return piece.getNumericalLocation();
+            }
+        }
+
+        return -1;
     }
 }

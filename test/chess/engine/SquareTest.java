@@ -17,7 +17,7 @@ public class SquareTest {
 	* Ensures that the numerical locations of the different types of Squares
 	* are properly assigned and can be accessed.
 	*/
-	@Test
+   	@Test
 	public void testNumericalLocations() {
         logger.log(Level.WARNING, "Begin testNumericalLocations() - SquareTest");
 
@@ -99,17 +99,17 @@ public class SquareTest {
         Square interSq2 = InteriorSquare.generateInteriorSquareAt(9);
 
         assert(!interSq1.isOccupied());
-        assertEquals(Team.NEUTRAL, interSq1.getOccupyingTeam());
+        assert(interSq1.getOccupant() instanceof NullChessPiece);
 
         ChessPiece pawn = Pawn.spawnAt(interSq1);
 
         assert(interSq1.isOccupied());
-        assertEquals(Team.GREEN, interSq1.getOccupyingTeam());
+        assert(interSq1.getOccupant() instanceof Pawn);
 
 		pawn.setLocation(interSq2);
 
 		assert(!interSq1.isOccupied());
-		assertEquals(Team.NEUTRAL, interSq1.getOccupyingTeam());
+		assert(interSq1.getOccupant() instanceof NullChessPiece);
 
         logger.log(Level.WARNING, "End testOccupancy() - SquareTest");
     }

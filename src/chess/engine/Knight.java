@@ -49,6 +49,7 @@ public class Knight extends ChessPiece{
     */
     private void addPossibleMovesInLateralDirection(ArrayList<Square> possibleMoveLocations,
                                                     int direction) {
+        ChessPiece occupant;
         Square currentLocation = getLocation();
         Square lateralTwoLocation = currentLocation;
 
@@ -59,6 +60,7 @@ public class Knight extends ChessPiece{
         Square[] testSquares = {lateralTwoLocation.getNeighborInDirection((direction + 2) % 8),
                                 lateralTwoLocation.getNeighborInDirection((direction + 6) % 8)};
 
+
         for (int j = 0; j < testSquares.length; j++) {
             /* make sure that the lateral two movement did not take us off the board */
             if (testSquares[j] instanceof PerimeterSquare) {
@@ -66,7 +68,8 @@ public class Knight extends ChessPiece{
             }
 
             /* make sure the square is not already occupied by our team */
-            if (testSquares[j].getOccupyingTeam() == getTeam()) {
+            occupant = testSquares[j].getOccupant();
+            if (occupant.getTeam() == getTeam()) {
 	            continue;
             }
 

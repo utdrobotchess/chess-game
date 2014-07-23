@@ -19,6 +19,8 @@ public class ChessGameBuilderTest {
     public void testPiecePlacement() {
         logger.log(Level.WARNING, "Begin testPiecePlacement() - ChessGameBuilderTest");
 
+        ChessPiece occupant;
+
         int[] expectedRookLocations = {0, 7, 56, 63};
         int[] expectedKnightLocations = {1, 6, 57, 62};
         int[] expectedBishopLocations = {2, 5, 58, 61};
@@ -50,8 +52,10 @@ public class ChessGameBuilderTest {
         }
 
 		for (int i = 0; i < TOTAL_PIECES / 2; i++) {
-			assertEquals(Team.GREEN, board.getSquareAt(i).getOccupyingTeam());
-			assertEquals(Team.ORANGE, board.getSquareAt(i+48).getOccupyingTeam());
+            occupant = board.getSquareAt(i).getOccupant();
+			assertEquals(Team.GREEN, occupant.getTeam());
+            occupant = board.getSquareAt(i + 48).getOccupant();
+			assertEquals(Team.ORANGE, occupant.getTeam());
 		}
 
         logger.log(Level.WARNING, "End testPiecePlacement() - ChessGameBuilderTest");

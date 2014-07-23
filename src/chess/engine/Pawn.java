@@ -29,6 +29,7 @@ public class Pawn extends ChessPiece {
 
     @Override
     protected ArrayList<Square> generatePossibleMoveLocations() {
+        possibleMoveLocations.clear();
         addPossibleForwardMoves();
         addPossibleCapturingMoves();
 
@@ -49,6 +50,8 @@ public class Pawn extends ChessPiece {
     }
 
     private void addPossibleCapturingMoves() {
+        Square testSquare;
+        ChessPiece occupant;
         Square currentLocation = getLocation();
         int forwardDirection = determineForwardDirectionFromTeam();
 
@@ -56,10 +59,12 @@ public class Pawn extends ChessPiece {
                                            currentLocation.getNeighborInDirection((forwardDirection + 7) % 8)};
 
         for (int i = 0; i < possibleCaptureSquares.length; i++) {
-            Square testSquare = possibleCaptureSquares[i];
+            testSquare = possibleCaptureSquares[i];
 
             if (testSquare.isOccupied()) {
-                if (testSquare.getOccupyingTeam() != getTeam()) {
+                occupant = testSquare.getOccupant();
+
+                if (occupant.getTeam() != getTeam()) {
                     possibleMoveLocations.add(testSquare);
                 }
             }

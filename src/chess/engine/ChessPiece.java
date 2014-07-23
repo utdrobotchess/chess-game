@@ -25,6 +25,7 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
 	 */
     protected void addPossibleMoveLocationsInDirection(ArrayList<Square> possibleMoveLocations,
                                                        int direction, int depth) {
+        ChessPiece occupant;
         Square testSquare = itsLocation;
 
         for (int i = 0; i < depth; i++) {
@@ -35,14 +36,19 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
             }
 
             if (testSquare.isOccupied()) {
-                if (testSquare.getOccupyingTeam() == itsTeam) {
-                    break; //cannot move through square occupied by teammate -- end search
+                occupant = testSquare.getOccupant();
+
+                if (occupant.getTeam() == itsTeam) {
+                    /* cannot move through square occupied by teammate -- end search */
+                    break;
                 } else {
+                    /* can capture opponent -- add location, end search */
                     possibleMoveLocations.add(testSquare);
-                    break; //can capture opponent -- add location, end search
+                    break;
                 }
             } else {
-                possibleMoveLocations.add(testSquare); //unoccupied interior square
+                /* unoccupied interior square */
+                possibleMoveLocations.add(testSquare);
             }
         }
 
@@ -86,13 +92,11 @@ public abstract class ChessPiece implements Comparable<ChessPiece> {
     protected void setLocation(Square newLocation) {
     	if (itsLocation != null) {
 			/* if it already occupied a square, reset the occupancy of that old square */
-			itsLocation.setOccupancy(false);
-			itsLocation.setOccupyingTeam(Team.NEUTRAL);
+			itsLocation.setOccupant(NullChessPiece.spawnAt(itsLocation));
 		}
 
 		itsLocation = newLocation;
-		itsLocation.setOccupancy(true);
-        itsLocation.setOccupyingTeam(itsTeam);
+		itsLocation.setOccupant(this);
 
         logger.log(Level.FINE, "Location of {0} set to {1}",
                    new Object[] {this, getNumericalLocation()});
