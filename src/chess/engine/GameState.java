@@ -22,7 +22,7 @@ public class GameState {
     private ArrayList<Integer> itsMovePairs;
     private ArrayList<Integer> itsEnPassantPairs;
 
-    private GameState() { }
+    public GameState() { } //change back to private after testing is over
 
     protected static GameState generateInitialState() {
         GameState state = new GameState();
