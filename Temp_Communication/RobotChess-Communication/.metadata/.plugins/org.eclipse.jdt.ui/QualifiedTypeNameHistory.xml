@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.sun.istack.internal.logging.Logger"/>
+<fullyQualifiedTypeName name="com.rapplogic.xbee.api.ApiId"/>
+<fullyQualifiedTypeName name="java.math.BigInteger"/>
+<fullyQualifiedTypeName name="com.rapplogic.xbee.api.zigbee.ZNetRxResponse"/>
+<fullyQualifiedTypeName name="com.rapplogic.xbee.api.AtCommand"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="com.rapplogic.xbee.api.wpan.NodeDiscover"/>
+</qualifiedTypeNameHistroy>
