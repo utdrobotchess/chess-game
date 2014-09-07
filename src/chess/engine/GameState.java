@@ -1,21 +1,18 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
 
-import chess.engine.Team;
-
+/**
+ *
+ * @author Alexandre
+ */
 public class GameState {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+  //  private static final Logger logger = ChessLogger.getInstance().logger;
     private Team itsActiveTeam;
     private boolean itsCheck;
     private boolean itsCheckmate;
     private boolean itsDraw;
+    private boolean itsPawnPromotion;
     private int itsSelectedPieceIndex;
     private int itsPawnPromotionIndex;
     private ArrayList<Integer> itsPossibleMoveIndexes;
@@ -37,7 +34,7 @@ public class GameState {
         state.setMovePairs(new ArrayList<Integer>());
         state.setEnPassantPairs(new ArrayList<Integer>());
 
-        logger.log(Level.FINE, "Game state initialized");
+        //logger.log(Level.FINE, "Game state initialized");
 
         return state;
     }
@@ -61,9 +58,11 @@ public class GameState {
     public int getSelectedPieceIndex() {
         return itsSelectedPieceIndex;
     }
-
-    public int getPawnPromotionIndex() {
-        return itsPawnPromotionIndex;
+     public void setPawnPromotion(boolean promotion) {
+        itsPawnPromotion = promotion;
+    }
+    public boolean getPawnPromotion(){
+        return itsPawnPromotion;
     }
 
     public ArrayList<Integer> getPossibleMoveIndexes() {
@@ -132,7 +131,7 @@ public class GameState {
         itsDraw = draw;
     }
 
-    protected void toggleActiveTeam() {
+    public void toggleActiveTeam() {
         if (itsActiveTeam == Team.GREEN) {
             itsActiveTeam = Team.ORANGE;
         } else {

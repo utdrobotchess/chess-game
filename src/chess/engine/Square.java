@@ -1,14 +1,12 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.logging.*;
+/**
+ *
+ * @author Alexandre
+ */
 
 public abstract class Square implements Comparable<Square> {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+   // private static final Logger logger = ChessLogger.getInstance().logger;
     private ChessPiece itsOccupant;
     private int itsNumericalLocation;
 
@@ -22,8 +20,8 @@ public abstract class Square implements Comparable<Square> {
     protected void assignNeighborInDirection(Square newNeighbor, int direction) {
         itsNeighbors[direction] = newNeighbor;
 
-        logger.log(Level.FINER, "{0} assigned as neighbor to {1} in direction {2}",
-                   new Object[] {newNeighbor, this, direction});
+        //logger.log(Level.FINER, "{0} assigned as neighbor to {1} in direction {2}",
+            //       new Object[] {newNeighbor, this, direction});
     }
 
 	/*
@@ -41,7 +39,7 @@ public abstract class Square implements Comparable<Square> {
         }
     }
 
-    protected int getNumericalLocation() {
+    public int getNumericalLocation() {
         return itsNumericalLocation;
     }
 
@@ -49,11 +47,11 @@ public abstract class Square implements Comparable<Square> {
         return itsNeighbors[direction];
     }
 
-    protected ChessPiece getOccupant() {
+    public ChessPiece getOccupant() {
         return itsOccupant;
     }
 
-    protected boolean isOccupied() {
+    public boolean isOccupied() {
         if (itsOccupant instanceof NullChessPiece) {
             return false;
         } else {
@@ -64,19 +62,19 @@ public abstract class Square implements Comparable<Square> {
     protected void setNumericalLocation(int location) {
         itsNumericalLocation = location;
 
-        logger.log(Level.FINER, "{0} location set to {1}",
-                   new Object[] {this, location});
+      //  logger.log(Level.FINER, "{0} location set to {1}",
+     //              new Object[] {this, location});
     }
 
     protected void setOccupant(ChessPiece occupant) {
         itsOccupant = occupant;
 
-        logger.log(Level.FINER, "{0} occupant set to {1}",
-                   new Object[] {this, occupant});
+      //  logger.log(Level.FINER, "{0} occupant set to {1}",
+               //    new Object[] {this, occupant});
     }
 
     @Override
     public String toString(){
-        return "Square at " + itsNumericalLocation;
+        return "" + itsNumericalLocation;
     }
 }

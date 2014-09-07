@@ -1,33 +1,27 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.ImageIcon;
 
-public class Rook extends ChessPiece {
-    private final static Logger logger = ChessLogger.getInstance().logger;
+/**
+ *
+ * @author Alexandre
+ */
+public class Rook extends ChessPiece{
+    private static final String white = prefix + "WRook.png";
+    private static final String black = prefix + "BRook.png";
+    private static ImageIcon WRookPic = new ImageIcon(white);
+    private static ImageIcon BRookPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
     private static final int BOARD_WIDTH = 8;
-
-    private Rook() {
-        super();
-    }
-
     protected static Rook spawnAt(Square location) {
         Rook r = new Rook();
         r.setTeamFromInitialLocation(location);
-		r.setLocation(location);
-
-        logger.log(Level.FINE, "{0} spawned at location {1}",
-                   new Object[] {r, location.getNumericalLocation()});
-
+        r.setLocation(location);
+        assignStringName(r);
         return r;
     }
-
     @Override
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
@@ -44,6 +38,16 @@ public class Rook extends ChessPiece {
 
     @Override
     public String toString() {
-        return "Rook (" + getID() + ")";
+        return ID;
+    }
+     public static void assignStringName(Rook r){
+        if(r.getTeam() == Team.GREEN){
+            r.setImage(WRookPic);
+            r.setName("R");
+        }
+        else{
+            r.setImage(BRookPic);
+            r.setName("r");
+        }
     }
 }

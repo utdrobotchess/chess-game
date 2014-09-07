@@ -1,31 +1,29 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.ImageIcon;
 
-public class King extends ChessPiece {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+/**
+ *
+ * @author Alexandre
+ */
+public class King extends ChessPiece{
+    private static final String white = prefix + "WKing.png";
+    private static final String black = prefix + "BKing.png";
+    private static ImageIcon WKingPic = new ImageIcon(white);
+    private static ImageIcon BKingPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
-    private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
-
-    private King() {
-        super();
-    }
-
     protected static King spawnAt(Square location) {
         King k = new King();
         k.setTeamFromInitialLocation(location);
-		k.setLocation(location);
-
-        logger.log(Level.FINE, "{0} spawned at location {1}",
-                   new Object[] {k, location.getNumericalLocation()});
-
-		return k;
+        k.setLocation(location);
+        assignStringName(k);
+        return k;
+    }
+    @Override
+    public String toString() {
+        return ID;
     }
 
     @Override
@@ -35,14 +33,48 @@ public class King extends ChessPiece {
         for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i++) {
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 1);
         }
+        Square firstSquare = getLocation();
+        ChessPiece king = firstSquare.getOccupant();
+        
+        if(king.hasNotMoved()){
+            
+            // Check if the king can castle right
+            firstSquare = firstSquare.getNeighborInDirection(2);
+            Square secondSquare = firstSquare.getNeighborInDirection(2);
+            Square rookSquare = secondSquare.getNeighborInDirection(2);
+            if(!firstSquare.isOccupied() && !secondSquare.isOccupied()
+                    && rookSquare.isOccupied() &&
+                    rookSquare.getOccupant() instanceof Rook &&
+                    rookSquare.getOccupant().hasNotMoved()){
+                possibleMoveLocations.add(secondSquare);
+            }
 
+            Square LeftFirstSquare = getLocation();
+            
+            // Check if the king can castle left
+            LeftFirstSquare = LeftFirstSquare.getNeighborInDirection(6);
+            Square LeftSecondSquare = LeftFirstSquare.getNeighborInDirection(6);
+            Square LeftThirdSquare = LeftSecondSquare.getNeighborInDirection(6);
+            Square LeftrookSquare = LeftThirdSquare.getNeighborInDirection(6);
+            if(!LeftFirstSquare.isOccupied() && !LeftSecondSquare.isOccupied() && !LeftThirdSquare.isOccupied() 
+                    && LeftrookSquare.isOccupied() &&
+                    LeftrookSquare.getOccupant() instanceof Rook &&
+                    LeftrookSquare.getOccupant().hasNotMoved()){
+                possibleMoveLocations.add(LeftSecondSquare);
+            }
+        }
         Collections.sort(possibleMoveLocations);
 
         return possibleMoveLocations;
     }
-
-    @Override
-    public String toString() {
-        return "King (" + getID() + ")";
+    public static void assignStringName(King k){
+        if(k.getTeam() == Team.GREEN){
+            k.setImage(WKingPic);
+            k.setName("A");
+        }
+        else{
+            k.setImage(BKingPic);
+            k.setName("a");
+        }
     }
 }

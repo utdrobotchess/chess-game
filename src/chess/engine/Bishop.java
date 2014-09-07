@@ -1,33 +1,26 @@
-/*
- * Defines the behavior and movement unique to a bishop
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.ImageIcon;
 
-import java.io.*;
-
-public class Bishop extends ChessPiece {
+/**
+ *
+ * @author Alexandre
+ */
+public class Bishop extends ChessPiece{
+    private static final String white = prefix + "WBishop.png";
+    private static final String black = prefix + "BBishop.png";
+    private static ImageIcon WBishopPic = new ImageIcon(white);
+    private static ImageIcon BBishopPic = new ImageIcon(black);
     private final static int BOARD_WIDTH = 8;
     private final static int NUM_NEIGHBOR_DIRECTIONS = 8;
-    private final static Logger logger = ChessLogger.getInstance().logger;
-
-    private Bishop() {
-        super();
-    }
-
     protected static Bishop spawnAt(Square location) {
         Bishop b = new Bishop();
         b.setTeamFromInitialLocation(location);
         b.setLocation(location);
-
-        logger.log(Level.FINE, "{0} spawned at location {1}",
-                   new Object[] {b, location.getNumericalLocation()});
-
-		return b;
+        assignStringName(b);
+        return b;
     }
 
     @Override
@@ -46,6 +39,16 @@ public class Bishop extends ChessPiece {
 
     @Override
     public String toString() {
-        return "Bishop (" + getID() + ")";
+        return ID;
+    }
+     public static void assignStringName(Bishop b){
+        if(b.getTeam() == Team.GREEN){
+            b.setImage(WBishopPic);
+            b.setName("B");
+        }
+        else{
+            b.setImage(BBishopPic);
+            b.setName("b");
+        }
     }
 }

@@ -1,8 +1,3 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
 import java.util.*;
@@ -13,7 +8,7 @@ import java.util.logging.*;
  * chess piece does not occupy that square
  */
 public class NullChessPiece extends ChessPiece {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+  //  private static final Logger logger = ChessLogger.getInstance().logger;
 
     private NullChessPiece() {
         super();
@@ -24,18 +19,23 @@ public class NullChessPiece extends ChessPiece {
 
         piece.setLocation(location);
 
-        logger.log(Level.FINE, "Null chess piece spawned at location {0}",
-                   location.getNumericalLocation());
+       /* logger.log(Level.FINE, "Null chess piece spawned at location {0}",
+                   location.getNumericalLocation());*/
 
         return piece;
+    }
+
+   /* @Override
+    protected ArrayList<Square> generatePossibleMoveLocations() {
+        return new ArrayList<>();
+    }*/
+
+    public String toString() {
+        return "Null chesspiece";
     }
 
     @Override
     protected ArrayList<Square> generatePossibleMoveLocations() {
         return new ArrayList<>();
-    }
-
-    public String toString() {
-        return "Null chesspiece";
     }
 }

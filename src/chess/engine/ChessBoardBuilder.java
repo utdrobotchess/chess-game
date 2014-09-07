@@ -1,19 +1,11 @@
-/*
- * Static class to construct a chessboard from squares that are connected properly
- * to each other.
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
-
-import java.util.logging.*;
 
 public class ChessBoardBuilder {
     private static final int NUM_INTERIOR_SQUARES = 64;
     private static final int TOTAL_SQUARES = 100;
     private static final int TOTAL_NEIGHBORS = 8;
 
-    private static final Logger logger = ChessLogger.getInstance().logger;
+  //  private static final Logger logger = ChessLogger.getInstance().logger;
     private static Square[] boardSquares;
 
     //for each location on the chessboard, denotes its neighboring locations (prior to remapping)
@@ -43,7 +35,7 @@ public class ChessBoardBuilder {
         assignMappingReferences();
         applyMappingReferencesToBoard();
 
-        logger.log(Level.FINE, "Chessboard built");
+    //    logger.log(Level.FINE, "Chessboard built");
     }
 
     private static void buildSquares() {
@@ -55,7 +47,7 @@ public class ChessBoardBuilder {
             }
         }
 
-        logger.log(Level.FINE, "Squares built for chessboard");
+      //  logger.log(Level.FINE, "Squares built for chessboard");
     }
 
     private static void assignMappingReferences() {
@@ -100,6 +92,7 @@ public class ChessBoardBuilder {
         /* skip the first row */
         for (int i = 10; i < TOTAL_SQUARES; i++) {
             mappingReferences[i][0] = i - 10;
+           
         }
     }
 
@@ -170,15 +163,23 @@ public class ChessBoardBuilder {
         int newNeighborIndex;
 
         for (int i = 0; i < TOTAL_SQUARES; i++) {
+            
+            // Square ID
             sq = boardSquares[i];
 
+            // 8 neighbors
             for (int j = 0; j < TOTAL_NEIGHBORS; j++) {
                 newNeighborIndex = mappingReferences[locationToOccupantMapping[i]][j];
-
+                
+                // Null square
                 if (newNeighborIndex == -1) {
                     sq.assignNeighborInDirection(NullSquare.generateNullSquare(), j);
-                } else {
+                } 
+                
+                // Assign direction
+                else {
                     newNeighbor = boardSquares[occupantToLocationMapping[newNeighborIndex]];
+                    
                     sq.assignNeighborInDirection(newNeighbor, j);
                 }
             }

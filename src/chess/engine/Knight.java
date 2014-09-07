@@ -1,29 +1,24 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.ImageIcon;
 
+/**
+ *
+ * @author Alexandre
+ */
 public class Knight extends ChessPiece{
-    private static final Logger logger = ChessLogger.getInstance().logger;
+    private static final String white = prefix + "WKnight.png";
+    private static final String black = prefix + "BKnight.png";
+    private static ImageIcon WKnightPic = new ImageIcon(white);
+    private static ImageIcon BKnightPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
-
-    private Knight() {
-        super();
-    }
-
     protected static Knight spawnAt(Square location) {
         Knight k = new Knight();
         k.setTeamFromInitialLocation(location);
-		k.setLocation(location);
-
-        logger.log(Level.FINE, "{0} spawned at location {1}",
-                   new Object[] {k, location.getNumericalLocation()});
-
+        k.setLocation(location);
+        assignStringName(k);
         return k;
     }
 
@@ -39,14 +34,6 @@ public class Knight extends ChessPiece{
 
         return possibleMoveLocations;
     }
-
-   /*
-    * Knights make L-shaped movements. To find possible move locations, divide the
-    * locations according to the direction of the long side of the "L", which is
-    * two squares long. We move two squares away from the current location, then
-    * test the adjacent squares in both directions that are perpendicular to that
-    * two-square lateral movement.
-    */
     private void addPossibleMovesInLateralDirection(ArrayList<Square> possibleMoveLocations,
                                                     int direction) {
         ChessPiece occupant;
@@ -76,9 +63,18 @@ public class Knight extends ChessPiece{
             possibleMoveLocations.add(testSquares[j]);
         }
     }
-
     @Override
     public String toString() {
-        return "Knight (" + getID() + ")";
+        return ID;
+    }
+    public static void assignStringName(Knight k){
+        if(k.getTeam() == Team.GREEN){
+            k.setImage(WKnightPic);
+            k.setName("K");
+        }
+        else{
+            k.setImage(BKnightPic);
+            k.setName("k");
+        }
     }
 }

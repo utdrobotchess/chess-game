@@ -1,33 +1,27 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.ImageIcon;
 
-public class Queen extends ChessPiece {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+/**
+ *
+ * @author Alexandre
+ */
+public class Queen extends ChessPiece{
+    private static final String white = prefix + "WQueen.png";
+    private static final String black = prefix + "BQueen.png";
+    private static ImageIcon WQueenPic = new ImageIcon(white);
+    private static ImageIcon BQueenPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
     private static final int BOARD_WIDTH = 8;
-
-    private Queen() {
-        super();
-    }
-
     protected static Queen spawnAt(Square location) {
         Queen q = new Queen();
         q.setTeamFromInitialLocation(location);
         q.setLocation(location);
-
-        logger.log(Level.FINE, "{0} spawned at location {1}",
-                   new Object[] {q, location.getNumericalLocation()});
-
-		return q;
+        assignStringName(q);
+        return q;
     }
-
     @Override
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
@@ -43,6 +37,16 @@ public class Queen extends ChessPiece {
 
     @Override
     public String toString() {
-        return "Queen (" + getID() + ")";
+        return ID;
+    }
+    public static void assignStringName(Queen q){
+        if(q.getTeam() == Team.GREEN){
+            q.setImage(WQueenPic);
+            q.setName("Q");
+        }
+        else{
+            q.setImage(BQueenPic);
+            q.setName("q");
+        }
     }
 }

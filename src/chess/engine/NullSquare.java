@@ -1,14 +1,11 @@
-/*
- *
- * @author Ryan J. Marcotte
- */
-
 package chess.engine;
 
-import java.util.logging.*;
-
+/**
+ *
+ * @author Alexandre
+ */
 public class NullSquare extends Square {
-    private static final Logger logger = ChessLogger.getInstance().logger;
+   // private static final Logger logger = ChessLogger.getInstance().logger;
     private static NullSquare instance = null;
 
     private NullSquare() {  }
@@ -24,7 +21,7 @@ public class NullSquare extends Square {
             }
         }
 
-        logger.log(Level.FINE, "Null square generated");
+       // logger.log(Level.FINE, "Null square generated");
 
 		return instance;
     }
