@@ -28,15 +28,23 @@ public class CommunicatorAPI
 			communicator.InitializeCommunication();
 			
 			//Use the following method to test finding Nodes
-				CommunicatorAPI.FindNextNodeAddress();
-			
-			//Use the following method to test whether incoming messages are being read
-				//communicator.ReadMessage();
+				int[][] currentAddress = communicator.FindNodeAddresses(); 
+				System.out.println();
+				for(int index = 0; index < rowIndex; index++)
+				{
+					System.out.println("index"+index+":	"+ByteUtils.toBase16(currentAddress[index]));
+				}
+				System.out.println();
 			
 			//Use the following to test sending messages.
-				//@SuppressWarnings("unused")
-				//int[] temp = new int[] {1,2,3,4,5,6,7,8};
-				//communicator.SendMessage(temp);
+				//System.out.println(ByteUtils.toBase16(nodeAddresses[2]));
+				int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
+				communicator.SendMessage(temp,nodeAddresses[1],0);
+				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
+				communicator.SendMessage(execute,nodeAddresses[1],0);
+				
+			//Use the following method to test whether incoming messages are being read
+				communicator.ReadMessage();
 			
 			communicator.EndCommunication();
 		}
@@ -52,7 +60,11 @@ public class CommunicatorAPI
 		
 		private static int BAUD_RATE = 57600;
 		
-		private static int[]nodeAddresses = new int[32];
+		private static int[][] nodeAddresses = new int[32][8];
+		
+		private static int rowIndex = 0;
+		
+		public int [] input;
 		
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
 		/*	Methods		*/
@@ -80,7 +92,7 @@ public class CommunicatorAPI
 				if(response.getApiId() == ApiId.ZNET_RX_RESPONSE)
 				{
 					rx = (ZNetRxResponse) response;
-					int[] input = rx.getData();
+					input = rx.getData();
 					
 					PrintResponseDetails();	//This is for testing purposes
 				
@@ -105,7 +117,7 @@ public class CommunicatorAPI
 		public void SendMessage(int[] bytearr, int[] destinationLow,int frameId)
 		{
 			int[] information = bytearr;
-			XBeeAddress64 destination = new XBeeAddress64(0x00,0x13,0xA2,0x00,destinationLow[0],destinationLow[1],destinationLow[2],destinationLow[3]);
+			XBeeAddress64 destination = new XBeeAddress64(destinationLow);
 			ZNetTxRequest request = new ZNetTxRequest(destination,information);
 			request.setOption(ZNetTxRequest.Option.UNICAST);
 			request.setFrameId(frameId);
@@ -177,9 +189,8 @@ public class CommunicatorAPI
 			BAUD_RATE = baud_rate;
 		}
 		
-		public static void FindNextNodeAddress() throws XBeeException,InterruptedException
+		public int[][] FindNodeAddresses() throws XBeeException,InterruptedException
 		{
-			
 			xbee.sendAsynchronous(new AtCommand("NT"));
 			AtCommandResponse nodeTimeOut =(AtCommandResponse)xbee.getResponse();
 			long nodeDiscoveryTimeOut = ByteUtils.convertMultiByteToInt(nodeTimeOut.getValue())*100;
@@ -191,15 +202,16 @@ public class CommunicatorAPI
 											if(response.getApiId() == ApiId.AT_RESPONSE)
 											{
 												NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-												nodeAddresses = nd.getNodeAddress64().getAddress();
-												System.out.println("\n"+ByteUtils.toBase10(nodeAddresses)+"\n");
+												nodeAddresses[rowIndex] = nd.getNodeAddress64().getAddress();
+												rowIndex++;
 											}
 										}
 									}
 								  );
 			xbee.sendAsynchronous(new AtCommand("ND"));
 			Thread.sleep(nodeDiscoveryTimeOut);
-			//return nodeAddresses;
+			
+			return nodeAddresses;
 		}
 		
 		public void EndCommunication()

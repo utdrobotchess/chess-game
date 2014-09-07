@@ -8,4 +8,5 @@
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="com.rapplogic.xbee.api.wpan.NodeDiscover"/>
+<fullyQualifiedTypeName name="com.rapplogic.xbee.util.ByteUtils"/>
 </qualifiedTypeNameHistroy>

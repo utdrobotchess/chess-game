@@ -2,15 +2,22 @@ package RobotChess_Communication;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+
 import com.rapplogic.xbee.api.XBeeException;
+import com.rapplogic.xbee.util.ByteUtils;
 
 public class Command 
 {
 	//----------------------------------------------------------------------------------------------------------------------------------------------------
 		/*	Test Program: Write any test programs for this class in the main method.	*/
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
-		public static void main(String[] args) throws XBeeException
+		public static void main(String[] args) throws XBeeException, InterruptedException
 		{
+			//Use the following method to test get DestinationAddresses
+				Command.SetDestinationAddresses();
+//				System.out.println();
+//				System.out.println(destinationAddresses);
+//				System.out.println();
 			//Use the following methods to test ConstructCommand using AT mode
 			  /*ConstructCommand("crossSquare",(char)0x1d,(char)0x07);
 		  		ConstructCommand("crossSquare",(char)0x01,(char)0x07);
@@ -21,7 +28,7 @@ public class Command
 		  	  */
 
 			//Use the following method to test remote control of the robots
-			  RemoteControlMode(0x01);
+			  //RemoteControlMode(0x01);
 		}
 	
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
@@ -30,14 +37,15 @@ public class Command
 		public static ArrayList<String> commandName =  new ArrayList<String>();
 		public static ArrayList<char[]> commandBuffer = new ArrayList<char[]>();
 	
-		private static int[][] destinationLow =	{{0x40,0x86,0x96,0x4F},{0x40,0x86,0x96,0xAA},{0x40,0x86,0x96,0x3C},{0x40,0x86,0x96,0x99},
+		/*private static int[][] destinationLow =	{{0x40,0x86,0x96,0x4F},{0x40,0x86,0x96,0xAA},{0x40,0x86,0x96,0x3C},{0x40,0x86,0x96,0x99},
 												 {0x40,0x86,0x96,0x9A},{0x40,0x8A,0x87,0xCA},{0x40,0x86,0x96,0xB0},{0x40,0x86,0x96,0xAF},
 												 {0x40,0x86,0x96,0x47},{0x40,0x86,0x96,0x4D},{0x40,0x86,0x96,0xB6},{0x40,0x86,0x96,0x39},
 												 {0x40,0xB1,0x8B,0x6E},{0x40,0x86,0x96,0x3A},{0x40,0x61,0xB2,0xC5},{0x40,0x86,0x96,0xA8},
 												 {0x40,0x86,0x96,0x38},{0x40,0xB8,0x04,0x96},{0x40,0x86,0x96,0xA1},{0x40,0x86,0x96,0x98},
 												 {0x40,0x86,0x96,0x3D},{0x40,0x86,0x96,0x49},{0x40,0x86,0x96,0x3B},{0x40,0x86,0x96,0x28},
 												 {0x40,0x86,0x96,0x46},{0x40,0x81,0x3E,0x34},{0x40,0x86,0x96,0x97},{0x40,0x86,0x95,0xFE},
-												 {0x40,0x8C,0x0D,0xB9},{0x40,0x86,0x96,0x33},{0x40,0x86,0x96,0x48},{0x40,0x86,0x69,0xAE}};
+												 {0x40,0x8C,0x0D,0xB9},{0x40,0x86,0x96,0x33},{0x40,0x86,0x96,0x48},{0x40,0x86,0x69,0xAE}};*/
+		private static int[][] destinationAddresses = new int[32][8];
 		
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
 		/*	Methods		*/
@@ -178,17 +186,17 @@ public class Command
 			CommunicatorAPI.SetUpCommunication("COM26", 57600);
 			CommunicatorAPI xbee = new CommunicatorAPI();
 			int[] data = new int[6]; 
-			int destinationLowIndex = 0;
+			int destinationIndex = 0;
 			xbee.InitializeCommunication();
 				for(int index = 0; index < commandBuffer.size(); index++)
 				{
 					char[] temp = commandBuffer.get(index);
 					if(index == 0)
-						destinationLowIndex = temp[0]-1;
+						destinationIndex = temp[0]-1;
 					else
 						data[index] = temp[index];
 				}
-			xbee.SendMessage(data,destinationLow[destinationLowIndex],0x01);
+			xbee.SendMessage(data,destinationAddresses[destinationIndex],0x01);
 			xbee.EndCommunication();
 			commandName.clear();
 			commandBuffer.clear();
@@ -196,9 +204,25 @@ public class Command
 		
 		/*public static void StartUpSequence()*/
 		
-		/*public static void GetLowAddresses()
-		{	
-		}*/
+		public static void SetDestinationAddresses() throws XBeeException, InterruptedException
+		{
+			CommunicatorAPI.SetUpCommunication("COM17", 57600);
+			CommunicatorAPI xbee = new CommunicatorAPI();
+			xbee.InitializeCommunication();
+			int[] getBotId = {};
+			int[]execute = {0xFF,0x00,0x00,0x00,0x00,0x00};
+			int[][] tempDestinationAddresses = xbee.FindNodeAddresses();
+			for(int index = 0; index < 2;index++)
+			{
+				System.out.println(ByteUtils.toBase16(tempDestinationAddresses[index]));
+				xbee.SendMessage(getBotId, tempDestinationAddresses[index+1], 1);
+				xbee.SendMessage(execute, tempDestinationAddresses[index+1], 1);
+				xbee.ReadMessage();
+				System.out.println(xbee.input);
+			}
+			xbee.EndCommunication();
+			
+		}
 		
 		public static void PrintCommandBuffer()
 		{
@@ -212,7 +236,7 @@ public class Command
 		
 		public static void RemoteControlMode(int botId)
 		{
-			RemoteController.SetDestinationLowAddresses(destinationLow);
+			RemoteController.SetDestinationLowAddresses(destinationAddresses);
 			RemoteController.InitializeControllers();
 			RemoteController.SendAPIMoveCommands(botId);
 		}

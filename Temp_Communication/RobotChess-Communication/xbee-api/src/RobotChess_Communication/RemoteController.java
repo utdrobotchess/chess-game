@@ -27,7 +27,7 @@ import org.lwjgl.input.Controllers;
 		
 		private static int direction=0x00, rotation=0x00, directionMagnitude=0x00, rotationMagnitude=0x00;
 		
-		private static int[][]destinationLow = new int[32][4];
+		private static int[][]destinationAddresses = new int[32][8];
 		
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
 		/*	Methods		*/
@@ -82,9 +82,9 @@ import org.lwjgl.input.Controllers;
 						else if(A_ButtonIsPressed == true && !controller.isButtonPressed(0))
 						{
 								int[]temp = {0x00, 0x00, 0x00, 0x00};
-								xbee.SendMessage(temp,destinationLow[botAddressIndex],0);
+								xbee.SendMessage(temp,destinationAddresses[botAddressIndex],0);
 								botAddressIndex++;
-								botAddressIndex %= 32;
+								botAddressIndex %= 3;
 								A_ButtonIsPressed = false;
 						}
 						
@@ -94,7 +94,7 @@ import org.lwjgl.input.Controllers;
 						else
 							xbee.SendMessage(temp, destinationLow[botAddressIndex+16],0);*/
 					//the following line is temporary. It will be removed in the future.
-						xbee.SendMessage(temp,destinationLow[botAddressIndex],0);
+						xbee.SendMessage(temp,destinationAddresses[botAddressIndex],0);
 						System.out.println((float)directionMagnitude+"	"+(float)rotationMagnitude);
 						startTime = System.currentTimeMillis();
 						ZeroJoyStick();
@@ -176,9 +176,9 @@ import org.lwjgl.input.Controllers;
 			ZeroJoyStick();
 		}
 		
-		public static void SetDestinationLowAddresses(int[][] addressLowList)
+		public static void SetDestinationLowAddresses(int[][] addressList)
 		{
-			destinationLow = addressLowList;
+			destinationAddresses = addressList;
 		}
 		
 		public static void PrintControllerMap()
