@@ -165,7 +165,7 @@ public class Chess extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(clickable)
+         //   if(clickable)
             for (int next = 0; next < 64; next++) {
                 // Search for the position of the square clicked
                 if (e.getSource() == square[next]) {
@@ -230,13 +230,13 @@ public class Chess extends JFrame {
 
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-   /*    for(int i = 0; i < possibleSquare.size(); i++){
+        for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).getNumericalLocation() != -1)
                 if(possibleSquare.get(i).isOccupied())
                     square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
                 else
                     square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
-        }*/
+        }
         
         //Save selected square number
         index = next;
@@ -247,7 +247,7 @@ public class Chess extends JFrame {
     public void undo(int next){
         // Undo move if the king is in check
         // Return the captured piece to the board
-        if(chess.isCaptured()){
+        if(chess.isTemporarilyCaptured()){
             if(chess.hasCastedEmpasse()){
                 square[chess.getPawnLocation()].setIcon(chess.getCapturedChessPiece().getImage());
             }
@@ -396,6 +396,16 @@ public class Chess extends JFrame {
                 JOptionPane.showMessageDialog(null, "Stalemate");
                 clickable = false;
             }
+         /*   String[][] strList = chess.convertToStringArray();
+             for(int i = 0; i < strList.length; i++){
+                for(int j = 0; j < strList.length; j++){
+                    if(strList[i][j] == null)
+                        System.out.print(" ");
+                    else
+                        System.out.print(strList[i][j]);
+                }
+            System.out.println();
+             }*/
         }
     }
     // Return the colors of possible moves to original colors.
