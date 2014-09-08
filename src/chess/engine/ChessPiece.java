@@ -58,8 +58,6 @@ public abstract class ChessPiece implements Comparable<ChessPiece>  {
                 possibleMoveLocations.add(testSquare);
             }
         }
-       // logger.log(Level.FINE, "Possible move locations in direction {0} " +
-          //         "added to {1}", new Object[] {direction, this});
     }
 
     public int getNumericalLocation() {
@@ -100,8 +98,6 @@ public abstract class ChessPiece implements Comparable<ChessPiece>  {
     protected void incrementNumberOfPriorMoves(){
         itsRecentTurnNumber = ++totalTurnNumber;
         itsNumberOfPriorMoves++;
-        //logger.log(Level.FINE, "Number of prior moves for {0} incremented to {1}",
-               //    new Object[] {this, itsNumberOfPriorMoves});
     }
     protected int getCurrentNumber(){
         return itsRecentTurnNumber;

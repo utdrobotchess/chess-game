@@ -165,7 +165,7 @@ public class Chess extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-         //   if(clickable)
+            if(clickable)
             for (int next = 0; next < 64; next++) {
                 // Search for the position of the square clicked
                 if (e.getSource() == square[next]) {
@@ -222,7 +222,7 @@ public class Chess extends JFrame {
     }
     public void selectPiece(int next){
          // Get the piece on the selected square
-        chess.selectPiece(next);
+        chess.selectPieceAtLocation(next);
 
         // Save the image of the piece and its location
         selectedPiece =  squareSelected.getOccupant().getImage();
@@ -230,13 +230,12 @@ public class Chess extends JFrame {
 
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-        for(int i = 0; i < possibleSquare.size(); i++){
-            if(possibleSquare.get(i).getNumericalLocation() != -1)
-                if(possibleSquare.get(i).isOccupied())
-                    square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
-                else
-                    square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
-        }
+       /*for(int i = 0; i < possibleSquare.size(); i++){
+            if(possibleSquare.get(i).isOccupied())
+                square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
+            else
+                square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
+        }*/
         
         //Save selected square number
         index = next;
@@ -260,7 +259,7 @@ public class Chess extends JFrame {
 
         square[index].setIcon(selectedPiece);
         chess.undoMove(next, index);
-        System.out.println("Current King is under attack");
+        System.out.println("Our king is or will be in trouble");
     }
     
     public void executeMove(int next){
@@ -289,7 +288,6 @@ public class Chess extends JFrame {
                      convertChartoStringName(rook.toString()) + " castles from square " + originRookLocation
                 + " move to square: " + destRookLocation);
         }
-        else if(chess.castlingAttempted());
         else {
             // Processing empasse
             if(!chess.getState().getEnPassantPairs().isEmpty()){
@@ -299,12 +297,12 @@ public class Chess extends JFrame {
             }
 
             square[index].setIcon(null);
-            square[next].setIcon(selectedPiece);
+            square[chess.getDestination()].setIcon(selectedPiece);
                 // Execute the move if the move is on the possible move list
 
             ChessPiece originPiece = chess.getBoard().getSquareAt(next).getOccupant();
             int originLocation = index;
-            int destinationLocation = next;
+            int destinationLocation = chess.getDestination();
 
             // A piece is captured
             if(chess.getCapturedPiece() != null){
@@ -339,6 +337,7 @@ public class Chess extends JFrame {
                         Integer.toString(next % 8));
             }
 
+            // Pawn gets promoted
             if(chess.getState().getPawnPromotion()){
                 int promo = JOptionPane.showOptionDialog(null, "What will the pawn be promoted to?", 
                         "Promotion", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
@@ -396,40 +395,28 @@ public class Chess extends JFrame {
                 JOptionPane.showMessageDialog(null, "Stalemate");
                 clickable = false;
             }
-         /*   String[][] strList = chess.convertToStringArray();
-             for(int i = 0; i < strList.length; i++){
-                for(int j = 0; j < strList.length; j++){
-                    if(strList[i][j] == null)
-                        System.out.print(" ");
-                    else
-                        System.out.print(strList[i][j]);
-                }
-            System.out.println();
-             }*/
         }
     }
     // Return the colors of possible moves to original colors.
     public void deselect() {
         for(int i = 0; i < possibleSquare.size(); i++){
-            if(possibleSquare.get(i).getNumericalLocation() != -1){
-                int x = possibleSquare.get(i).getNumericalLocation();
-                if((x<8)||(x>15&&x<24)||(x>31&&x<40)||(x>47&&x<56)){
-                    if(x%2==0){
-                        square[x].setBackground(new Color(247,131,0));
-                    }
-                    else{
-                        square[x].setBackground(new Color(3,73,0));	 
-                    }
+            int x = possibleSquare.get(i).getNumericalLocation();
+            if((x<8)||(x>15&&x<24)||(x>31&&x<40)||(x>47&&x<56)){
+                if(x%2==0){
+                    square[x].setBackground(new Color(247,131,0));
                 }
-                if((x>7&&x<16)||(x>23&&x<32)||(x>39&&x<48)||(x>55&&x<=63)){
-                    if(x%2==0){
-                        square[x].setBackground(new Color(3,73,0));
-                    }
-                    else{
-                        square[x].setBackground(new Color(247,131,0));
-                    }
+                else{
+                    square[x].setBackground(new Color(3,73,0));	 
                 }
-            }  
+            }
+            if((x>7&&x<16)||(x>23&&x<32)||(x>39&&x<48)||(x>55&&x<=63)){
+                if(x%2==0){
+                    square[x].setBackground(new Color(3,73,0));
+                }
+                else{
+                    square[x].setBackground(new Color(247,131,0));
+                }
+            }
         }
 
         // Turn blue back to the original color

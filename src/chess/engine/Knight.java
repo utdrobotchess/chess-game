@@ -26,6 +26,7 @@ public class Knight extends ChessPiece{
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
 
+        // Even number neighbors
         for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i += 2) {
             addPossibleMovesInLateralDirection(possibleMoveLocations, i);
         }
@@ -47,17 +48,17 @@ public class Knight extends ChessPiece{
         Square[] testSquares = {lateralTwoLocation.getNeighborInDirection((direction + 2) % 8),
                                 lateralTwoLocation.getNeighborInDirection((direction + 6) % 8)};
 
-
+        
         for (int j = 0; j < testSquares.length; j++) {
             /* make sure that the lateral two movement did not take us off the board */
-            if (testSquares[j] instanceof PerimeterSquare) {
+            if (testSquares[j] instanceof PerimeterSquare || testSquares[j].getNumericalLocation() == -1) {
                 continue;
             }
 
             /* make sure the square is not already occupied by our team */
             occupant = testSquares[j].getOccupant();
             if (occupant.getTeam() == getTeam()) {
-	            continue;
+	         continue;
             }
 
             possibleMoveLocations.add(testSquares[j]);

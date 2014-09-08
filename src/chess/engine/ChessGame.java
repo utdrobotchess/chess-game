@@ -17,13 +17,13 @@ public class ChessGame {
     private int bothSideCastled = 0;
     private int rookLocation;
     private int castlingLocation;
+    private int finalDestination;
     private ChessBoard itsBoard;
     private boolean capturePiece = false;
     private GameState itsState;
     private ChessPiece temporarilyCapturedPiece;
     private ChessPiece permanentlyCapturedPiece;
     private Square square;
-    private boolean castlingAttempt;
     public static ChessGame setupGame() {
         ChessGame game = new ChessGame();
         // Begin building a chess game
@@ -58,7 +58,7 @@ public class ChessGame {
     protected void setState(GameState state) {
         itsState = state;
     }
-    public GameState selectPiece(int selectionLocation){
+    public GameState selectPieceAtLocation(int selectionLocation){
          // Retrieve the selected square
         Square selectionSquare = itsBoard.getSquareAt(selectionLocation);
         //  Get the selected chess piece on the selected square
@@ -73,13 +73,15 @@ public class ChessGame {
         
         // Set what square the selected piece is at
         itsState.setSelectedPieceIndex(selectionLocation);
+        
         // Retrieve all possiblem moves
         possibleMoveLocations = occupant.getPossibleMoveLocations();
+        
         // Save the possible moves
         itsState.setPossibleMoveIndexes(possibleMoveLocations);
-        
-      //  convert();
-        printEntireMove();
+     
+        // print all possible moves from all pieces
+       // printEntireMove();
         return itsState;
     }
     
@@ -98,8 +100,6 @@ public class ChessGame {
         return strList;
     }
     
-    
-    
     // This function simulates that if a piece is moved, is the king still in
     // check.
     protected boolean TestForCheck(int origin, int destination){
@@ -107,12 +107,16 @@ public class ChessGame {
         
         int savedOrigin = origin;
         int savedDest = destination;
-        // Return the king's location to the previous if castling is invalid
- 
+        
+        // Return false if the king tries to castle
+        if(isCastlingInvoked(destination) && itsBoard.getSquareAt(origin).getOccupant() instanceof King)
+            return false;
+        
         if(itsBoard.getSquareAt(origin).getOccupant() instanceof Pawn && 
                 checkForImpasse(destination)){
             movePiece(itsState.getEnPassantPairs().get(0), itsState.getEnPassantPairs().get(1));
         }
+        
         ArrayList<Integer> movePairs;
         movePairs = addMovePairs(destination);
         itsState.setMovePairs(movePairs);
@@ -136,9 +140,7 @@ public class ChessGame {
         return isValid;
     }
     public boolean isKingInCheck(int origin, int destination){
-        boolean isValid;
-        castlingAttempt = false;
-        // Castling
+        // Determine if King will castle
         if(isCastlingInvoked(destination) && itsBoard.getSquareAt(origin).getOccupant() instanceof King){
             
             // If castling succeeds
@@ -146,8 +148,11 @@ public class ChessGame {
                 setCastled(true);
                 movePiece(rookLocation, castlingLocation);
             }
-            else if(castlingAttempt){
-                itsState.toggleActiveTeam();
+            else{
+                movePiece(origin, destination); 
+                itsState.setSelectedPieceIndex(-1);
+                itsState.clearPossibleMoveIndexes();
+                return false;
             }
         }
         else{
@@ -159,8 +164,7 @@ public class ChessGame {
                 movePiece(itsState.getEnPassantPairs().get(0), itsState.getEnPassantPairs().get(1));
             }
             
-            ArrayList<Integer> movePairs;
-            movePairs = addMovePairs(destination);
+             ArrayList<Integer>movePairs = addMovePairs(destination);
             itsState.setMovePairs(movePairs);
             
             // An opponent piece is captured
@@ -176,12 +180,9 @@ public class ChessGame {
         
         // Update after these moves
         updatePossibleMoveLocations();
-        
-        // Check if the king is not in check after the move
-        isValid = !testForBeingChecked();
-        
+                
         // A valid move has been executed.
-        if(isValid){
+        if(!testForBeingChecked()){
             if(temporarilyCapturedPiece != null){
                 
                 // Remove a captured piece from the chess piece list
@@ -191,14 +192,16 @@ public class ChessGame {
                 else
                     blackPieces.remove(permanentlyCapturedPiece);
                 itsChessPieces.remove(permanentlyCapturedPiece);
-                strList[(int)Math.floor(origin / 8)][origin % 8] = null;
+                //strList[(int)Math.floor(origin / 8)][origin % 8] = null;
             }
             setCapture(false);
             updateKingStatus();
             // update game status
             updateStatus(destination);
+            return true;
         }
-        return isValid;
+        else
+            return false;
     }
     
     public void updateKingStatus(){
@@ -216,6 +219,7 @@ public class ChessGame {
         convertToStringArray();
     }
     private void updateStatus(int dest){
+        finalDestination = dest;
         itsState.setSelectedPieceIndex(-1);
         itsState.clearPossibleMoveIndexes();
         itsState.toggleActiveTeam();
@@ -396,58 +400,64 @@ public class ChessGame {
             }
         }
         boolean preventedByAPiece = false;
-        int here; int there;
+        boolean shouldCheckMove = false;
+        int here = -1; int there = -1;
         // Number of team pieces
         opponentPiece.remove(itsBoard.getSquareAt(kingLocation).getOccupant());
-        for(int w = 0; w < teamPiece.size() && !preventedByAPiece; w++){
+        
+        // Break out of the loop if a checkmate fails
+        outerLoop:
+        for(int w = 0; w < teamPiece.size(); w++){
             // Each team piece's move list
             
             teamPieceMoveList = teamPiece.get(w).getPossibleMoveLocations();
             // Number of opponent members
-            for(int x = 0; x < opponentPiece.size() && !preventedByAPiece; x++){
+            for(int x = 0; x < opponentPiece.size(); x++){
                 // Each opponent piece's possible move list
                 boolean captureAttempt = false;
                 opponentMoveList = opponentPiece.get(x).getPossibleMoveLocations();
                 // Find the square that is both in the opponent's and team's possible move list
-                for(int y = 0; y < teamPieceMoveList.size() && !preventedByAPiece; y++){
+                for(int y = 0; y < teamPieceMoveList.size(); y++){
                     for(int z = 0; z < opponentMoveList.size(); z++){
-                        // If the current opponent piece is unable to block the attacker piece's path or even capture that piece,
-                        // it is a checkmate
-                        // Otherwise, break out of the loop to move on to the next piece
-                        if(teamPieceMoveList.get(y) == opponentMoveList.get(z) && opponentMoveList.get(z).getNumericalLocation() != -1){
-                            
+                        
+                        // Cehck if an opponent can block the team piece from attack
+                        if(teamPieceMoveList.get(y) == opponentMoveList.get(z)){
                             there = teamPieceMoveList.get(y).getNumericalLocation();
                             here = opponentPiece.get(x).getNumericalLocation();
-                            if(canOpponentPreventBeingInCheck(here, there)){
-                                preventedByAPiece = true;
-                                break;
-                            }
+                            shouldCheckMove = true;
                         }
-                        // If an opponent can capture the attacker
-                        else if(teamPiece.get(w).getLocation() == opponentMoveList.get(z) && !captureAttempt){
-                            captureAttempt = true;
+                        // Check if an opponent can capture the attacking team piece
+                        else if(!captureAttempt && teamPiece.get(w).getLocation() == opponentMoveList.get(z)){
                             there = teamPiece.get(w).getNumericalLocation();
                             here = opponentPiece.get(x).getNumericalLocation();
+                            captureAttempt = true;
+                            shouldCheckMove = true;
+                        }
+                        
+                        // If either above is true, then check if their king is still
+                        // safe 
+                        if(shouldCheckMove){
                             if(canOpponentPreventBeingInCheck(here, there)){
                                 preventedByAPiece = true;
-                                break;
+                                break outerLoop;
                             }
+                            captureAttempt = false;
                         }
                     }
                 }
             }
         }
+        
         if(preventedByAPiece){
             itsState.setCheckmate(false);
         }
-        // If there is no team piece to protect the king, check
-        // if the king can move at all when in check
+        // If there is no opponent piece to protect the king, test
+        // if the king can move at all while in check
         else if(isEnemyKingStuck()){
             itsState.setCheckmate(true);
         }
-        else{
+        else
             itsState.setCheckmate(false);
-        }
     }
     // Check that the king can't move anywhere for checkmate or stalemate
     protected boolean isEnemyKingStuck(){
@@ -456,13 +466,13 @@ public class ChessGame {
         int kingLocation = getEnemyKingLocation();
         ChessPiece theirKing = itsBoard.getSquareAt(kingLocation).getOccupant();
         
-        // Get the new list of possible moves
+        // Get a new list of possible moves
         numberOfPossibleMove = theirKing.getPossibleMoveLocations();
         
         if (!theirKing.getPossibleMoveLocations().isEmpty()){
             for(int x = 0; x < numberOfPossibleMove.size(); x++){
                 int kingPossibleMove = numberOfPossibleMove.get(x).getNumericalLocation();
-                selectPiece(kingLocation);
+                selectPieceAtLocation(kingLocation);
                 itsState.toggleActiveTeam();
                 
                 // King can move and, therefore, not stuck
@@ -479,20 +489,20 @@ public class ChessGame {
     
     protected boolean canOpponentPreventBeingInCheck(int defender, int attacker){
         boolean canPreventAttack;
+        
         itsState.setSelectedPieceIndex(-1); 
-        // Deselect all the possible move
         itsState.clearPossibleMoveIndexes();  
         
-        selectPiece(defender);
-        // king is in checkmate
+        selectPieceAtLocation(defender);
+        
+        // Check if the king is still safe or not
         itsState.toggleActiveTeam();
         canPreventAttack = TestForCheck(defender, attacker);
         itsState.toggleActiveTeam();
         return canPreventAttack;
-        
     }
     
-    // Undo the move execute. The player will move again
+    // Undo the move execution. The player will move again
     public void undoMove(int destination, int origin){
         
         // Put a captured piece back into the game
@@ -536,31 +546,19 @@ public class ChessGame {
         }
     }
     protected boolean checkForCastle(int kingLocation, int dest){
+        if(bothSideCastled == 3 || itsState.isCheck() ){
+            return false;
+        }
         
         ChessPiece rook;
         Square kingSquare = itsBoard.getSquareAt(kingLocation);
         Square destSquare = itsBoard.getSquareAt(dest);
         ChessPiece king = kingSquare.getOccupant();
+        
         int castleDirection;
-        ArrayList<ChessPiece> opponentPieces;
         
-        if(king.getTeam() == Team.GREEN){
-            opponentPieces = blackPieces;
-        }
-        else{
-            opponentPieces = whitePieces;
-        }
         
-        if(!(bothSideCastled != 3 )){
-            return false;
-        }
-        if(itsState.isCheck()){
-            castlingAttempt = true;
-         //   castlingAttempt = true;
-            return false;
-        }
-        
-        //***** Check if the destination square will invoke castling********
+        //***** Determine which square invoked castling ********
         // Which side will the king castle
         int whichSide = kingSquare.compareTo(destSquare);
         
@@ -569,6 +567,7 @@ public class ChessGame {
             castleDirection = 6;
             rook = destSquare.getNeighborInDirection(6).getNeighborInDirection(6).getOccupant();
         }
+        
         // Right side
         else if(whichSide == -1 && (dest - kingLocation == 2)){
             castleDirection = 2;
@@ -578,17 +577,23 @@ public class ChessGame {
             return false;
         }
         
-        // Get the square which is beside the king's square
+        // The square next to the king's square
         Square castlingSquare = kingSquare.getNeighborInDirection(castleDirection);
         castlingLocation = castlingSquare.getNumericalLocation();
 
         // ******** Check if either squares are not being attacked ********
+        ArrayList<ChessPiece> opponentPieces;
+        
+        if(king.getTeam() == Team.GREEN)
+            opponentPieces = blackPieces;
+        else
+            opponentPieces = whitePieces;
+        
         for (int i = 0; i < opponentPieces.size(); i++){
             ArrayList<Square> pieceMove = opponentPieces.get(i).getPossibleMoveLocations();
             for (int j = 0; j < pieceMove.size(); j++)
                 if(pieceMove.get(j) == castlingSquare || pieceMove.get(j) == destSquare){
                     System.out.println("Cannot castle: square under attack");
-                    castlingAttempt = true;
                     return false;
                 }
         }
@@ -660,16 +665,14 @@ public class ChessGame {
         hasCastled = castled;
     }
     protected boolean isCastlingInvoked( int dest){
-        if(dest == 2 || dest == 6 || dest == 58 || dest == 62)
+        if(itsBoard.getSquareAt(getOurKingLocation()).getOccupant().hasNotMoved() && 
+                (dest == 2 || dest == 6 || dest == 58 || dest == 62))
             return true;
         else 
             return false;
     }
     public int getPawnLocation(){
         return pawnLocation;
-    }
-    public boolean castlingAttempted(){
-        return castlingAttempt;
     }
     public ChessPiece getCapturedPiece(){
         return permanentlyCapturedPiece;
@@ -701,23 +704,24 @@ public class ChessGame {
             ArrayList<Square> possibleMove = itsChessPieces.get(i).getPossibleMoveLocations();
             
             for(int j = 0; j < possibleMove.size(); j++){
-                if(possibleMove.get(j).getNumericalLocation() != -1){
-                    list += (int)Math.floor(itsChessPieces.get(i).getNumericalLocation() / 8) + "" +
-                    (itsChessPieces.get(i).getNumericalLocation()% 8);
-                // Check if the opponent piece is on the move location
-                    if(itsBoard.getSquareAt(possibleMove.get(j).getNumericalLocation()).isOccupied()){
-                        list += (int)Math.floor(possibleMove.get(j).getNumericalLocation()/8) + "" 
-                                + (possibleMove.get(j).getNumericalLocation() % 8) + 
-                                itsBoard.getSquareAt(possibleMove.get(j).getNumericalLocation()).getOccupant().toString();
-                    }
+                list += (int)Math.floor(itsChessPieces.get(i).getNumericalLocation() / 8) + "" +
+                (itsChessPieces.get(i).getNumericalLocation()% 8);
+            // Check if the opponent piece is on the move location
+                if(itsBoard.getSquareAt(possibleMove.get(j).getNumericalLocation()).isOccupied()){
+                    list += (int)Math.floor(possibleMove.get(j).getNumericalLocation()/8) + "" 
+                            + (possibleMove.get(j).getNumericalLocation() % 8) + 
+                            itsBoard.getSquareAt(possibleMove.get(j).getNumericalLocation()).getOccupant().toString();
+                }
 
-                    else{
-                         list += (int)Math.floor(possibleMove.get(j).getNumericalLocation()/8) + "" 
-                                + (possibleMove.get(j).getNumericalLocation() % 8 ) + " ";
-                    }
+                else{
+                     list += (int)Math.floor(possibleMove.get(j).getNumericalLocation()/8) + "" 
+                            + (possibleMove.get(j).getNumericalLocation() % 8 ) + " ";
                 }
             }
         }
-       // System.out.println(list);
+        System.out.println(list);
+    }
+    public int getDestination(){
+        return finalDestination;
     }
 }
