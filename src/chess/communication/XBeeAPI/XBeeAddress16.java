@@ -19,7 +19,7 @@
 
 package chess.communication.XBeeAPI;
 
-import chess.communication.XBeeAPI.DoubleByte;
+import chess.communication.XBeeAPI.util.DoubleByte;
 
 /**
  * Represents a 16-bit XBee Address.

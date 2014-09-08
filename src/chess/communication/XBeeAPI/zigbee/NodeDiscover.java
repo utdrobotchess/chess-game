@@ -29,7 +29,7 @@ import chess.communication.XBeeAPI.AtCommandResponse;
 import chess.communication.XBeeAPI.XBeeAddress16;
 import chess.communication.XBeeAPI.XBeeAddress64;
 import chess.communication.XBeeAPI.util.ByteUtils;
-import chess.communication.XBeeAPI.IntArrayInputStream;
+import chess.communication.XBeeAPI.util.IntArrayInputStream;
 
 /**
  * Series 2 XBee.  Parses a Node Discover (ND) AT Command Response

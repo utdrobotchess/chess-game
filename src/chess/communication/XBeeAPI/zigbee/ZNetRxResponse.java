@@ -20,7 +20,7 @@
 package chess.communication.XBeeAPI.zigbee;
 
 import chess.communication.XBeeAPI.NoRequestResponse;
-import chess.communication.XBeeAPI.ByteUtils;
+import chess.communication.XBeeAPI.util.ByteUtils;
 
 /**
  * Series 2 XBee. This packet is received when

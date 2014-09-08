@@ -28,7 +28,7 @@ import chess.communication.XBeeAPI.NoRequestResponse;
 import chess.communication.XBeeAPI.XBeeParseException;
 import chess.communication.XBeeAPI.util.ByteUtils;
 import chess.communication.XBeeAPI.util.IIntArrayInputStream;
-import chess.communication.XBeeAPI.IntArrayInputStream;
+import chess.communication.XBeeAPI.util.IntArrayInputStream;
 
 /**
  * Series 2 XBee.  Represents an I/O Sample resposne sent from a remote radio.

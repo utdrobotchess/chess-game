@@ -404,7 +404,7 @@ public class XBee implements IXBee {
 			} else {
 				response = parser.getResponseQueue().take();
 			}
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			throw new XBeeException("Error while attempting to remove packet from queue", e);
 		}
 		
