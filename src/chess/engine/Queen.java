@@ -40,7 +40,7 @@ public class Queen extends ChessPiece{
         return ID;
     }
     public static void assignStringName(Queen q){
-        if(q.getTeam() == Team.GREEN){
+        if(q.getTeam() == Team.ORANGE){
             q.setImage(WQueenPic);
             q.setName("Q");
         }

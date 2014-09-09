@@ -42,7 +42,7 @@ public class Bishop extends ChessPiece{
         return ID;
     }
      public static void assignStringName(Bishop b){
-        if(b.getTeam() == Team.GREEN){
+        if(b.getTeam() == Team.ORANGE){
             b.setImage(WBishopPic);
             b.setName("B");
         }

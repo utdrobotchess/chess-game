@@ -69,7 +69,7 @@ public class Knight extends ChessPiece{
         return ID;
     }
     public static void assignStringName(Knight k){
-        if(k.getTeam() == Team.GREEN){
+        if(k.getTeam() == Team.ORANGE){
             k.setImage(WKnightPic);
             k.setName("K");
         }

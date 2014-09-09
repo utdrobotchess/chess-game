@@ -230,12 +230,12 @@ public class Chess extends JFrame {
 
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-       /*for(int i = 0; i < possibleSquare.size(); i++){
+       for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).isOccupied())
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
             else
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
-        }*/
+        }
         
         //Save selected square number
         index = next;
@@ -283,6 +283,7 @@ public class Chess extends JFrame {
              ChessPiece rook = chess.getBoard().getSquareAt(chess.getCastlingLocation()).getOccupant();
              int originRookLocation = chess.getBoard().getSquareAt(chess.getRookLocation()).getNumericalLocation();
              int destRookLocation = chess.getBoard().getSquareAt(chess.getCastlingLocation()).getNumericalLocation();
+             
              gameDataPanel.updateMove(convertChartoStringName(king.toString()) + " castles from square " + originKingLocation
                 + " move to square: " + destKingLocation + "\n" +
                      convertChartoStringName(rook.toString()) + " castles from square " + originRookLocation
@@ -348,7 +349,6 @@ public class Chess extends JFrame {
                     Rook rook = new Rook();
                     Rook.assignStringName(rook);
                     rook.setTeam(squareLocation.getOccupant().getTeam());
-                    chess.addPromotedPiece(rook);
                     rook.setLocation(squareLocation);
                     square[next].setIcon(rook.getImage());
                 }
@@ -356,7 +356,6 @@ public class Chess extends JFrame {
                     Knight knight = new Knight();
                     Knight.assignStringName(knight);
                     knight.setTeam(squareLocation.getOccupant().getTeam());
-                    chess.addPromotedPiece(knight);
                     knight.setLocation(squareLocation);
                     square[next].setIcon(knight.getImage());
                 }
@@ -364,7 +363,6 @@ public class Chess extends JFrame {
                     Bishop bishop = new Bishop();
                     Bishop.assignStringName(bishop);
                     bishop.setTeam(squareLocation.getOccupant().getTeam());
-                    chess.addPromotedPiece(bishop);
                     bishop.setLocation(squareLocation);
                     square[next].setIcon(bishop.getImage());
                 }
@@ -372,17 +370,10 @@ public class Chess extends JFrame {
                     Queen queen = new Queen();
                     Queen.assignStringName(queen);
                     queen.setTeam(squareLocation.getOccupant().getTeam());
-                    chess.addPromotedPiece(queen);
                     queen.setLocation(squareLocation);
                     square[next].setIcon(queen.getImage());
                 }
-
-                chess.getState().setPawnPromotion(false);
-                chess.getState().toggleActiveTeam();
-                chess.updatePossibleMoveLocations();
-                chess.updateKingStatus();
-                chess.getState().toggleActiveTeam();
-
+                chess.updateBecauseOfPromotion();
             }
             if(chess.getState().isCheckmate()){
                 Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();

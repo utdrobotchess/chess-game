@@ -41,7 +41,7 @@ public class Rook extends ChessPiece{
         return ID;
     }
      public static void assignStringName(Rook r){
-        if(r.getTeam() == Team.GREEN){
+        if(r.getTeam() == Team.ORANGE){
             r.setImage(WRookPic);
             r.setName("R");
         }

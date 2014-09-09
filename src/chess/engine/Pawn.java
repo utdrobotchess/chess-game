@@ -151,7 +151,7 @@ public class Pawn extends ChessPiece{
         return ID;
     }
     public static void assignStringName(Pawn p){
-        if(p.getTeam() == Team.GREEN){
+        if(p.getTeam() == Team.ORANGE){
             p.setImage(WPawnPic);
             p.setName("P");
         }

@@ -33,20 +33,20 @@ public class King extends ChessPiece{
         for (int i = 0; i < NUM_NEIGHBOR_DIRECTIONS; i++) {
             addPossibleMoveLocationsInDirection(possibleMoveLocations, i, 1);
         }
-        Square firstSquare = getLocation();
-        ChessPiece king = firstSquare.getOccupant();
+        Square rightFirstSquare = getLocation();
+        ChessPiece king = rightFirstSquare.getOccupant();
         
         if(king.hasNotMoved()){
             
             // Check if the king can castle right
-            firstSquare = firstSquare.getNeighborInDirection(2);
-            Square secondSquare = firstSquare.getNeighborInDirection(2);
-            Square rookSquare = secondSquare.getNeighborInDirection(2);
-            if(!firstSquare.isOccupied() && !secondSquare.isOccupied()
+            rightFirstSquare = rightFirstSquare.getNeighborInDirection(2);
+            Square rightSecondSquare = rightFirstSquare.getNeighborInDirection(2);
+            Square rookSquare = rightSecondSquare.getNeighborInDirection(2);
+            if(!rightFirstSquare.isOccupied() && !rightSecondSquare.isOccupied()
                     && rookSquare.isOccupied() &&
                     rookSquare.getOccupant() instanceof Rook &&
                     rookSquare.getOccupant().hasNotMoved()){
-                possibleMoveLocations.add(secondSquare);
+                possibleMoveLocations.add(rightSecondSquare);
             }
 
             Square LeftFirstSquare = getLocation();
@@ -68,7 +68,7 @@ public class King extends ChessPiece{
         return possibleMoveLocations;
     }
     public static void assignStringName(King k){
-        if(k.getTeam() == Team.GREEN){
+        if(k.getTeam() == Team.ORANGE){
             k.setImage(WKingPic);
             k.setName("A");
         }

@@ -29,7 +29,6 @@ public class GameState {
         state.setCheckmate(false);
         state.setDraw(false);
         state.setSelectedPieceIndex(-1);
-        state.setPawnPromotionIndex(-1);
         state.setPossibleMoveIndexes(new ArrayList<Square>());
         state.setMovePairs(new ArrayList<Integer>());
         state.setEnPassantPairs(new ArrayList<Integer>());
@@ -95,10 +94,6 @@ public class GameState {
 
     protected void setSelectedPieceIndex(int index) {
         itsSelectedPieceIndex = index;
-    }
-
-    protected void setPawnPromotionIndex(int index) {
-        itsPawnPromotionIndex = index;
     }
 
     protected void setPossibleMoveIndexes(ArrayList<Square> possibleMoveLocations) {
