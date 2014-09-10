@@ -1,18 +1,18 @@
-package RobotChess_Communication;
+package chess.communication;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.rapplogic.xbee.api.ApiId;
-import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.api.PacketListener;
-import com.rapplogic.xbee.api.XBee;
-import com.rapplogic.xbee.api.XBeeAddress64;
-import com.rapplogic.xbee.api.XBeeException;
-import com.rapplogic.xbee.api.XBeeResponse;
-import com.rapplogic.xbee.api.wpan.NodeDiscover;
-import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
+import XBeeAPI.ApiId;
+import XBeeApI.AtCommand;
+import XBeeApI.AtCommandResponse;
+import XBeeApI.PacketListener;
+import XBeeApI.XBee;
+import XBeeApI.XBeeAddress64;
+import XBeeApI.XBeeException;
+import XBeeApI.XBeeResponse;
+import XBeeApI.wpan.NodeDiscover;
+import XBeeApI.zigbee.ZNetRxResponse;
+import XBeeApI.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.util.ByteUtils;
 
 public class CommunicatorAPI 

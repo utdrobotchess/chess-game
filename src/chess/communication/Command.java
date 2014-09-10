@@ -1,10 +1,10 @@
-package RobotChess_Communication;
+package chess.communication;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import com.rapplogic.xbee.api.XBeeException;
-import com.rapplogic.xbee.util.ByteUtils;
+import XBeeApI.XBeeException;
+import XBeeApI.util.ByteUtils;
 
 public class Command 
 {

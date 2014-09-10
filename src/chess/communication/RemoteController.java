@@ -1,4 +1,4 @@
-package RobotChess_Communication;
+package chess.communication;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
