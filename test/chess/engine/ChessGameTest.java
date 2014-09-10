@@ -1,4 +1,3 @@
-
 /*
  *
  * @author Ryan J. Marcotte
@@ -29,6 +28,12 @@ public class ChessGameTest {
         state = GameState.generateInitialState();
     }
 
+    /*
+     * test to ensure that chess game can handle any input from user, including
+     * clicking on an empty square or an enemy square initially, clicking on a
+     * square that is not a possible move location after a piece is selected, or
+     * selecting a different piece
+     */
     @Test
     public void testBadUserSelection() {
         logger.log(Level.WARNING, "Begin testBadUserSelection() - ChessGameTest");
@@ -57,7 +62,7 @@ public class ChessGameTest {
                                   { }, { }, { }, {30, -1, 58, 30}};
 
         for (int i = 0; i < selectionLocations.length; i++) {
-            state = game.updateStateFromUserSelection(selectionLocations[i]);
+            state = game.selectPieceAtLocation(selectionLocations[i]);
 
             assertEquals("Selection index: " + i + "\nActive teams ", activeTeams[i],
                          state.getActiveTeam());
@@ -88,6 +93,10 @@ public class ChessGameTest {
         logger.log(Level.WARNING, "End testBadUserSelection() - ChessGameTest");
     }
 
+    /*
+     * test to ensure that chess game can identify when check occurs, including
+     * the various ways of removing a team from check
+     */
     @Test
     public void testIdentifyCheck() {
         logger.log(Level.WARNING, "Begin testIdentifyCheck() - ChessGameTest");
@@ -105,10 +114,89 @@ public class ChessGameTest {
                                 true, false};
 
         for (int i = 0; i < userInputs.length; i++) {
-            state = game.updateStateFromUserSelection(userInputs[i]);
+            state = game.selectPieceAtLocation(userInputs[i]);
             assertEquals("User input: " + i + "\nCheck state ", checkState[i], state.isCheck());
         }
 
         logger.log(Level.WARNING, "End testIdentifyCheck() - ChessGameTest");
+    }
+
+    /*
+     * test to ensure that moves that would result in check are removed from the
+     * list of possible moves that are displayed to the user
+     */
+    public void testRemoveMovesResultingInCheck() {
+
+    }
+
+    /*
+     * test to ensure that checkmate is identified correctly and the game state is
+     * updated appropriately
+     */
+    public void testCheckMate() {
+
+    }
+
+    /*
+     * test to ensure that castling can occur if and only if the king and the rook
+     * doing the castling have not moved before
+     */
+    public void testCastlingPriorMoves() {
+
+    }
+
+    /*
+     * test to ensure that castling can occur if and only if there are no obstructions
+     * between the king and the rook
+     */
+    public void testCastlingObstructions() {
+
+    }
+
+    /*
+     * test to ensure that castling can occur if and only if the castling team is not
+     * already in check
+     */
+    public void testCastlingExistingCheck() {
+
+    }
+
+    /*
+     * test to ensure that castling can occur if and only if the castling king does
+     * not have to pass through a square that would put it in check
+     */
+    public void testCastlingPassThrough() {
+
+    }
+
+    /*
+     * test to ensure that castling can occur if and only if the end result of the castling
+     * move is not check
+     */
+    public void testCastlingResultCheck() {
+
+    }
+
+    /*
+     * test to ensure that pawn promotion is correctly identified and that the game state
+     * is appropriately updated
+     */
+    public void testpawnPromotion() {
+
+    }
+
+    /*
+     * test to ensure that capturing can occur via en passant
+     */
+    public void testEnPassant() {
+
+    }
+
+    /*
+     * test to ensure that stalemate can be detected and that game state is
+     * updated appropriately
+     */
+    public void testStalemate() {
+
     }
 }
