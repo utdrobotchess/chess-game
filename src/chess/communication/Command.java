@@ -3,8 +3,8 @@ package chess.communication;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import XBeeApI.XBeeException;
-import XBeeApI.util.ByteUtils;
+import chess.communication.XBeeApI.XBeeException;
+import chess.communication.XBeeApI.util.ByteUtils;
 
 public class Command 
 {
