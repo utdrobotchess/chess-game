@@ -1,23 +1,23 @@
 /**
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rapplogic.xbee.api;
+package chess.communication.XBeeAPI;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -40,24 +40,24 @@ import chess.communication.XBeeAPI.util.ByteUtils;
  *
  */
 public class InputStreamThread implements Runnable {
-	
+
 	private final static Logger log = Logger.getLogger(InputStreamThread.class);
-	
+
 	private Thread thread;
 	private ExecutorService listenerPool;
 	private volatile boolean done = false;
 	private final XBeeConnection connection;
 	private XBeeConfiguration conf;
-	
+
 	public XBeeConnection getXBeeConnection() {
 		return connection;
 	}
 
 	private final BlockingQueue<XBeeResponse> responseQueue = new LinkedBlockingQueue<XBeeResponse>();
-	
+
 	// TODO use weak references
 	private final List<PacketListener> packetListenerList = new LinkedList<PacketListener>();
-	
+
 	public List<PacketListener> getPacketListenerList() {
 		return packetListenerList;
 	}
@@ -69,37 +69,37 @@ public class InputStreamThread implements Runnable {
 	public InputStreamThread(final XBeeConnection connection, XBeeConfiguration conf) {
 		this.connection = connection;
 		this.conf = conf;
-		
+
 //		executor = Executors.newFixedThreadPool(1);
 //		executor.submit(this);
 
         // Create an executor to deliver incoming packets to listeners. We'll use a single
         // thread with an unbounded queue.
 		listenerPool = Executors.newSingleThreadExecutor();
-		
+
 		thread = new Thread(this);
 		thread.setName("InputStreamThread");
 		thread.start();
-		
+
 		log.debug("starting packet parser thread");
 	}
-	
+
 	private void addResponse(final XBeeResponse response) throws InterruptedException {
-		
+
 		// trim the queue
 		while (responseQueue.size() >= (conf.getMaxQueueSize() - 1)) {
 			log.debug("Response queue has reached the maximum size of " + conf.getMaxQueueSize() + " packets.  Trimming a packet from head of queue to make room");
 			responseQueue.poll();
 		}
-		
+
 		if (conf.getResponseQueueFilter() != null) {
 			if (conf.getResponseQueueFilter().accept(response)) {
 				responseQueue.put(response);
 			}
 		} else {
-			responseQueue.put(response);	
+			responseQueue.put(response);
 		}
-		
+
 		listenerPool.submit(new Runnable() {
 			public void run() {
 				// must synchronize to avoid  java.util.ConcurrentModificationException at java.util.AbstractList$Itr.checkForComodification(Unknown Source)
@@ -108,23 +108,23 @@ public class InputStreamThread implements Runnable {
 					for (PacketListener pl : packetListenerList) {
 						try {
 							if (pl != null) {
-								pl.processResponse(response);	
+								pl.processResponse(response);
 							} else {
 								log.warn("PacketListener is null, size is " + packetListenerList.size());
 							}
 						} catch (Throwable th) {
 							log.warn("Exception in packet listener", th);
 						}
-					}			
-				}				
+					}
+				}
 			}
 		});
 	}
-	
+
 	public void run() {
 
 		int val = -1;
-		
+
 		XBeeResponse response = null;
 		PacketParser packetStream = null;
 
@@ -135,16 +135,16 @@ public class InputStreamThread implements Runnable {
 						log.debug("About to read from input stream");
 						val = connection.getInputStream().read();
 						log.debug("Read " + ByteUtils.formatByte(val) + " from input stream");
-						
+
 						if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
 							packetStream = new PacketParser(connection.getInputStream());
 							response = packetStream.parsePacket();
-							
+
 							if (log.isInfoEnabled()) {
-								log.info("Received packet from XBee: " + response);	
-								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");	
+								log.info("Received packet from XBee: " + response);
+								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");
 							}
-							
+
 							// success
 							this.addResponse(response);
 						} else {
@@ -152,23 +152,23 @@ public class InputStreamThread implements Runnable {
 						}
 					} else {
 						log.debug("No data available.. waiting for new data event");
-						
+
 						// we will wait here for RXTX to notify us of new data
 						synchronized (this.connection) {
 							// There's a chance that we got notified after the first in.available check
 							if (connection.getInputStream().available() > 0) {
 								continue;
 							}
-							
+
 							// wait until new data arrives
 							this.connection.wait();
-						}	
-					}				
+						}
+					}
 				} catch (Exception e) {
 					if (e instanceof InterruptedException) throw ((InterruptedException)e);
-					
+
 					log.error("Error while parsing packet:", e);
-					
+
 					if (e instanceof IOException) {
 						// this is thrown by RXTX if the serial device unplugged while we are reading data; if we are waiting then it will waiting forever
 						log.error("Serial device IOException.. exiting");
@@ -177,13 +177,13 @@ public class InputStreamThread implements Runnable {
 				}
 			}
 		} catch(InterruptedException ie) {
-			// We've been told to stop -- the user called the close() method			
+			// We've been told to stop -- the user called the close() method
 			log.info("Packet parser thread was interrupted.  This occurs when close() is called");
 		} finally {
 			if (connection != null) {
 				connection.close();
 			}
-			
+
 			if (listenerPool != null) {
 				try {
 					listenerPool.shutdownNow();
@@ -192,18 +192,18 @@ public class InputStreamThread implements Runnable {
 				}
 			}
 		}
-		
+
 		log.info("InputStreamThread is exiting");
 	}
 
 	public void setDone(boolean done) {
 		this.done = done;
 	}
-	
+
 	public void interrupt() {
 		if (thread != null) {
 			try {
-				thread.interrupt();	
+				thread.interrupt();
 			} catch (Exception e) {
 				log.warn("Error interrupting parser thread", e);
 			}
