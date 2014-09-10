@@ -1,4 +1,4 @@
-package chess.communication;
+package RobotChess_Communication;
 
 import gnu.io.*;
 

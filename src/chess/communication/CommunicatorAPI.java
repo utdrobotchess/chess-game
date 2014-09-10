@@ -1,19 +1,19 @@
-package chess.communication;
+package RobotChess_Communication;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import chess.communication.XBeeAPI.ApiId;
-import chess.communication.XBeeAPI.AtCommand;
-import chess.communication.XBeeAPI.AtCommandResponse;
-import chess.communication.XBeeAPI.PacketListener;
-import chess.communication.XBeeAPI.XBee;
-import chess.communication.XBeeAPI.XBeeAddress64;
-import chess.communication.XBeeAPI.XBeeException;
-import chess.communication.XBeeAPI.XBeeResponse;
-import chess.communication.XBeeAPI.wpan.NodeDiscover;
-import chess.communication.XBeeAPI.zigbee.ZNetRxResponse;
-import chess.communication.XBeeAPI.zigbee.ZNetTxRequest;
-import chess.communication.XBeeAPI.util.ByteUtils;
+import com.rapplogic.xbee.api.ApiId;
+import com.rapplogic.xbee.api.AtCommand;
+import com.rapplogic.xbee.api.AtCommandResponse;
+import com.rapplogic.xbee.api.PacketListener;
+import com.rapplogic.xbee.api.XBee;
+import com.rapplogic.xbee.api.XBeeAddress64;
+import com.rapplogic.xbee.api.XBeeException;
+import com.rapplogic.xbee.api.XBeeResponse;
+import com.rapplogic.xbee.api.wpan.NodeDiscover;
+import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
+import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
+import com.rapplogic.xbee.util.ByteUtils;
 
 public class CommunicatorAPI 
 {
@@ -27,25 +27,31 @@ public class CommunicatorAPI
 			CommunicatorAPI communicator =  new CommunicatorAPI();
 			communicator.InitializeCommunication();
 			
-			//Use the following method to test finding Nodes
-				int[][] currentAddress = communicator.FindNodeAddresses(); 
-				System.out.println();
-				for(int index = 0; index < rowIndex; index++)
-				{
-					System.out.println("index"+index+":	"+ByteUtils.toBase16(currentAddress[index]));
-				}
-				System.out.println();
-			
 			//Use the following to test sending messages.
-				//System.out.println(ByteUtils.toBase16(nodeAddresses[2]));
-				int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
-				communicator.SendMessage(temp,nodeAddresses[1],0);
-				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
-				communicator.SendMessage(execute,nodeAddresses[1],0);
-				
-			//Use the following method to test whether incoming messages are being read
-				communicator.ReadMessage();
+//				int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
+//				communicator.SendMessage(temp,nodeAddresses[1],0);
+//				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
+//				communicator.SendMessage(execute,nodeAddresses[1],0);
 			
+			//Use the following method to test whether incoming messages are being read
+//				communicator.ReadMessage();
+//				communicator.ReadMessage();
+				
+			
+			//Use the following method test for scanning
+//				nodeAddresses = communicator.FindAllNodes();
+//				for(int index = 0; index < 32; index++)
+//				{
+//					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
+//				}
+				
+			//Use the following test if the previous test works
+				communicator.GetBotAddresses(communicator.FindAllNodes());
+				for(int index = 0; index < 32; index++)
+				{
+					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
+				}
+				
 			communicator.EndCommunication();
 		}
 
@@ -56,15 +62,17 @@ public class CommunicatorAPI
 		
 		private static ZNetRxResponse rx;
 		
-		private static String COM = "COM17";
+		private static String COM = "COM31";
 		
 		private static int BAUD_RATE = 57600;
 		
-		private static int[][] nodeAddresses = new int[32][8];
+		public static int[][] nodeAddresses = new int[32][8];
 		
 		private static int rowIndex = 0;
 		
-		public int [] input;
+		private static boolean doneReading;
+		
+		public  static int [] input;
 		
 	//----------------------------------------------------------------------------------------------------------------------------------------------------	
 		/*	Methods		*/
@@ -93,19 +101,16 @@ public class CommunicatorAPI
 				{
 					rx = (ZNetRxResponse) response;
 					input = rx.getData();
+					doneReading = true;
+					//PrintResponseDetails();	//This is for testing purposes
 					
-					PrintResponseDetails();	//This is for testing purposes
-				
-					PrintResponse(input);
 					
-					/*[Optional] Prints the signal strength of the last hop.
-								 If routers are in your network, this signal
-								 will be of the last hop.
-					*/	
+					/**[Optional] Prints the signal strength of the last hop.
+					  *			 If routers are in your network, this signal
+					  *			 will be of the last hop.
+					 **/	
 						//GetRSSI();		
 				}
-				else
-					System.out.println("\n received unexpected packet "+response.toString()+"\n");
 			} 
 			catch (XBeeException e) 
 			{
@@ -133,66 +138,17 @@ public class CommunicatorAPI
 			}
 		}
 		
-		private static void PrintResponse(int[] message)
-		{
-			char[] output = new char[8];
-			for(int index = 0; index < message.length; index++)
-				output[index] = (char)message[index];
-			System.out.println("\n RFData: "+ new String(output)+"\n");
-		}
-		
-		private static void PrintResponseDetails()
-		{
-			System.out.println("\n Received RX packet, under option: " + rx.getOption());
-			System.out.println(" Sender 64-bit address is: " + ByteUtils.toBase16(rx.getRemoteAddress64().getAddress()));
-			System.out.println(" Remote 16-bit address is: " + ByteUtils.toBase16(rx.getRemoteAddress16().getAddress()));
-			System.out.println(" RFData in hexadecimal is: " + ByteUtils.toBase16(rx.getData()));
-		}
-		
-		@SuppressWarnings("unused")
-		private static void GetRSSI()
-		{
-			
-			try 
-			{
-				AtCommand at = new AtCommand("DB");
-				xbee.sendAsynchronous(at);
-			} 
-			catch (XBeeException e) 
-			{
-				System.out.println("\n[CommunicatorAPI-GetRSSI] Problem sending message.\n");
-				e.printStackTrace();
-				System.exit(0);
-			}
-			try 
-			{
-				XBeeResponse atResponse = xbee.getResponse();
-				if (atResponse.getApiId() == ApiId.AT_RESPONSE)
-				{
-					// Note: RSSI is a negative db value.
-					System.out.println("\n RSSI of last response is " + -((AtCommandResponse)atResponse).getValue()[0]+"\n");
-				}
-				else
-					System.out.println("expected RSSI, but received " + atResponse.toString()+"\n");
-			} 
-			catch (XBeeException e) 
-			{
-				System.out.println("\n[CommunicatorAPI-GetRSSI] Problem accessing recieved data.\n");
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-		
 		public static void SetUpCommunication(String com, int baud_rate)
 		{
 			COM = com;
 			BAUD_RATE = baud_rate;
 		}
 		
-		public int[][] FindNodeAddresses() throws XBeeException,InterruptedException
+		public int[][] FindAllNodes() throws XBeeException,InterruptedException
 		{
+			int[][] xbeeAddresses = new int [32][8];
 			xbee.sendAsynchronous(new AtCommand("NT"));
-			AtCommandResponse nodeTimeOut =(AtCommandResponse)xbee.getResponse();
+			AtCommandResponse nodeTimeOut = (AtCommandResponse)xbee.getResponse();
 			long nodeDiscoveryTimeOut = ByteUtils.convertMultiByteToInt(nodeTimeOut.getValue())*100;
 			xbee.addPacketListener(
 									new PacketListener()
@@ -202,7 +158,7 @@ public class CommunicatorAPI
 											if(response.getApiId() == ApiId.AT_RESPONSE)
 											{
 												NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-												nodeAddresses[rowIndex] = nd.getNodeAddress64().getAddress();
+												xbeeAddresses[rowIndex] = nd.getNodeAddress64().getAddress();
 												rowIndex++;
 											}
 										}
@@ -210,6 +166,25 @@ public class CommunicatorAPI
 								  );
 			xbee.sendAsynchronous(new AtCommand("ND"));
 			Thread.sleep(nodeDiscoveryTimeOut);
+			
+			return xbeeAddresses;
+		}
+		
+		public int[][] GetBotAddresses(int[][] addresses)
+		{
+			int index;
+			for(index = 1; index < rowIndex; index++)
+			{
+				int[] idRequest = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
+				SendMessage(idRequest,addresses[index],0);
+				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
+				SendMessage(execute,addresses[index],0);
+				doneReading = false;
+				while(!doneReading)
+					ReadMessage();
+				
+				nodeAddresses[(input[0]-1)] = addresses[index];
+			}
 			
 			return nodeAddresses;
 		}

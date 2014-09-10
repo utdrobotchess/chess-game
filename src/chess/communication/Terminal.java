@@ -1,8 +1,8 @@
-package chess.communication;
+package RobotChess_Communication;
 
 import java.util.Scanner;
 
-import chess.communication.XBeeAPI.XBeeException;
+import com.rapplogic.xbee.api.XBeeException;
 
 public class Terminal 
 {

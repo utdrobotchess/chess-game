@@ -1,10 +1,10 @@
-package chess.communication;
+package RobotChess_Communication;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import chess.communication.XBeeAPI.XBeeException;
-import chess.communication.XBeeAPI.util.ByteUtils;
+import com.rapplogic.xbee.api.XBeeException;
+import com.rapplogic.xbee.util.ByteUtils;
 
 public class Command 
 {
@@ -211,7 +211,7 @@ public class Command
 			xbee.InitializeCommunication();
 			int[] getBotId = {};
 			int[]execute = {0xFF,0x00,0x00,0x00,0x00,0x00};
-			int[][] tempDestinationAddresses = xbee.FindNodeAddresses();
+			int[][] tempDestinationAddresses = xbee.nodeAddresses;
 			for(int index = 0; index < 2;index++)
 			{
 				System.out.println(ByteUtils.toBase16(tempDestinationAddresses[index]));
