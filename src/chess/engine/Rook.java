@@ -19,6 +19,7 @@ public class Rook extends ChessPiece{
         Rook r = new Rook();
         r.setTeamFromInitialLocation(location);
         r.setLocation(location);
+        r.setInitialNumericalLocation();
         assignStringName(r);
         return r;
     }

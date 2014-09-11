@@ -18,6 +18,7 @@ public class Knight extends ChessPiece{
         Knight k = new Knight();
         k.setTeamFromInitialLocation(location);
         k.setLocation(location);
+        k.setInitialNumericalLocation();
         assignStringName(k);
         return k;
     }

@@ -19,6 +19,7 @@ public class Queen extends ChessPiece{
         Queen q = new Queen();
         q.setTeamFromInitialLocation(location);
         q.setLocation(location);
+        q.setInitialNumericalLocation();
         assignStringName(q);
         return q;
     }

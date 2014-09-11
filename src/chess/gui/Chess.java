@@ -60,6 +60,7 @@ public class Chess extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameStartPanel.setVisible(false);
+                gameDataPanel.setVisible(true);
                 rightSidePanel.add(gameDataPanel);
                 clickable = true; // the squares are now clickable
                 f.pack();
@@ -259,11 +260,11 @@ public class Chess extends JFrame {
 
         square[index].setIcon(selectedPiece);
         chess.undoMove(next, index);
-        System.out.println("Our king is or will be in trouble");
     }
     
     public void executeMove(int next){
-         // Check if castling fails or passes
+        
+         // Check if castling is valid
         if(chess.hasCastled()){
 
             // Rook's new location
@@ -345,34 +346,36 @@ public class Chess extends JFrame {
                         new Object[]{"Rook", "Knight", "Bishop", "Queen"}, "Rook");
 
                 Square squareLocation = chess.getBoard().getSquareAt(next);
+                ChessPiece oldPawn = squareLocation.getOccupant();
                 if(promo == 0){
                     Rook rook = new Rook();
-                    Rook.assignStringName(rook);
                     rook.setTeam(squareLocation.getOccupant().getTeam());
+                    Rook.assignStringName(rook);
                     rook.setLocation(squareLocation);
                     square[next].setIcon(rook.getImage());
                 }
                 else if(promo == 1){
                     Knight knight = new Knight();
-                    Knight.assignStringName(knight);
                     knight.setTeam(squareLocation.getOccupant().getTeam());
+                    Knight.assignStringName(knight);
                     knight.setLocation(squareLocation);
                     square[next].setIcon(knight.getImage());
                 }
                 else if(promo == 2){
                     Bishop bishop = new Bishop();
-                    Bishop.assignStringName(bishop);
                     bishop.setTeam(squareLocation.getOccupant().getTeam());
+                    Bishop.assignStringName(bishop);
                     bishop.setLocation(squareLocation);
                     square[next].setIcon(bishop.getImage());
                 }
                 else if(promo == 3){
                     Queen queen = new Queen();
-                    Queen.assignStringName(queen);
                     queen.setTeam(squareLocation.getOccupant().getTeam());
+                    Queen.assignStringName(queen);
                     queen.setLocation(squareLocation);
                     square[next].setIcon(queen.getImage());
                 }
+                chess.removeChessPiece(oldPawn);
                 chess.updateBecauseOfPromotion();
             }
             if(chess.getState().isCheckmate()){

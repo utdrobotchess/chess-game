@@ -18,6 +18,7 @@ public class King extends ChessPiece{
         King k = new King();
         k.setTeamFromInitialLocation(location);
         k.setLocation(location);
+        k.setInitialNumericalLocation();
         assignStringName(k);
         return k;
     }
@@ -49,8 +50,8 @@ public class King extends ChessPiece{
                 possibleMoveLocations.add(rightSecondSquare);
             }
 
+            // ***********SPECIAL MOVE: castling ****************
             Square LeftFirstSquare = getLocation();
-            
             // Check if the king can castle left
             LeftFirstSquare = LeftFirstSquare.getNeighborInDirection(6);
             Square LeftSecondSquare = LeftFirstSquare.getNeighborInDirection(6);

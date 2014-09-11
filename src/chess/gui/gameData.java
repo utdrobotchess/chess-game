@@ -27,14 +27,14 @@ public class gameData extends JPanel{
     JTextArea moveListText = new JTextArea(null, 6, 40);
     String record = "";
     int numberOfWhiteCaptured = 0;
-    JPanel whiteCapturedPanel = new JPanel(new GridLayout(2,8));
-    JLabel whiteCapturedLabel = new JLabel("Captured White Pieces:");
-    JButton whiteCapturedButtons[] = new JButton[16];
-	  
-    int numberOfBlackCaptured = 0;
     JPanel blackCapturedPanel = new JPanel(new GridLayout(2,8));
     JLabel blackCapturedLabel = new JLabel("Captured Black Pieces:");
     JButton blackCapturedButtons[] = new JButton[16];
+	  
+    int numberOfBlackCaptured = 0;
+    JPanel whiteCapturedPanel = new JPanel(new GridLayout(2,8));
+    JLabel whiteCapturedLabel = new JLabel("Captured White Pieces:");
+    JButton whiteCapturedButtons[] = new JButton[16];
 	  
     JPanel promotionPanel= new JPanel(new GridLayout(1,4));
     JLabel pawnPromotionLabel = new JLabel("Pawn Promotion: If your pawn is promoted, Click a piece below");
@@ -67,31 +67,31 @@ public class gameData extends JPanel{
         c.gridy = 40;
         for(int x=0;x<16;x++){
             JLabel addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater = new JLabel();
-            whiteCapturedButtons[x]=new JButton();
-            whiteCapturedPanel.add(whiteCapturedButtons[x]);
-            whiteCapturedButtons[x].setBackground(Color.BLUE);
-            whiteCapturedButtons[x].add(addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater);
+            blackCapturedButtons[x]=new JButton();
+            blackCapturedPanel.add(blackCapturedButtons[x]);
+            blackCapturedButtons[x].setBackground(Color.BLUE);
+            blackCapturedButtons[x].add(addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater);
         } 
-        p.add(whiteCapturedLabel, c);
+        p.add(blackCapturedLabel, c);
         c.gridy = 50;
         c.ipadx = 50;
         c.ipady = 75;
-        p.add(whiteCapturedPanel, c);
+        p.add(blackCapturedPanel, c);
         c.gridy = 60;
         c.ipadx = 0;
         c.ipady = 0;
-        p.add(blackCapturedLabel, c);
+        p.add(whiteCapturedLabel, c);
         c.gridy = 70;
         c.ipadx = 50;
         c.ipady = 75;
         for(int x=0;x<16;x++){
             JLabel addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater = new JLabel();
-            blackCapturedButtons[x]=new JButton();
-            blackCapturedPanel.add(blackCapturedButtons[x]);
-	    blackCapturedButtons[x].setBackground(Color.red);
-	    blackCapturedButtons[x].add(addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater);
+            whiteCapturedButtons[x]=new JButton();
+            whiteCapturedPanel.add(whiteCapturedButtons[x]);
+	    whiteCapturedButtons[x].setBackground(Color.red);
+	    whiteCapturedButtons[x].add(addThisPlaceHolderJLabelToPreventJButtonFromResizingWhenImagesAreAddedToItLater);
         }
-        p.add(blackCapturedPanel, c);
+        p.add(whiteCapturedPanel, c);
              
        /* c.gridy = 80;
         c.ipadx = 0;
@@ -121,15 +121,15 @@ public class gameData extends JPanel{
     }
     public void updateCapturedPiece(ImageIcon image, int team){
         if(team == 0){
-            whiteCapturedButtons[numberOfWhiteCaptured++].setIcon(image);
+            blackCapturedButtons[numberOfWhiteCaptured++].setIcon(image);
         }
         else
-            blackCapturedButtons[numberOfBlackCaptured++].setIcon(image);
+            whiteCapturedButtons[numberOfBlackCaptured++].setIcon(image);
     }
     public void clear(){
-        for(int i = 0; i < whiteCapturedButtons.length; i++){
-            whiteCapturedButtons[i].setIcon(null);
+        for(int i = 0; i < blackCapturedButtons.length; i++){
             blackCapturedButtons[i].setIcon(null);
+            whiteCapturedButtons[i].setIcon(null);
         }
         messageText.setText(null);
         moveListText.setText(null);

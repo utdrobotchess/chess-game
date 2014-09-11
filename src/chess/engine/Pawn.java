@@ -78,7 +78,7 @@ public class Pawn extends ChessPiece{
             }
         }
         
-        //impasse
+        // ****************SPECIAL MOVE: en passant ********************
         Square testSquare3 = getLocation();
         occupant = testSquare3.getOccupant();
         

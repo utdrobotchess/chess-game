@@ -19,6 +19,7 @@ public class Bishop extends ChessPiece{
         Bishop b = new Bishop();
         b.setTeamFromInitialLocation(location);
         b.setLocation(location);
+        b.setInitialNumericalLocation();
         assignStringName(b);
         return b;
     }
