@@ -546,25 +546,30 @@ public class ChessGame {
     // If the king is the only piece remaining in the team and is stuck,
     // it is a stalemate
     private void testForStalemate(){
+        boolean noMove = true;;
         // White Team
         if(itsState.getActiveTeam() == Team.GREEN){
             for(int i = 0; i < whitePieces.size(); i++){
                 // Check if any pieces beside the king can move
                 if(!(whitePieces.get(i) instanceof King) &&
-                        !whitePieces.get(i).getPossibleMoveLocations().isEmpty())
+                        !whitePieces.get(i).getPossibleMoveLocations().isEmpty()){
+                    noMove = false;
                     break;
+                }
             }
-            if(isEnemyKingStuck() && !itsState.isCheck())
+            if(noMove && isEnemyKingStuck() && !itsState.isCheck())
                 itsState.setDraw(true);
         }
         else{
             for(int i = 0; i < blackPieces.size(); i++){
             // Check if any pieces beside the king can move
                 if(!(blackPieces.get(i) instanceof King) &&
-                        !blackPieces.get(i).getPossibleMoveLocations().isEmpty())
+                        !blackPieces.get(i).getPossibleMoveLocations().isEmpty()){
+                    noMove = false;
                     break;
+                }
             }
-            if(isEnemyKingStuck() && !itsState.isCheck())
+            if(noMove && isEnemyKingStuck() && !itsState.isCheck())
                 itsState.setDraw(true);
         }
     }
