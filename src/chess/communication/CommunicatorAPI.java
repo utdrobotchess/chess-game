@@ -3,17 +3,17 @@ package chess.communication;
 import org.apache.log4j.PropertyConfigurator;
 
 import chess.communication.XBeeAPI.ApiId;
-import chess.communication.XBeeApI.AtCommand;
-import chess.communication.XBeeApI.AtCommandResponse;
-import chess.communication.XBeeApI.PacketListener;
-import chess.communication.XBeeApI.XBee;
-import chess.communication.XBeeApI.XBeeAddress64;
-import chess.communication.XBeeApI.XBeeException;
-import chess.communication.XBeeApI.XBeeResponse;
-import chess.communication.XBeeApI.wpan.NodeDiscover;
-import chess.communication.XBeeApI.zigbee.ZNetRxResponse;
-import chess.communication.XBeeApI.zigbee.ZNetTxRequest;
-import chess.communication.XBeeApI.util.ByteUtils;
+import chess.communication.XBeeAPI.AtCommand;
+import chess.communication.XBeeAPI.AtCommandResponse;
+import chess.communication.XBeeAPI.PacketListener;
+import chess.communication.XBeeAPI.XBee;
+import chess.communication.XBeeAPI.XBeeAddress64;
+import chess.communication.XBeeAPI.XBeeException;
+import chess.communication.XBeeAPI.XBeeResponse;
+import chess.communication.XBeeAPI.wpan.NodeDiscover;
+import chess.communication.XBeeAPI.zigbee.ZNetRxResponse;
+import chess.communication.XBeeAPI.zigbee.ZNetTxRequest;
+import chess.communication.XBeeAPI.util.ByteUtils;
 
 public class CommunicatorAPI 
 {
@@ -39,14 +39,15 @@ public class CommunicatorAPI
 				
 			
 			//Use the following method test for scanning
-//				nodeAddresses = communicator.FindAllNodes();
-//				for(int index = 0; index < 32; index++)
-//				{
-//					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
-//				}
+				/*nodeAddresses = communicator.FindAllNodes();
+				for(int index = 0; index < 32; index++)
+				{
+					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
+				}*/
 				
 			//Use the following test if the previous test works
-				communicator.GetBotAddresses(communicator.FindAllNodes());
+				int[][] node = communicator.FindAllNodes();
+				communicator.GetBotAddresses(node);
 				for(int index = 0; index < 32; index++)
 				{
 					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
@@ -62,7 +63,7 @@ public class CommunicatorAPI
 		
 		private static ZNetRxResponse rx;
 		
-		private static String COM = "COM31";
+		private static String COM = "COM17";
 		
 		private static int BAUD_RATE = 57600;
 		
@@ -96,20 +97,18 @@ public class CommunicatorAPI
 			try 
 			{
 				XBeeResponse response = xbee.getResponse();
-				
-				if(response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+				boolean doneReading = false;
+				while(!doneReading)
 				{
-					rx = (ZNetRxResponse) response;
-					input = rx.getData();
-					doneReading = true;
-					//PrintResponseDetails();	//This is for testing purposes
-					
-					
-					/**[Optional] Prints the signal strength of the last hop.
-					  *			 If routers are in your network, this signal
-					  *			 will be of the last hop.
-					 **/	
-						//GetRSSI();		
+					if(response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+					{
+						rx = (ZNetRxResponse) response;
+						input = rx.getData();
+						System.out.println(input[0]);
+						doneReading = true;
+					}
+					else;
+						//System.out.println(response.);
 				}
 			} 
 			catch (XBeeException e) 
@@ -146,7 +145,7 @@ public class CommunicatorAPI
 		
 		public int[][] FindAllNodes() throws XBeeException,InterruptedException
 		{
-			int[][] xbeeAddresses = new int [32][8];
+			int[][] xbeeAddresses = new int [33][8];
 			xbee.sendAsynchronous(new AtCommand("NT"));
 			AtCommandResponse nodeTimeOut = (AtCommandResponse)xbee.getResponse();
 			long nodeDiscoveryTimeOut = ByteUtils.convertMultiByteToInt(nodeTimeOut.getValue())*100;
@@ -175,15 +174,15 @@ public class CommunicatorAPI
 			int index;
 			for(index = 1; index < rowIndex; index++)
 			{
+				System.out.println(index +","+ rowIndex);
 				int[] idRequest = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
 				SendMessage(idRequest,addresses[index],0);
 				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
 				SendMessage(execute,addresses[index],0);
-				doneReading = false;
-				while(!doneReading)
-					ReadMessage();
-				
-				nodeAddresses[(input[0]-1)] = addresses[index];
+				System.out.println(index);
+				ReadMessage();
+				System.out.println("n");
+				//nodeAddresses[(input[0]-1)] = addresses[index];
 			}
 			
 			return nodeAddresses;
