@@ -51,6 +51,7 @@ public class Chess extends JFrame {
     }
 
     public Chess() {
+        
         Chess.MouseAdapter clicked = new Chess.MouseAdapter();
         file = new JMenu("File");
         view = new JMenu("View");
@@ -173,24 +174,22 @@ public class Chess extends JFrame {
                     
                     // Retrieve the piece on that square
                     squareSelected = chess.getBoard().getSquareAt(next);
-                    
+
                     // Player select a square that has his/her own team piece on the team's turn
-                    if(squareSelected.isOccupied() && 
-                            squareSelected.getOccupant().getTeam() == chess.getState().getActiveTeam() 
-                            && !selected){
-                        
+                    if(!selected && squareSelected.isOccupied() && 
+                            squareSelected.getOccupant().getTeam() == chess.getState().getActiveTeam()){
                        selectPiece(next);
                     }
                     // Choose where the selected piece will move to
                     else if(selected){
                         
-                        // Check if the square selected is possible to move to
+                        // Check if square selected is in the possible move list
                         if(chess.getState().getPossibleMoveIndexes().contains(next)){
                             deselect();
                             // Check if the king is in check after
                             // player finishes a move
                             if(!chess.isKingInCheck(index, next)){
-                                undo(next);
+                                chess.undoMove(next, index);
                             }
                             
                             // Process the move
@@ -198,8 +197,9 @@ public class Chess extends JFrame {
                                 executeMove(next);
                             }
                         }
-                        else
+                        else{
                             deselect();
+                        }
                     }
                 }
             }
@@ -227,39 +227,19 @@ public class Chess extends JFrame {
 
         // Save the image of the piece and its location
         selectedPiece =  squareSelected.getOccupant().getImage();
+        index = next;
         possibleSquare = squareSelected.getOccupant().getPossibleMoveLocations();
-
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-       for(int i = 0; i < possibleSquare.size(); i++){
+        for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).isOccupied())
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
             else
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
         }
-        
-        //Save selected square number
-        index = next;
 
         // Now to move the piece to where
         selected = true;
-    }
-    public void undo(int next){
-        // Undo move if the king is in check
-        // Return the captured piece to the board
-        if(chess.isTemporarilyCaptured()){
-            if(chess.hasCastedEmpasse()){
-                square[chess.getPawnLocation()].setIcon(chess.getCapturedChessPiece().getImage());
-            }
-            else
-                square[next].setIcon(chess.getCapturedChessPiece().getImage());
-        }
-        else
-            // Remove the piece from the board
-            square[next].setIcon(null);
-
-        square[index].setIcon(selectedPiece);
-        chess.undoMove(next, index);
     }
     
     public void executeMove(int next){
@@ -291,23 +271,21 @@ public class Chess extends JFrame {
                 + " move to square: " + destRookLocation);
         }
         else {
-            // Processing empasse
+            // Processing empassant
             if(!chess.getState().getEnPassantPairs().isEmpty()){
                 // Remove the piece from the board
-                square[next].setIcon(selectedPiece);
                 square[chess.getPawnLocation()].setIcon(null);
             }
 
             square[index].setIcon(null);
-            square[chess.getDestination()].setIcon(selectedPiece);
-                // Execute the move if the move is on the possible move list
+            square[next].setIcon(selectedPiece);
 
             ChessPiece originPiece = chess.getBoard().getSquareAt(next).getOccupant();
-            int originLocation = index;
-            int destinationLocation = chess.getDestination();
 
             // A piece is captured
             if(chess.getCapturedPiece() != null){
+                
+                // Update to the data panel
                 if(chess.getCapturedPiece().getTeam() == Team.GREEN){
                     gameDataPanel.updateCapturedPiece(chess.getCapturedPiece().getImage(), 0);
                 }
@@ -315,22 +293,22 @@ public class Chess extends JFrame {
                     gameDataPanel.updateCapturedPiece(chess.getCapturedPiece().getImage(), 1);
                 }
 
-                 gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
-                         " from square " + originLocation +
+                gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
+                         " from square " + index +
                          " captures: " + convertChartoStringName(chess.getCapturedPiece().toString())
-                    + " at square: " + destinationLocation);
+                    + " at square: " + next);
                 gameDataPanel.convertWithCap(Integer.toString((int)Math.floor(index / 8)), 
                         Integer.toString(index % 8), 
                         chess.getCapturedPiece().toString(),
                         Integer.toString((int)Math.floor(next / 8)), 
                         Integer.toString(next % 8));
-                chess.sendPrisoner();
+                chess.setCapture(false);
             }
             else{
                 // Record the move to Display messages
                 gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
-                        " from square: " + originLocation
-                    + " move to square: " + destinationLocation);
+                        " from square: " + index
+                    + " move to square: " + next);
 
                 // Record the move into Played Move
                 gameDataPanel.convert(Integer.toString((int)Math.floor(index / 8)), 
@@ -375,9 +353,12 @@ public class Chess extends JFrame {
                     queen.setLocation(squareLocation);
                     square[next].setIcon(queen.getImage());
                 }
-                chess.removeChessPiece(oldPawn);
-                chess.updateBecauseOfPromotion();
+                chess.updatePawnPromotion(oldPawn, next);
             }
+            
+            chess.updateStatus(next);
+            
+            // End if there is a stalemate or a checkmate
             if(chess.getState().isCheckmate()){
                 Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();
                 gameDataPanel.updateMove("Winner: Team " + winner);
@@ -390,6 +371,9 @@ public class Chess extends JFrame {
                 clickable = false;
             }
         }
+    }
+    public void processPromotion(ChessPiece p){
+        
     }
     // Return the colors of possible moves to original colors.
     public void deselect() {

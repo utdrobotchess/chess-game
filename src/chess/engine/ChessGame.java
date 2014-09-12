@@ -17,12 +17,10 @@ public class ChessGame {
     private int bothSideCastled = 0;
     private int rookLocation;
     private int castlingLocation;
-    private int finalDestination;
     private ChessBoard itsBoard;
     private boolean capturePiece = false;
     private GameState itsState;
-    private ChessPiece temporarilyCapturedPiece;
-    private ChessPiece permanentlyCapturedPiece;
+    private ChessPiece CapturedPiece;
     private Square square;
     public static ChessGame setupGame() {
         ChessGame game = new ChessGame();
@@ -68,27 +66,20 @@ public class ChessGame {
     public GameState selectPieceAtLocation(int selectionLocation){
          // Retrieve the selected square
         Square selectionSquare = itsBoard.getSquareAt(selectionLocation);
-        
         //  Get the selected chess piece on the selected square
         ChessPiece occupant = selectionSquare.getOccupant();
         
-        // Make a list of all possible moves
-        ArrayList<Square> possibleMoveLocations;
         itsState.clearEnPassantPairs();
         itsState.clearMovePairs();
-        
         // Update
         updatePossibleMoveLocations();
-        
         // Set what square the selected piece is at
         itsState.setSelectedPieceIndex(selectionLocation);
         
         // Retrieve all possiblem moves
-        possibleMoveLocations = occupant.getPossibleMoveLocations();
-        
-        // Save the possible moves
+        ArrayList<Square> possibleMoveLocations = occupant.getPossibleMoveLocations();
+        // Save the list of possible moves for the selected piece.
         itsState.setPossibleMoveIndexes(possibleMoveLocations);
-     
         // print all possible moves from all pieces
        // printEntireMove();
         return itsState;
@@ -111,7 +102,7 @@ public class ChessGame {
     
     // This function simulates while a king is in check, if a team piece is moved,
     // will the king still be in check.
-    protected boolean isKingInStillCheck(int origin, int destination){
+    private boolean isKingInStillCheck(int origin, int destination){
         
         int savedOrigin = origin;
         int savedDest = destination;
@@ -121,12 +112,11 @@ public class ChessGame {
         if(piece instanceof King && isCastlingInvoked(destination))
             return false;
         
-        if(piece instanceof Pawn && checkForImpasse(destination)){
+        if(piece instanceof Pawn && checkForEmpasssant(destination)){
+            capturePieceLocatedNumericallyAt(pawnLocation);
             movePiece(itsState.getEnPassantPairs().get(0), itsState.getEnPassantPairs().get(1));
         }
-        
-        ArrayList<Integer> movePairs;
-        movePairs = addMovePairs(destination);
+        ArrayList<Integer> movePairs = addMovePairs(destination);
         itsState.setMovePairs(movePairs);
         
         // An opponent piece is captured
@@ -152,6 +142,7 @@ public class ChessGame {
     
     public boolean isKingInCheck(int origin, int destination){
         
+        // Get the selected piece
         ChessPiece piece = itsBoard.getSquareAt(origin).getOccupant();
         
         // Determine if the king will castle
@@ -171,13 +162,12 @@ public class ChessGame {
                 return false;
             }
         }
-        
-        // Impasse
-        else if(piece instanceof Pawn && checkForImpasse(destination)){
-            movePiece(itsState.getEnPassantPairs().get(0), itsState.getEnPassantPairs().get(1));
+
+        if(piece instanceof Pawn && checkForEmpasssant(destination)){
+            capturePieceLocatedNumericallyAt(pawnLocation);
+            movePiece(itsState.getEnPassantPairs().get(0),itsState.getEnPassantPairs().get(1));
         }
         
- 
         ArrayList<Integer>movePairs = addMovePairs(destination);
         itsState.setMovePairs(movePairs);
 
@@ -196,55 +186,36 @@ public class ChessGame {
                 
         // A valid move has been executed.
         if(!testForBeingChecked()){
-            if(temporarilyCapturedPiece != null){
-                
+            if(CapturedPiece != null){
                 // Remove a captured piece from the chess piece list
-                permanentlyCapturedPiece = temporarilyCapturedPiece;
-                removeChessPiece(permanentlyCapturedPiece);
+                removeChessPiece(CapturedPiece);
             }
-            setCapture(false);
             // Pawn promotion
             if(isPawnBeingPromoted(destination)){
                 itsState.setPawnPromotion(true);
-            }
-
-            updateKingStatus();
-            // update game status
-            updateStatus(destination);
+            }          
             return true;
         }
         else
             return false;
     }
-    
-    public void updateKingStatus(){
+    public void updateStatus(int dest){
+        itsState.setSelectedPieceIndex(-1);
+        itsState.clearPossibleMoveIndexes();  
         testForCheck();
         testForStalemate();
-        if(itsState.isDraw())
-            System.out.println("draw");
         if(itsState.isCheck()){
             testForCheckMate();
-            if(itsState.isCheckmate())
-                System.out.println("checkmate");
-            else
-                System.out.println("check");
         }
-        convertToStringArray();
-    }
-    private void updateStatus(int dest){
-        finalDestination = dest;
-        itsState.setSelectedPieceIndex(-1);
-        itsState.clearPossibleMoveIndexes();
+      //  convertToStringArray();
         itsState.toggleActiveTeam();
         itsBoard.getSquareAt(dest).getOccupant().incrementNumberOfPriorMoves();
-        
     }
     private void capturePieceLocatedNumericallyAt(int destination){
         setCapture(true);
-        
         // Save the piece and its location
-        temporarilyCapturedPiece = itsBoard.getSquareAt(destination).getOccupant();
-        square = temporarilyCapturedPiece.getLocation();
+        CapturedPiece = itsBoard.getSquareAt(destination).getOccupant();
+        square = CapturedPiece.getLocation();
     }
     
     private ArrayList<Integer> addMovePairs(int destination) {
@@ -413,6 +384,7 @@ public class ChessGame {
         boolean preventedByAPiece = false;
         boolean shouldCheckMove = false;
         int here = -1; int there = -1;
+        
         // Number of team pieces
         opponentPiece.remove(itsBoard.getSquareAt(kingLocation).getOccupant());
         
@@ -420,7 +392,6 @@ public class ChessGame {
         outerLoop:
         for(int w = 0; w < teamPiece.size(); w++){
             // Each team piece's move list
-            
             teamPieceMoveList = teamPiece.get(w).getPossibleMoveLocations();
             // Number of opponent members
             for(int x = 0; x < opponentPiece.size(); x++){
@@ -499,17 +470,11 @@ public class ChessGame {
        return stillStuck;
     }
     
-    protected boolean canOpponentPreventBeingInCheck(int defender, int attacker){
-        boolean canPreventAttack;
-        
-        itsState.setSelectedPieceIndex(-1); 
-        itsState.clearPossibleMoveIndexes();  
-        
+    protected boolean canOpponentPreventBeingInCheck(int defender, int attacker){        
         selectPieceAtLocation(defender);
-        
         // Check if the king is still safe or not
         itsState.toggleActiveTeam();
-        canPreventAttack = isKingInStillCheck(defender, attacker);
+        boolean canPreventAttack = isKingInStillCheck(defender, attacker);
         itsState.toggleActiveTeam();
         return canPreventAttack;
     }
@@ -519,8 +484,8 @@ public class ChessGame {
         
         // Put a captured piece back into the game
         movePiece(destination, origin);
-        if(isTemporarilyCaptured()){
-           temporarilyCapturedPiece.setLocation(square);
+        if(isCaptured()){
+           CapturedPiece.setLocation(square);
            setCapture(false);
         }
         
@@ -529,50 +494,48 @@ public class ChessGame {
         itsState.clearPossibleMoveIndexes();
     }
  
-    public ChessPiece getCapturedChessPiece(){
-        return temporarilyCapturedPiece;
-    }
-    public boolean isTemporarilyCaptured(){
+    private boolean isCaptured(){
         return capturePiece;
     }
     
-    protected void setCapture(boolean x){
-        temporarilyCapturedPiece = null;
-        capturePiece = x;
-    }
-    public void sendPrisoner(){
-        permanentlyCapturedPiece = null;
+    public void setCapture(boolean isCaptured){
+        if(!isCaptured)
+            CapturedPiece = null;
+        capturePiece = isCaptured;
     }
     // If the king is the only piece remaining in the team and is stuck,
     // it is a stalemate
     private void testForStalemate(){
-        boolean noMove = true;;
         // White Team
         if(itsState.getActiveTeam() == Team.GREEN){
             for(int i = 0; i < whitePieces.size(); i++){
                 // Check if any pieces beside the king can move
                 if(!(whitePieces.get(i) instanceof King) &&
                         !whitePieces.get(i).getPossibleMoveLocations().isEmpty()){
-                    noMove = false;
-                    break;
+                    return;
                 }
             }
-            if(noMove && isEnemyKingStuck() && !itsState.isCheck())
+            if(isEnemyKingStuck() && !itsState.isCheck())
                 itsState.setDraw(true);
         }
+        // Black team
         else{
             for(int i = 0; i < blackPieces.size(); i++){
             // Check if any pieces beside the king can move
                 if(!(blackPieces.get(i) instanceof King) &&
                         !blackPieces.get(i).getPossibleMoveLocations().isEmpty()){
-                    noMove = false;
-                    break;
+                    return;
                 }
             }
-            if(noMove && isEnemyKingStuck() && !itsState.isCheck())
+            if(isEnemyKingStuck() && !itsState.isCheck())
                 itsState.setDraw(true);
         }
     }
+    
+    // King can castled if:
+    // The king is not in check
+    // The king has not already castled
+    // The squares are not attacked
     protected boolean checkForCastle(int kingLocation, int dest){
         
         // Check if both side castled or is in check
@@ -630,7 +593,8 @@ public class ChessGame {
         rookLocation = rook.getNumericalLocation();
         return true;
     }
-    protected boolean checkForImpasse(int dest){
+    
+    protected boolean checkForEmpasssant(int dest){
         castEmpasse = false;
         Square destSquare = itsBoard.getSquareAt(dest);
         Square originSquare = itsBoard.getSquareAt(itsState.getSelectedPieceIndex());
@@ -669,7 +633,6 @@ public class ChessGame {
                 emPassePairs.add(-1);
 
                 itsState.setEnPassantPairs(emPassePairs);
-                capturePieceLocatedNumericallyAt(pawnLocation);
                 castEmpasse = true;
                 return true;
             }
@@ -703,7 +666,7 @@ public class ChessGame {
         return pawnLocation;
     }
     public ChessPiece getCapturedPiece(){
-        return permanentlyCapturedPiece;
+        return CapturedPiece;
     }
     protected boolean isPawnBeingPromoted(int destination){
         Square originSquare = itsBoard.getSquareAt(destination);
@@ -746,16 +709,10 @@ public class ChessGame {
         }
         System.out.println(list);
     }
-    public int getDestination(){
-        return finalDestination;
-    }
-    public void updateBecauseOfPromotion(){
-        addChessPiece(itsBoard.getSquareAt(finalDestination).getOccupant());
+    public void updatePawnPromotion(ChessPiece pawn, int dest){
+        removeChessPiece(pawn);
+        addChessPiece(itsBoard.getSquareAt(dest).getOccupant());
         itsState.setPawnPromotion(false);
         updatePossibleMoveLocations();
-
-        itsState.toggleActiveTeam();
-        updateKingStatus();
-        itsState.toggleActiveTeam();
     }
 }

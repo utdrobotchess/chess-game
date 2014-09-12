@@ -96,13 +96,13 @@ public class Pawn extends ChessPiece{
                     
         if(testSquare3.getNeighborInDirection(6).isOccupied()){
             ChessPiece occupant2 = testSquare3.getNeighborInDirection(6).getOccupant();
-            
             //Condition: the capturing pawn and the targeting pawn have to be on different team.
-            //         : the targeted pawn made a double-step
+            //         : the targeted pawn made a double-step in the first move
             //         : the capturing pawn must captures the targeted pawn immediately
             if(occupant.getTeam() != occupant2.getTeam()
                     && occupant2.getCurrentNumber() - occupant2.getNumberOfTurn() == 0
-                    && Math.abs(occupant2.getNumericalLocation() - occupant2.getInitialNumericalLocation()) == 16){
+                    && Math.abs(occupant2.getNumericalLocation() - occupant2.getInitialNumericalLocation()) == 16
+                    && occupant2.getNumberOfPriorMoves() == 1){
                 possibleMoveLocations.add(leftSide);
             }
         }
@@ -111,7 +111,8 @@ public class Pawn extends ChessPiece{
             ChessPiece occupant2 = testSquare3.getNeighborInDirection(2).getOccupant();
             if(occupant.getTeam() != occupant2.getTeam() 
                     && occupant2.getCurrentNumber() - occupant2.getNumberOfTurn() == 0
-                    && Math.abs(occupant2.getNumericalLocation() - occupant2.getInitialNumericalLocation()) == 16){
+                    && Math.abs(occupant2.getNumericalLocation() - occupant2.getInitialNumericalLocation()) == 16
+                    && occupant2.getNumberOfPriorMoves() == 1){
                 possibleMoveLocations.add(rightSide);
             }
         }
@@ -131,7 +132,7 @@ public class Pawn extends ChessPiece{
             if (testSquare.isOccupied()) {
                 occupant = testSquare.getOccupant();
 
-                if (occupant.getTeam() != getTeam()) {
+                if (occupant.getTeam() != getTeam() && occupant.getNumericalLocation() >= 0 && occupant.getNumericalLocation() < 65) {
                     possibleMoveLocations.add(testSquare);
                 }
             }

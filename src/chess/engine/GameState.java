@@ -14,7 +14,6 @@ public class GameState {
     private boolean itsDraw;
     private boolean itsPawnPromotion;
     private int itsSelectedPieceIndex;
-    private int itsPawnPromotionIndex;
     private ArrayList<Integer> itsPossibleMoveIndexes;
     private ArrayList<Integer> itsMovePairs;
     private ArrayList<Integer> itsEnPassantPairs;

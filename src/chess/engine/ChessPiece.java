@@ -99,6 +99,9 @@ public abstract class ChessPiece implements Comparable<ChessPiece>  {
         itsRecentTurnNumber = ++totalTurnNumber;
         itsNumberOfPriorMoves++;
     }
+    protected int getNumberOfPriorMoves(){
+        return itsNumberOfPriorMoves;
+    }
     protected int getCurrentNumber(){
         return itsRecentTurnNumber;
     }
