@@ -3,17 +3,17 @@ package chess.communication;
 import org.apache.log4j.PropertyConfigurator;
 
 import chess.communication.XBeeAPI.ApiId;
-import chess.communication.XBeeApI.AtCommand;
-import chess.communication.XBeeApI.AtCommandResponse;
-import chess.communication.XBeeApI.PacketListener;
-import chess.communication.XBeeApI.XBee;
-import chess.communication.XBeeApI.XBeeAddress64;
-import chess.communication.XBeeApI.XBeeException;
-import chess.communication.XBeeApI.XBeeResponse;
-import chess.communication.XBeeApI.wpan.NodeDiscover;
-import chess.communication.XBeeApI.zigbee.ZNetRxResponse;
-import chess.communication.XBeeApI.zigbee.ZNetTxRequest;
-import chess.communication.XBeeApI.util.ByteUtils;
+import chess.communication.XBeeAPI.AtCommand;
+import chess.communication.XBeeAPI.AtCommandResponse;
+import chess.communication.XBeeAPI.PacketListener;
+import chess.communication.XBeeAPI.XBee;
+import chess.communication.XBeeAPI.XBeeAddress64;
+import chess.communication.XBeeAPI.XBeeException;
+import chess.communication.XBeeAPI.XBeeResponse;
+import chess.communication.XBeeAPI.wpan.NodeDiscover;
+import chess.communication.XBeeAPI.zigbee.ZNetRxResponse;
+import chess.communication.XBeeAPI.zigbee.ZNetTxRequest;
+import chess.communication.XBeeAPI.util.ByteUtils;
 
 public class CommunicatorAPI
 {
