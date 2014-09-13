@@ -15,182 +15,148 @@ import chess.communication.XBeeApI.zigbee.ZNetRxResponse;
 import chess.communication.XBeeApI.zigbee.ZNetTxRequest;
 import chess.communication.XBeeApI.util.ByteUtils;
 
-public class CommunicatorAPI 
+public class CommunicatorAPI
 {
-	//----------------------------------------------------------------------------------------------------------------------------------------------------
-		/*	Test Program: Write any test programs for this class in the main method.	*/
-	//----------------------------------------------------------------------------------------------------------------------------------------------------	
-		public static void main(String[] args) throws XBeeException, InterruptedException  
-		{
-			
-			PropertyConfigurator.configure("log4j.properties");
-			CommunicatorAPI communicator =  new CommunicatorAPI();
-			communicator.InitializeCommunication();
-			
-			//Use the following to test sending messages.
-//				int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
-//				communicator.SendMessage(temp,nodeAddresses[1],0);
-//				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
-//				communicator.SendMessage(execute,nodeAddresses[1],0);
-			
-			//Use the following method to test whether incoming messages are being read
-//				communicator.ReadMessage();
-//				communicator.ReadMessage();
-				
-			
-			//Use the following method test for scanning
-//				nodeAddresses = communicator.FindAllNodes();
-//				for(int index = 0; index < 32; index++)
-//				{
-//					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
-//				}
-				
-			//Use the following test if the previous test works
-				communicator.GetBotAddresses(communicator.FindAllNodes());
-				for(int index = 0; index < 32; index++)
-				{
-					System.out.println(ByteUtils.toBase16(nodeAddresses[index]));
-				}
-				
-			communicator.EndCommunication();
-		}
+    /*----------------------------------------------------------------------------------------------
+    Test Program: Write any test programs for this class in the main method.    
+    ----------------------------------------------------------------------------------------------*/
+    public static void main(String[] args) throws XBeeException, InterruptedException  
+    {
+        PropertyConfigurator.configure("log4j.properties");
+        CommunicatorAPI communicator =  new CommunicatorAPI();
+        communicator.FindAllNodes();
+        //communicator.GetBotAddresses(nodeAddresses);
 
-	//----------------------------------------------------------------------------------------------------------------------------------------------------	
-		/*	Variables	*/
-	//----------------------------------------------------------------------------------------------------------------------------------------------------
-		static XBee xbee = new XBee();
-		
-		private static ZNetRxResponse rx;
-		
-		private static String COM = "COM31";
-		
-		private static int BAUD_RATE = 57600;
-		
-		public static int[][] nodeAddresses = new int[32][8];
-		
-		private static int rowIndex = 0;
-		
-		private static boolean doneReading;
-		
-		public  static int [] input;
-		
-	//----------------------------------------------------------------------------------------------------------------------------------------------------	
-		/*	Methods		*/
-	//----------------------------------------------------------------------------------------------------------------------------------------------------			
-		public void InitializeCommunication() 
-		{	
-			try 
-			{
-				xbee.open(COM, BAUD_RATE);
-			} 
-			catch (XBeeException e) 
-			{
-				System.out.println("\n[CommunicatorAPI-InitializeCommunication] problem opening COM ports.");
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-		
-		public void ReadMessage()
-		{
-			try 
-			{
-				XBeeResponse response = xbee.getResponse();
-				
-				if(response.getApiId() == ApiId.ZNET_RX_RESPONSE)
-				{
-					rx = (ZNetRxResponse) response;
-					input = rx.getData();
-					doneReading = true;
-					//PrintResponseDetails();	//This is for testing purposes
-					
-					
-					/**[Optional] Prints the signal strength of the last hop.
-					  *			 If routers are in your network, this signal
-					  *			 will be of the last hop.
-					 **/	
-						//GetRSSI();		
-				}
-			} 
-			catch (XBeeException e) 
-			{
-				System.out.println("\n[CommunicatorAPI-ReadMessage] Problem accessing recieved data.\n");
-				e.printStackTrace();
-			}
-		}
-		
-		public void SendMessage(int[] bytearr, int[] destinationLow,int frameId)
-		{
-			int[] information = bytearr;
-			XBeeAddress64 destination = new XBeeAddress64(destinationLow);
-			ZNetTxRequest request = new ZNetTxRequest(destination,information);
-			request.setOption(ZNetTxRequest.Option.UNICAST);
-			request.setFrameId(frameId);
-			try 
-			{
-				xbee.sendAsynchronous(request);
-			} 
-			catch (XBeeException e) 
-			{
-				System.out.println("\n[CommunincatorAPI-SendMessage] problem sending message.\n");
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-		
-		public static void SetUpCommunication(String com, int baud_rate)
-		{
-			COM = com;
-			BAUD_RATE = baud_rate;
-		}
-		
-		public int[][] FindAllNodes() throws XBeeException,InterruptedException
-		{
-			int[][] xbeeAddresses = new int [32][8];
-			xbee.sendAsynchronous(new AtCommand("NT"));
-			AtCommandResponse nodeTimeOut = (AtCommandResponse)xbee.getResponse();
-			long nodeDiscoveryTimeOut = ByteUtils.convertMultiByteToInt(nodeTimeOut.getValue())*100;
-			xbee.addPacketListener(
-									new PacketListener()
-									{
-										public void processResponse(XBeeResponse response)
-										{
-											if(response.getApiId() == ApiId.AT_RESPONSE)
-											{
-												NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-												xbeeAddresses[rowIndex] = nd.getNodeAddress64().getAddress();
-												rowIndex++;
-											}
-										}
-									}
-								  );
-			xbee.sendAsynchronous(new AtCommand("ND"));
-			Thread.sleep(nodeDiscoveryTimeOut);
-			
-			return xbeeAddresses;
-		}
-		
-		public int[][] GetBotAddresses(int[][] addresses)
-		{
-			int index;
-			for(index = 1; index < rowIndex; index++)
-			{
-				int[] idRequest = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
-				SendMessage(idRequest,addresses[index],0);
-				int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
-				SendMessage(execute,addresses[index],0);
-				doneReading = false;
-				while(!doneReading)
-					ReadMessage();
-				
-				nodeAddresses[(input[0]-1)] = addresses[index];
-			}
-			
-			return nodeAddresses;
-		}
-		
-		public void EndCommunication()
-		{
-			xbee.close();
-		}
+        /* Test to print all nodes in network
+        for(int i = 1; i < numOfConnectNodes; i++)
+            System.out.println(ByteUtils.toBase16(communicator.nodeAddresses[i]));
+        */
+        
+        /* Test sending the ID query message
+        int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
+        communicator.SendMessage(temp,nodeAddresses[1],0);
+        int[] execute = new int[] {0xff,0x00,0x00,0x00,0x00,0x00};
+        communicator.SendMessage(execute,nodeAddresses[1],0);           
+        */
+          
+        communicator.EndCommunication();
+    }
+
+    /*----------------------------------------------------------------------------------------------
+    Class Member Variables
+    ----------------------------------------------------------------------------------------------*/
+    static XBee xbee = new XBee();
+
+    private static String comPort;
+    private static ZNetRxResponse rxPacket;
+    private static int numOfConnectNodes = 0;
+
+    public static int[][] nodeAddresses = new int[33][8];
+    public static int[][] BotIDOrderedNodeAddresses = int[32][8]
+        
+    /*----------------------------------------------------------------------------------------------
+    Class Member Methods
+    ----------------------------------------------------------------------------------------------*/
+    public CommunicatorAPI(String _comport) 
+    {
+        try 
+            xbee.open(_comport, 57600);
+
+        catch (XBeeException e) 
+        {
+            System.out.println("\n[CommunicatorAPI-Constructor]: Cannot open comport" + _comport);
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+        SetComPort(_comport);
+    }
+
+    public void FindAllNodes() throws XBeeException, InterruptedException
+    {
+        xbee.sendAsynchronous(new AtCommand("NT"));
+        AtCommandResponse nodeTimeOut = (AtCommandResponse)xbee.getResponse();
+        long nodeDiscoveryTimeOut = ByteUtils.convertMultiByteToInt(nodeTimeOut.getValue())*100;
+        xbee.addPacketListener(
+                                new PacketListener()
+                                {
+                                    public void processResponse(XBeeResponse response)
+                                    {
+                                        if(response.getApiId() == ApiId.AT_RESPONSE)
+                                        {
+                                            NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
+                                            nodeAddresses[numOfConnectNodes] = nd.getNodeAddress64().getAddress();
+                                            numOfConnectNodes++;
+                                        }
+                                    }
+                                }
+                              );
+        xbee.sendAsynchronous(new AtCommand("ND"));
+        Thread.sleep(nodeDiscoveryTimeOut);
+    }
+
+    public void GetBotAddresses(int[][] _nodeAddresses)
+    {
+        for(int i = 1; i < numOfConnectNodes; i++)
+            BotIDOrderedNodeAddresses[GetBotAddress(nodeAddresses[i])] = nodeAddresses[i];    
+    }
+
+    //Depends on ReadMessage()
+    /*
+    public int GetBotAddress(int[] nodeAddress)
+    {
+        int[] botIDRequest = new int[] {0x0A};
+        SendMessage(botIDRequest, nodeAddress, 0);
+
+        int[] execute = new int[] {0xff};
+        SendMessage(execute, nodeAddress, 0);
+
+        boolean recievedMessage = false;
+        while(!recievedMessage)
+        {
+           if(ReadMessage());
+
+        }
+        
+        return nodeAddresses;
+    }*/
+    
+    //Needs to be rewritten to implement SerialEventHandler
+    /*public int[] ReadMessage()
+    {
+        XBeeResponse response = xbee.getResponse();
+        
+        if(response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+            rxPacket = (ZNetRxResponse) response;
+
+        return rxPacket.getData();
+    }*/
+    
+    public void SendMessage(int[] bytearr, int[] destinationLow, int frameId)
+    {
+        int[] information = bytearr;
+        XBeeAddress64 destination = new XBeeAddress64(destinationLow);
+        ZNetTxRequest request = new ZNetTxRequest(destination,information);
+        request.setOption(ZNetTxRequest.Option.UNICAST);
+        request.setFrameId(frameId);
+        try
+        {
+            xbee.sendAsynchronous(request);
+        } 
+        catch (XBeeException e) 
+        {
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    public void SetComPort(String _comport)
+    {
+        comPort = _comport;
+    }
+    
+    public void EndCommunication()
+    {
+        xbee.close();
+    }
 }
