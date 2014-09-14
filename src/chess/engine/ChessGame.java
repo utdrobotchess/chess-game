@@ -174,7 +174,7 @@ public class ChessGame {
             }
         }
 
-        if(isEnpassantInvoked(piece)){
+        if(isEnpassantInvoked(piece, destination)){
             castEnpasssant(destination);
             capturePieceLocatedNumericallyAt(pawnLocation);
             movePiece(itsState.getEnPassantPairs().get(0),itsState.getEnPassantPairs().get(1));
@@ -432,7 +432,7 @@ public class ChessGame {
                         // Check if an opponent can capture the attacking team piece
                         else if(!captureAttempt && 
                                 teamPiece.get(w).getLocation() == opponentMoveList.get(z) 
-                                || isEnpassantInvoked(opponentPiece.get(x))){
+                                || isEnpassantInvoked(opponentPiece.get(x), opponentMoveList.get(z).getNumericalLocation())){
                             there = teamPiece.get(w).getNumericalLocation();
                             here = opponentPiece.get(x).getNumericalLocation();
                             captureAttempt = true;
@@ -445,7 +445,7 @@ public class ChessGame {
                             if(canOpponentPreventBeingInCheck(here, there)){
                                 preventedByAPiece = true;
                                 // Test
-                            //    System.out.println(opponentPiece.get(x) + " can prevent " + teamPiece.get(w) + " from checkmate at square: " + there);
+                              //  System.out.println(opponentPiece.get(x) + " can prevent " + teamPiece.get(w) + " from checkmate at square: " + there);
                                 break outerLoop;
                             }
                             captureAttempt = false;
@@ -514,10 +514,10 @@ public class ChessGame {
         // Put a captured piece back into the game
         movePiece(destination, origin);
         if(isCaptured()){
+            castEnpassant = false;
            CapturedPiece.setLocation(square);
            setCapture(false);
         }
-        
         updatePossibleMoveLocations();
         itsState.setSelectedPieceIndex(-1); 
         itsState.clearPossibleMoveIndexes();
@@ -652,7 +652,7 @@ public class ChessGame {
     }
     
     // ********************* Methods related to Enpassant *****************
-    private boolean isEnpassantInvoked(ChessPiece piece){
+    private boolean isEnpassantInvoked(ChessPiece piece, int destination){
         if(piece instanceof Pawn){
             Square leftSide;
             Square rightSide;
@@ -665,12 +665,14 @@ public class ChessGame {
                 rightSide = piece.getLocation().getNeighborInDirection(1);
             }
 
-            if((piece.getPossibleMoveLocations().contains(leftSide) && !leftSide.isOccupied())){
+            if((piece.getPossibleMoveLocations().contains(leftSide) && !leftSide.isOccupied())
+                    && leftSide.getNumericalLocation() == destination){
                 setPawnLocation(piece.getLocation().getNeighborInDirection(6).getNumericalLocation());
                 castEnpassant = true;
                 return true;
             }
-            else if(piece.getPossibleMoveLocations().contains(rightSide) && !rightSide.isOccupied()){
+            else if(piece.getPossibleMoveLocations().contains(rightSide) && !rightSide.isOccupied()
+                    && rightSide.getNumericalLocation() == destination){
                 setPawnLocation(piece.getLocation().getNeighborInDirection(2).getNumericalLocation());
                 castEnpassant = true;
                 return true;
