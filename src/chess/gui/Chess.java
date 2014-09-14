@@ -189,6 +189,7 @@ public class Chess extends JFrame {
                             // Check if the king is in check after
                             // player finishes a move
                             if(!chess.isKingInCheck(index, next)){
+                                System.out.println("check");
                                 chess.undoMove(next, index);
                             }
                             
@@ -231,12 +232,12 @@ public class Chess extends JFrame {
         possibleSquare = squareSelected.getOccupant().getPossibleMoveLocations();
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-        for(int i = 0; i < possibleSquare.size(); i++){
+    /*    for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).isOccupied())
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
             else
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
-        }
+        }*/
 
         // Now to move the piece to where
         selected = true;
@@ -271,9 +272,8 @@ public class Chess extends JFrame {
                 + " move to square: " + destRookLocation);
         }
         else {
-            // Processing empassant
-            if(!chess.getState().getEnPassantPairs().isEmpty()){
-                // Remove the piece from the board
+            // Remove the captured pawn if enpassant is invoked
+            if(chess.hasCastedEnpassant()){
                 square[chess.getPawnLocation()].setIcon(null);
             }
 
@@ -295,8 +295,8 @@ public class Chess extends JFrame {
 
                 gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
                          " from square " + index +
-                         " captures: " + convertChartoStringName(chess.getCapturedPiece().toString())
-                    + " at square: " + next);
+                         " captures " + convertChartoStringName(chess.getCapturedPiece().toString())
+                    + " at square " + next);
                 gameDataPanel.convertWithCap(Integer.toString((int)Math.floor(index / 8)), 
                         Integer.toString(index % 8), 
                         chess.getCapturedPiece().toString(),
@@ -308,7 +308,7 @@ public class Chess extends JFrame {
                 // Record the move to Display messages
                 gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
                         " from square: " + index
-                    + " move to square: " + next);
+                    + " move to square " + next);
 
                 // Record the move into Played Move
                 gameDataPanel.convert(Integer.toString((int)Math.floor(index / 8)), 
@@ -363,7 +363,6 @@ public class Chess extends JFrame {
                 Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();
                 gameDataPanel.updateMove("Winner: Team " + winner);
                 JOptionPane.showMessageDialog(null, "CheckMate: Team " + winner + " wins");
-                clickable = false;
             }
             else if(chess.getState().isDraw()){
                 gameDataPanel.updateMove("Stalemate");
