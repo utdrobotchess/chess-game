@@ -232,12 +232,12 @@ public class Chess extends JFrame {
         possibleSquare = squareSelected.getOccupant().getPossibleMoveLocations();
         // Highlight possible moves
         square[next].setBackground(Color.blue);
-    /*    for(int i = 0; i < possibleSquare.size(); i++){
+        for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).isOccupied())
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
             else
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.YELLOW);
-        }*/
+        }
 
         // Now to move the piece to where
         selected = true;
@@ -355,20 +355,19 @@ public class Chess extends JFrame {
                 }
                 chess.updatePawnPromotion(oldPawn, next);
             }
+        }
+        chess.updateStatus(next);
             
-            chess.updateStatus(next);
-            
-            // End if there is a stalemate or a checkmate
-            if(chess.getState().isCheckmate()){
-                Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();
-                gameDataPanel.updateMove("Winner: Team " + winner);
-                JOptionPane.showMessageDialog(null, "CheckMate: Team " + winner + " wins");
-            }
-            else if(chess.getState().isDraw()){
-                gameDataPanel.updateMove("Stalemate");
-                JOptionPane.showMessageDialog(null, "Stalemate");
-                clickable = false;
-            }
+        // End if there is a stalemate or a checkmate
+        if(chess.getState().isCheckmate()){
+            Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();
+            gameDataPanel.updateMove("Winner: Team " + winner);
+            JOptionPane.showMessageDialog(null, "CheckMate: Team " + winner + " wins");
+        }
+        else if(chess.getState().isDraw()){
+            gameDataPanel.updateMove("Stalemate");
+            JOptionPane.showMessageDialog(null, "Stalemate");
+            clickable = false;
         }
     }
     public void processPromotion(ChessPiece p){
