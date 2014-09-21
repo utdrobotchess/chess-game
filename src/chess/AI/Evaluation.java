@@ -1,6 +1,9 @@
-package AI;
+package chess.AI;
 
 //##########################################################################################################################//
+
+import chess.AI.ChessGameAI;
+
 //----------------------------------This is move evaluation of moves of the Chess Engine-----------------------------------//
 //This class has the board evaluation functions based on the current piece positions, end game scenario, attacking scenario//
 //possible movement option scenario.                                                                                       //

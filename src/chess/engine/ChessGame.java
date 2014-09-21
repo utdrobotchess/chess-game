@@ -22,11 +22,15 @@ public class ChessGame {
     private GameState itsState;
     private ChessPiece CapturedPiece;
     private Square square;
+    
+    static private int[] flipBoard = new int[64];
     public static ChessGame setupGame() {
         ChessGame game = new ChessGame();
         // Begin building a chess game
         System.out.println("Setting up the game");
         ChessGameBuilder.build(game);
+        for (int i = 0; i < flipBoard.length; i++)
+            flipBoard[i] = 63 - i;
         return game;
     }
     protected void addBuiltChessBoard(ChessBoard builtChessBoard) {
@@ -83,7 +87,8 @@ public class ChessGame {
         // Save the list of possible moves for the selected piece.
         itsState.setPossibleMoveIndexes(possibleMoveLocations);
         // print all possible moves from all pieces
-       // printEntireMove();
+//        printEntireMove();
+     
         return itsState;
     }
     
@@ -94,14 +99,31 @@ public class ChessGame {
             }
         }
     }*/
+    
+    // print out current location of each piece
     public String[][]  convertToStringArray(){
+     
+        // Set all the elemnents in strList to blank
+        for(int i = 0; i < strList.length ;i++){
+            for(int j = 0; j < strList.length; j++){
+                strList[i][j] = " ";
+            }
+        }
+        
+        // Reload the chess board
         for(int i = 0; i < itsChessPieces.size(); i++){
             int sqLocation = itsChessPieces.get(i).getNumericalLocation();
                 strList[(int)Math.floor(sqLocation/8)][sqLocation % 8] = itsChessPieces.get(i).toString();
         }
+        
+    /*    for (String[] strList1 : strList) {
+            for (int j = 0; j < strList.length; j++) {
+                System.out.print(strList1[j]);
+            }
+            System.out.println();
+        */
         return strList;
     }
-    
     // This function simulates that (while a king is in check) if a team piece is moved,
     // will the king still be in check.
     private boolean isKingInStillCheck(int origin, int destination){
@@ -757,7 +779,7 @@ public class ChessGame {
                 else{
                     list += testSquareRow + "" + testSquareColumn;
                 }
-                System.out.print(" ");
+                list = list + (" ");
             }
         }
         System.out.println(list);

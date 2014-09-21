@@ -1,6 +1,8 @@
 package chess.gui;
 
 import chess.engine.*;
+import chess.AI.*;
+import static chess.AI.ChessGameAI.BoardRepn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -9,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,13 +29,16 @@ import javax.swing.JOptionPane;
 public class Chess extends JFrame {
 
     ChessGame chess;
+    String moveTemp;
     Square squareSelected;
+    
     private ArrayList<ChessPiece> itsChessPieces = new ArrayList<>();
     private ArrayList<Square> possibleSquare = new ArrayList<>();
     static JPanel chessBoard = new JPanel(new GridLayout(8, 8));
     JFrame f = new JFrame();
     static JButton[] square = new JButton[64];
     private int index = 0;
+    int[] flipBoard = new int[64];
     ImageIcon selectedPiece = new ImageIcon();
     private boolean selected = false;
     boolean clickable = false;
@@ -42,16 +48,17 @@ public class Chess extends JFrame {
     gameSettings gameStartPanel = new gameSettings();
     gameData gameDataPanel = new gameData();
     JMenuBar menuBar = new JMenuBar();
-  
+    ChessGameAI gameAI = new ChessGameAI();
     JMenu file = new JMenu("Files"), view = new JMenu("View"), settings = new JMenu("Settings"), subMenu;
     JMenuItem menuItem;
-
     public static void main(String[] args) {
        new Chess();
     }
 
     public Chess() {
-        
+        for (int i = 0; i < flipBoard.length; i++){
+            flipBoard[i] = 63 - i;
+        }
         Chess.MouseAdapter clicked = new Chess.MouseAdapter();
         file = new JMenu("File");
         view = new JMenu("View");
@@ -100,7 +107,7 @@ public class Chess extends JFrame {
             // Register the action listener.
             square[i].addMouseListener(clicked);
         }
-
+        gameAI.setGameToAI(chess);
         // Start building a GUI
         parentPanel.add(menuBar, BorderLayout.NORTH);
         parentPanel.add(gridLayoutPanel);
@@ -162,7 +169,7 @@ public class Chess extends JFrame {
         menuItem = new JMenuItem("test1");
         view.add(menuItem);
     }
-
+    
     class MouseAdapter implements MouseListener {
 
         @Override
@@ -196,6 +203,25 @@ public class Chess extends JFrame {
                             // Process the move
                             else{
                                 executeMove(next);
+                                
+                                //
+                                gameAI.updateGameBoard(chess.convertToStringArray());
+                                ChessGameAI.flipBoard();
+                                long startTime=System.currentTimeMillis();
+                                moveTemp=ChessGameAI.alphaBeta(ChessGameAI.globalDepth, 1000000, -1000000, "", 0);
+                                ChessGameAI.makeMove(moveTemp);
+                                long endTime=System.currentTimeMillis();
+                                System.out.println("My Move: "+UI.moveDecoding(1,moveTemp.substring(0, 5))+" took: "+(endTime-startTime)+" milliseconds");
+
+                                //ChessGameAI.flipBoard();
+                                
+                             /*   for(int i=0 ;i<8 ;i++){
+                                    System.out.println(Arrays.deepToString(ChessGameAI.BoardRepn[i]));
+                                }*/
+                                
+                                gameAI.updateGameStatus(chess);
+                                executeAIMove(moveTemp.substring(0, 5));
+                                
                             }
                         }
                         else{
@@ -221,6 +247,24 @@ public class Chess extends JFrame {
         @Override
         public void mouseExited(MouseEvent e) {
         }
+    }
+    public void executeAIMove(String move){
+        int rowDigit1 = (move.charAt(0) - 48) * 8;
+        int columnDigit1 = (move.charAt(1) - 48);
+        int next = flipBoard[rowDigit1 + columnDigit1];
+        
+        squareSelected = chess.getBoard().getSquareAt(next);
+        selectPiece(next);
+        
+        int rowDigit2;
+        int columnDigit2;
+        index = next;
+        rowDigit2 = (move.charAt(2) - 48) * 8;
+        columnDigit2 = (move.charAt(3) - 48);
+        deselect();
+        chess.isKingInCheck(index, flipBoard[rowDigit2 + columnDigit2]);
+        executeMove(flipBoard[rowDigit2 + columnDigit2]);
+    //    gameAI.updateGameBoard(chess.convertToStringArray());
     }
     public void selectPiece(int next){
          // Get the piece on the selected square

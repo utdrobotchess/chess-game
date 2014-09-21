@@ -1,4 +1,4 @@
-package AI;
+package chess.AI;
 
 //##########################################################################################################################//
 //-----------------------------------------This is a Main class of the Chess Engine-----------------------------------------//
@@ -8,237 +8,46 @@ package AI;
 //functionality to increase or decrease the piece points based on user configuration.                                       //
 //##########################################################################################################################//
 
+import chess.AI.Evaluation;
+import chess.gui.Chess;
+import chess.engine.*;
+import chess.AI.GenerateMovements;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import javax.swing.*;
 public class ChessGameAI extends JFrame{
     //2D board representation
-    static String BoardRepn[][]={
-         {"r","k","b","q","a","b","k","r"},
-         {"p","p","p","p","p","p","p","p"},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {"P","P","P","P","P","P","P","P"},
-         {"R","K","B","Q","A","B","K","R"}};
+    public static String[][] BoardRepn;
+    ChessGame chessGame;
     static int curWKingPos, curBKingPos,tempWK,tempBK;
-    static int globalDepth=4;
+    public static int globalDepth=4;
     static int searchSort=0,branchFactor=0,AggressivePlay=0;
     
-    public static void main(String[] args) {
-         while (!"A".equals(BoardRepn[curWKingPos/8][curWKingPos%8])) {curWKingPos++;}
+ 
+    public void setGameToAI(ChessGame chessGame){
+        this.chessGame = chessGame;
+        BoardRepn = this.chessGame.convertToStringArray();
+       // for(int i=0 ;i<8 ;i++){
+       // System.out.println(Arrays.deepToString(BoardRepn[i]));
+   // }
+        while (!"A".equals(BoardRepn[curWKingPos/8][curWKingPos%8])) {curWKingPos++;}
          while (!"a".equals(BoardRepn[curBKingPos/8][curBKingPos%8])) {curBKingPos++;}
          tempWK=curWKingPos;
          tempBK=curBKingPos;
-         JFrame f=new JFrame();
-         f.setTitle("CHESS 5.4");
-         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         UI ui=new UI();
-         JMenuBar menuBar = new JMenuBar();
-         JMenu menu = new JMenu("Game");
-         JMenu menu1 = new JMenu("Engine Configuration");
-         JMenuItem item1 = new JMenuItem("Re-set");
-         JMenuItem item2 = new JMenuItem("     Engine Level::    ");
-            JMenuItem rbMenuItem1 = new JMenuItem("Low Level:Depth 3");
-            JMenuItem rbMenuItem2 = new JMenuItem("Medium Level:Depth 4");
-            JMenuItem rbMenuItem3 = new JMenuItem("High Level:Depth 6");
-         JMenu menu1Item1= new JMenu("Alter Weights");
-         JMenuItem menu1Item2=new JMenuItem("Sort Search Space");
-         JMenuItem menu1Item3=new JMenuItem("Limit Branch Factor");
-         JMenuItem menu1Item4=new JMenuItem("Aggressive Play");
-            JMenu label1 = new JMenu ("Pawn Weight:");
-               JMenuItem rb11 = new JMenuItem("+50");
-               JMenuItem rb12 = new JMenuItem("-50");
-            JMenu label2 = new JMenu("Knight Weight:");
-                JMenuItem rb21 = new JMenuItem("+50");
-                JMenuItem rb22 = new JMenuItem("-50");
-            JMenu label3 = new JMenu("Bishop Weight:");
-                JMenuItem rb31 = new JMenuItem("+50");
-                JMenuItem rb32 = new JMenuItem("-50");
-            JMenu label4 = new JMenu("Rook Weight:");
-                JMenuItem rb41 = new JMenuItem("+50");
-                JMenuItem rb42 = new JMenuItem("-50");
-            JMenu label5 = new JMenu("QueenWeight:");
-                JMenuItem rb51 = new JMenuItem("+50");
-                JMenuItem rb52 = new JMenuItem("-50"); 
-         menu1Item1.add(label1);
-         label1.add(rb11);
-         label1.add(rb12);
-         menu1Item1.add(label2);
-         label2.add(rb21);
-         label2.add(rb22);
-         menu1Item1.add(label3);
-         label3.add(rb31);
-         label3.add(rb32);
-         menu1Item1.add(label4);
-         label4.add(rb41);
-         label4.add(rb42);
-         menu1Item1.add(label5);
-         label5.add(rb51);
-         label5.add(rb52);
-         menu1.add(menu1Item1);
-         menu1.addSeparator();
-         menu1.add(menu1Item2);
-         menu1.addSeparator();
-         menu1.add(menu1Item3);
-         menu1.addSeparator();
-         menu1.add(menu1Item4);
-         menuBar.add(menu);
-         menuBar.add(menu1);
-         menu.add(item1);
-         menu.addSeparator();
-         menu.add(item2);
-         menu.add(rbMenuItem1);
-         menu.add(rbMenuItem2);
-         menu.add(rbMenuItem3);
-         f.repaint();
-         item1.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {Initialize();}});//resetting the board state to original
-         f.repaint();
-         rbMenuItem1.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {gd3();}});//changing the globalDepth to 4
-         rbMenuItem2.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {gd4();}});//Changing the global depth to 7
-         rbMenuItem3.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {gd6();}});//Changing the global depth to 10
-         rb11.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {increment("P");}});//Incrementing the Pawn points to current value plus 50
-         rb12.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {decrement("P");}});//Decrementing the Pawn points to current value plus 50
-         rb21.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {increment("K");}});//Incrementing the Knight points to current value plus 50
-         rb22.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {decrement("K");}});//Decrementing the Knight points to current value plus 50
-         rb31.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {increment("B");}});//Incrementing the Bishop points to current value plus 50
-         rb32.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {decrement("B");}});//Decrementing the Bishop points to current value plus 50
-         rb41.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {increment("R");}});//Incrementing the Rook points to current value plus 50
-         rb42.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {decrement("R");}});//Decrementing the Rook points to current value plus 50
-         rb51.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {increment("Q");}});//Incrementing the Queen points to current value plus 50
-         rb52.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {decrement("Q");}});//Decrementing the Queen points to current value plus 50
-         menu1Item2.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {searchSortPrune();}});//confining the move results to only those moves which take away the oponents pieces
-         menu1Item3.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {limitBranchFactor();}});//Iteratively increasing the search depth between range 4 to 10 if the board is in Mid-game
-         menu1Item4.addActionListener(new ActionListener() {@Override
-         public void actionPerformed(ActionEvent e) {AggressivePlay();}});
-         menu.setVisible(true);
-         ImageIcon img = new ImageIcon("C:\\Summer2014\\AI\\Project\\Pawn\\BlackN.png");
-         f.setIconImage(img.getImage());
-         f.setJMenuBar(menuBar);
-         f.add(ui);
-         f.setSize(700, 730);
-         f.setVisible(true);
-         f.repaint();
-         f.setLocation(300, 45);
-         JOptionPane.showMessageDialog(null,"You get to play first.Please make your move!!");
-         //Define the GUI frame parameters
     }
-    public static void Initialize(){
-        //Initializing the board to original board state
-         String BoardRepn1[][]={
-         {"r","k","b","q","a","b","k","r"},
-         {"p","p","p","p","p","p","p","p"},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {" "," "," "," "," "," "," "," "},
-         {"P","P","P","P","P","P","P","P"},
-         {"R","K","B","Q","A","B","K","R"}};
-         globalDepth=4;
-         BoardRepn=BoardRepn1;
-         curWKingPos=tempWK;
-         curBKingPos=tempBK;
-         UI.countOfMoves=0;
-         Evaluation.pawnPoints=100;
-         Evaluation.rookPoints=500;
-         Evaluation.knightPoints=300;
-         Evaluation.bishopPoints=300;
-         Evaluation.queenPoints=900;
-         Evaluation.kingPoints=1000;
-         UI.king=0;
-         System.out.println("King pos:"+curWKingPos+" "+curBKingPos);
-     }
-    public static void depthConfig(){//iteratively increasing the search depth in range of 4 to 10 when the board is in mid-game
-        Evaluation.depthConfiguration();
+    public void updateGameStatus(ChessGame chessGame){
+        this.chessGame = chessGame;
     }
-    public static void limitBranchFactor(){
-        branchFactor=1;//If pruning is selected then set prune to 1
-    }
-    public static void searchSortPrune(){
-        searchSort=1;
-    }
-    public static void AggressivePlay(){
-        AggressivePlay=1;
-    }
-    public static void increment(String piece){//increment the piece points based on the piece selected
-        switch(piece){
-            case "P": Evaluation.pawnPoints+=50;
-                break;
-            case "B": Evaluation.bishopPoints+=50;
-                break;
-            case "K": Evaluation.knightPoints+=50;
-                break;
-            case "R": Evaluation.rookPoints+=50;
-                break;
-            case "Q": Evaluation.queenPoints+=50;
-                break;
-        }
-        JOptionPane.showMessageDialog(null,"Pawn weight: "+Evaluation.pawnPoints+"\n"+
-        "Bishop weight: "+Evaluation.bishopPoints+"\n"+
-        "Knight weight: "+Evaluation.knightPoints+"\n"+
-        "Rook weight: "+Evaluation.rookPoints+"\n"+
-        "Queen weight: "+Evaluation.queenPoints+"\n"
-                );
-    }
-    public static void decrement(String piece){//decrement the piece points based on the piece selected
-        switch(piece){
-            case "P": Evaluation.pawnPoints-=50;
-                break;
-            case "B": Evaluation.bishopPoints-=50;
-                break;
-            case "K": Evaluation.knightPoints-=50;
-                break;
-            case "R": Evaluation.rookPoints-=50;
-                break;
-            case "Q": Evaluation.queenPoints-=50;
-                break;
-        }
-        JOptionPane.showMessageDialog(null,"Pawn weight: "+Evaluation.pawnPoints+"\n"+
-        "Bishop weight: "+Evaluation.bishopPoints+"\n"+
-        "Knight weight: "+Evaluation.knightPoints+"\n"+
-        "Rook weight: "+Evaluation.rookPoints+"\n"+
-        "Queen weight: "+Evaluation.queenPoints+"\n"
-                );
-    }
-    public static void gd3(){
-        globalDepth=3;
-    }
-    public static void gd4(){
-        globalDepth=4;
-    }
-    public static void gd6(){
-        globalDepth=6;
+    public void updateGameBoard(String[][] board){
+        BoardRepn = board;
+  
     }
     public static String alphaBeta(int depth, int beta, int alpha, String move, int player) {
         //generate the possible moves
         String list=posibleMoves();
         //check for the terminating condition
         if (depth==0 || list.length()==0) {return move+(Evaluation.rating(list.length(), depth)*(player*2-1));}
-        //if prune is selected then call the function to limit only those moves which are likely to take away the oponents pawns
-//        if(prune==1){
-//        String list2=posibleMoves();
-//        list=pruneSearchSpace(list2);
-//        //list=sortMoves(list2);
-//        }//sort the moves based on top rank  
-//        else if(searchSort==1)
-//       list=sortMoves(list);//if no space pruning then only sort the moves based in the best moves
         if(searchSort==1){
             list=sortMoves(list);}
         else if(branchFactor==1){
@@ -282,7 +91,7 @@ public class ChessGameAI extends JFrame{
                 BoardRepn[r][c]=BoardRepn[7-r][7-c].toLowerCase();
             } else {
                 BoardRepn[r][c]=BoardRepn[7-r][7-c].toUpperCase();
-            }
+                }
             BoardRepn[7-r][7-c]=temp;
         }
         int kingTemp=curWKingPos;
