@@ -1,7 +1,7 @@
 package chess.communication;
 import java.util.Scanner;
 
-import chess.communication.XBeeApI.XBeeException;
+import chess.communication.XBeeAPI.XBeeException;
 
 public class Terminal 
 {
