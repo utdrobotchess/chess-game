@@ -65,6 +65,20 @@ public class CommunicatorAPI
     /*----------------------------------------------------------------------------------------------
     Class Member Methods
     ----------------------------------------------------------------------------------------------*/
+    public CommunicatorAPI() 
+    {
+        try 
+        {
+            xbee.open(comPort, 57600);
+        }
+        catch (XBeeException e) 
+        {
+            System.out.println("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + comPort);
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }    
+    
     public CommunicatorAPI(String _comport) 
     {
         try 
@@ -209,9 +223,14 @@ public class CommunicatorAPI
         }
     }
 
-    public void SetComPort(String _comport)
+    public static void SetComPort(String _comport)
     {
         comPort = _comport;
+    }
+    
+    public static String GetCurrentComPort()
+    {
+        return comPort;
     }
     
     public void EndCommunication()
