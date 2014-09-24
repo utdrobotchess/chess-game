@@ -1,4 +1,4 @@
-package AI;
+package chess.AI;
 
 //##########################################################################################################################//
 //-----------------------------------------This is GUI part of the Chess Engine---------------------------------------------//
@@ -177,48 +177,48 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener {
         }
        
     }
-    public String moveDecoding(int player,String moves){
+    public static String moveDecoding(int player,String moves){
         String moveDecod="",temp="";
         if(player==0){
             switch(moves.charAt(1)){
-                case '0': moveDecod+="A";break;
-                case '1': moveDecod+="B";break;
-                case '2': moveDecod+="C";break;
-                case '3': moveDecod+="D";break;
-                case '4': moveDecod+="E";break;
-                case '5': moveDecod+="F";break;
-                case '6': moveDecod+="G";break;
-                case '7': moveDecod+="H";break;
+                case '0': moveDecod+="H";break;
+                case '1': moveDecod+="G";break;
+                case '2': moveDecod+="F";break;
+                case '3': moveDecod+="E";break;
+                case '4': moveDecod+="D";break;
+                case '5': moveDecod+="C";break;
+                case '6': moveDecod+="B";break;
+                case '7': moveDecod+="A";break;
             }
             switch(moves.charAt(0)){
-                case '0': moveDecod+="8";break;
-                case '1': moveDecod+="7";break;
-                case '2': moveDecod+="6";break;
-                case '3': moveDecod+="5";break;
-                case '4': moveDecod+="4";break;
-                case '5': moveDecod+="3";break;
-                case '6': moveDecod+="2";break;
-                case '7': moveDecod+="1";break;
+                case '0': moveDecod+="1";break;
+                case '1': moveDecod+="2";break;
+                case '2': moveDecod+="3";break;
+                case '3': moveDecod+="4";break;
+                case '4': moveDecod+="5";break;
+                case '5': moveDecod+="6";break;
+                case '6': moveDecod+="7";break;
+                case '7': moveDecod+="8";break;
             }
             switch(moves.charAt(3)){
-                case '0': moveDecod+="A";break;
-                case '1': moveDecod+="B";break;
-                case '2': moveDecod+="C";break;
-                case '3': moveDecod+="D";break;
-                case '4': moveDecod+="E";break;
-                case '5': moveDecod+="F";break;
-                case '6': moveDecod+="G";break;
-                case '7': moveDecod+="H";break;
+                case '0': moveDecod+="H";break;
+                case '1': moveDecod+="G";break;
+                case '2': moveDecod+="F";break;
+                case '3': moveDecod+="E";break;
+                case '4': moveDecod+="D";break;
+                case '5': moveDecod+="C";break;
+                case '6': moveDecod+="B";break;
+                case '7': moveDecod+="A";break;
             }
             switch(moves.charAt(2)){
-                case '0': moveDecod+="8";break;
-                case '1': moveDecod+="7";break;
-                case '2': moveDecod+="6";break;
-                case '3': moveDecod+="5";break;
-                case '4': moveDecod+="4";break;
-                case '5': moveDecod+="3";break;
-                case '6': moveDecod+="2";break;
-                case '7': moveDecod+="1";break;
+                case '0': moveDecod+="1";break;
+                case '1': moveDecod+="2";break;
+                case '2': moveDecod+="3";break;
+                case '3': moveDecod+="4";break;
+                case '4': moveDecod+="5";break;
+                case '5': moveDecod+="6";break;
+                case '6': moveDecod+="7";break;
+                case '7': moveDecod+="8";break;
             }
 //            moveDecod+=moves.charAt(4);
          }

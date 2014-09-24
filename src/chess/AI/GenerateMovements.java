@@ -1,6 +1,9 @@
-package AI;
+package chess.AI;
 
 //##########################################################################################################################//
+
+import chess.AI.ChessGameAI;
+
 //------------------------------------This is Move ganeration part of the Chess Engine--------------------------------------//
 //This class has the instruction to generate valid piece movements for each chess piece.                                    //
 //##########################################################################################################################//
