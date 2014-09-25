@@ -29,17 +29,38 @@ public class gameSettings extends JPanel{
     String[] difficulties = {"Easy", "Normal", "Hard"};
     JComboBox difficultyBox = new JComboBox(difficulties);
     JButton gameStartButton = new JButton("Let's Start");
-    
-	public gameSettings(){
-            //addComponent(panel, component, x, y, width, height, pixelsX, pixelsY, stretch)
-                    //gridwidth and grid height only specifies how many columns component CAN take up-not number of pixels
-            settingsPanel.setLayout(new GridLayout(5,1,0,5));
-            settingsPanel.add(playerOrComputerLabel);
-            settingsPanel.add(playerOrComputerBox);
-            settingsPanel.add(difficultySettingsLabel);
-            settingsPanel.add(difficultyBox);
-            settingsPanel.add(gameStartButton);
-            add(settingsPanel);
-		
-	}
+    boolean againstPlayer = true;
+    public gameSettings(){
+        //addComponent(panel, component, x, y, width, height, pixelsX, pixelsY, stretch)
+                //gridwidth and grid height only specifies how many columns component CAN take up-not number of pixels
+        settingsPanel.setLayout(new GridLayout(5,1,0,5));
+        settingsPanel.add(playerOrComputerLabel);
+        settingsPanel.add(playerOrComputerBox);
+        playerOrComputerBox.addItemListener(new ItemListener(){
+            
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED){
+                    if(e.getItem().toString().equals("Computer"))
+                        againstPlayer = false;
+                    else
+                        againstPlayer = true;
+                }
+            }
+
+        });
+        settingsPanel.add(difficultySettingsLabel);
+        settingsPanel.add(difficultyBox);
+        settingsPanel.add(gameStartButton);
+        add(settingsPanel);
+
+    }
+        
+    public boolean playAgainstWho(){
+        return againstPlayer;
+    }
+    public void reset(){
+        playerOrComputerBox.setSelectedIndex(0);
+        againstPlayer = true;
+    }
 }

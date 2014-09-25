@@ -113,15 +113,16 @@ public class ChessGame {
         // Reload the chess board
         for(int i = 0; i < itsChessPieces.size(); i++){
             int sqLocation = itsChessPieces.get(i).getNumericalLocation();
-                strList[(int)Math.floor(sqLocation/8)][sqLocation % 8] = itsChessPieces.get(i).toString();
+                strList[sqLocation/8][sqLocation % 8] = itsChessPieces.get(i).toString();
         }
         
-    /*    for (String[] strList1 : strList) {
+        /*for (String[] strList1 : strList) {
             for (int j = 0; j < strList.length; j++) {
                 System.out.print(strList1[j]);
             }
             System.out.println();
-        */
+        }
+        System.out.println();*/
         return strList;
     }
     // This function simulates that (while a king is in check) if a team piece is moved,
@@ -760,13 +761,13 @@ public class ChessGame {
     public void printEntireMove(){
         String list = "";
         for(int i = 0; i < itsChessPieces.size(); i++){
-            int chessPieceRow = (int)Math.floor(itsChessPieces.get(i).getNumericalLocation() / 8);
+            int chessPieceRow = itsChessPieces.get(i).getNumericalLocation() / 8;
             int chessPieceColumn = itsChessPieces.get(i).getNumericalLocation()% 8;
             ArrayList<Square> possibleMove = itsChessPieces.get(i).getPossibleMoveLocations();
             
             for(int j = 0; j < possibleMove.size(); j++){
                 Square testSquare = possibleMove.get(j);
-                int testSquareRow = (int)Math.floor(testSquare.getNumericalLocation()/8);
+                int testSquareRow = testSquare.getNumericalLocation()/8;
                 int testSquareColumn = possibleMove.get(j).getNumericalLocation() % 8;
                 
                 list += chessPieceRow + "" + chessPieceColumn;

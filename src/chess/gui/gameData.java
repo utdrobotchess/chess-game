@@ -111,13 +111,14 @@ public class gameData extends JPanel{
         moveList += data + "\n";
         messageText.setText(moveList);
     }
-    public void convert(String Orow, String Ocolumn, String Drow, String Dcolumn){
-        record += Orow + Ocolumn + Drow + Dcolumn + "\n";
+    public void convert(String Orow, String Ocolumn, String piece, String Drow, String Dcolumn){
+        record += convertRowPosition(Orow, Ocolumn) + convertRowPosition(Drow, Dcolumn) + piece+ "\n";
         moveListText.setText(record);
     }
-    public void convertWithCap(String Orow, String Ocolumn, String piece, String Drow, String Dcolumn){
-        record += Orow + Ocolumn + Drow + Dcolumn + piece+ "\n";
-        moveListText.setText(record);
+    public String convertRowPosition(String row, String column){
+        int positionX = 8 - Integer.valueOf(row);
+        int positionY = Integer.valueOf(column);
+        return String.valueOf(positionX) + String.valueOf((char)(positionY + 65));
     }
     public void updateCapturedPiece(ImageIcon image, int team){
         if(team == 0){
