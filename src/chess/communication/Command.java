@@ -11,45 +11,59 @@ public class Command
 	/*----------------------------------------------------------------------------------------------------------------------------------------------------
 	Test Program: Write any test programs for this class in the main method.	
 	----------------------------------------------------------------------------------------------------------------------------------------------------*/	
-	public static void main(String[] args) throws XBeeException, InterruptedException
-	{
-		CommunicatorAPI.SetComPort("COM17");
-		Command.RunStartUpSequence();
-		//Use the following method to test get DestinationAddresses
+		public static void main(String[] args) throws XBeeException, InterruptedException
+		{
+			xbee.FindAllNodes();
+			xbee.GetBotAddresses();
+			//Use the following method to test get DestinationAddresses
+			ArrayList <Integer> AvailableBotIndices = xbee.GetAvailableBotIndices();
+			
+				/*for(int index = 0; index < AvailableBotIndices.size(); index++)
+				{*/
+					//System.out.println(destinationAddresses[AvailableBots.get(index)]);
+					ConstructCommand("aligntoedge");
+					ConstructCommand("execute");
+					PrintCommandBuffer();
+					//System.out.println(ByteUtils.toBase16(xbee.botIdOrderedNodeAddresses[AvailableBotIndices.get(index)]));
+					
+				//}
+				for(int index = 0; index < AvailableBotIndices.size(); index++)
+				{
+					//SendCommands(AvailableBotIndices.get(index));
+					System.out.println(AvailableBotIndices.get(index));
+				}
+				
+				//commandName.clear();
+				//commandBuffer.clear();
+			
+			//Use the following methods to test ConstructCommand using AT mode
+			  /*ConstructCommand("crossSquare",(char)0x1d,(char)0x07);
+		  		ConstructCommand("crossSquare",(char)0x01,(char)0x07);
+		  		ConstructCommand("execute", (char)0x1d);
+		  		ConstructCommand("execute", (char)0x01);
+		  		PrintCommandBuffer();
+		  		SendCommands();
+		  	  */
 
-		//Use the following methods to test ConstructCommand using AT mode
-		  /*ConstructCommand("crossSquare",(char)0x1d,(char)0x07);
-	  		ConstructCommand("crossSquare",(char)0x01,(char)0x07);
-	  		ConstructCommand("execute", (char)0x1d);
-	  		ConstructCommand("execute", (char)0x01);
-	  		PrintCommandBuffer();
-	  		SendCommands();
-	  	  */
-
-		//Use the following method to test remote control of the robots
-		  //RemoteControlMode(0x01);
-	}
+			//Use the following method to test remote control of the robots
+			  //RemoteControlMode(0x01);
+				
+				CommunicatorAPI.EndCommunication();
+		}
 	
 	/*----------------------------------------------------------------------------------------------------------------------------------------------------	
 	Class Member Variables
 	----------------------------------------------------------------------------------------------------------------------------------------------------*/
 	public static ArrayList<String> commandName =  new ArrayList<String>();
-	public static ArrayList<char[]> commandBuffer = new ArrayList<char[]>();
+	public static ArrayList<int[]> commandBuffer = new ArrayList<int[]>();
 	
-	private static int[][] destinationAddresses = new int[32][8];
+	public static CommunicatorAPI xbee = new CommunicatorAPI("COM17");
 		
 	/*----------------------------------------------------------------------------------------------------------------------------------------------------	
 	Class Member Methods		
 	----------------------------------------------------------------------------------------------------------------------------------------------------*/
-	public static void RunStartUpSequence() throws XBeeException, InterruptedException
-	{
-	    CommunicatorAPI xbee = new CommunicatorAPI();
-	    xbee.FindAllNodes();
-	    destinationAddresses = xbee.GetBotAddresses();
-	    xbee.EndCommunication();
-	}
 		
-	public static void ConstructCommand(String command,char botId,char param1,char param2,char param3,char param4,char param5)
+	public static void ConstructCommand(String command,int param1,int param2,int param3,int param4,int param5)
 	{
 	    switch(command.toLowerCase())
 		{	
@@ -57,7 +71,7 @@ public class Command
 			    if (param1>=0x01&&param1<=0x07)
 			    {
 			        commandName.add("crossSquare");
-				    char[] temp = {botId,0x01,param1,0x00,0x00,0x00,0x00};
+				    int[] temp = {0x01,param1};
 				    commandBuffer.add(temp);
 			    }
 			    else
@@ -70,7 +84,7 @@ public class Command
 			    if ((param1==0x00||param1== 0x2d) && (param2>=0x00&&param2<=0xFF)&&(param3>=0x00&&param3<=0xFF))
 			    {
 			        commandName.add("rotate");
-			        char[] temp = {botId,0x02,param1,param2,param3,0x00,0x00};
+			        int[] temp = {0x02,param1,param2,param3};
 			        commandBuffer.add(temp);
 			    }
 			    else
@@ -83,7 +97,7 @@ public class Command
 			    if ((param1==0x00||param1==0x2d)&&(param2>=0x00&&param2<=0x04)&&(param3==0x00||param1==0x2d)&&(param4>=0x00&&param4<=0x04))
 				{
 			        commandName.add("center");
-					char[] temp = {botId,0x03,param1,param2,param3,param4,param5};
+					int[] temp = {0x03,param1,param2,param3,param4,param5};
 					commandBuffer.add(temp);
 				}
 				else
@@ -97,7 +111,7 @@ public class Command
 				if (param1>=0x00&&param1<=0xFE)
 				{
 				    commandName.add("writeBotId");
-					char[] temp = {botId,0x01,param1,0x00,0x00,0x00,0x00};
+					int[] temp = {0x01,param1};
 					commandBuffer.add(temp);
 				}
 				else
@@ -110,7 +124,7 @@ public class Command
 			    if(param1<=0x07&&param2<=0x07)
 				{
 					commandName.add("movetTo");
-					char[] temp = {botId,0x09,param1,param2,0x00,0x00,0x00};
+					int[] temp = {0x09,param1,param2};
 					commandBuffer.add(temp);
 				}
 				else
@@ -122,21 +136,21 @@ public class Command
 			case("measuresquarestate"):
 				{
 					commandName.add("measureSquareState");
-					char[] temp = {botId,0x05,0x00,0x00,0x00,0x00,0x00};
+					int[] temp = {0x05};
 					commandBuffer.add(temp);
 				}
 				break;
 			case("unwind"):
 				{
 					commandName.add("unwind");
-					char[] temp = {botId,0x06,0x00,0x00,0x00,0x00,0x00};
+					int[] temp = {0x06};
 					commandBuffer.add(temp);
 				}
 				break;
 			case("aligntoedge"):
 				{
 					commandName.add("alignToEdge");
-					char[] temp = {botId,0x07,0x00,0x00,0x00,0x00,0x00};
+					int[] temp = {0x07};
 					commandBuffer.add(temp);
 				}
 				break;
@@ -144,14 +158,14 @@ public class Command
 				if ((param1==0x00||param1==0x2d)&&(param2>=0x00&&param2<=0xFF)&&(param3>=0x00&&param3<=0xFF)&&(param4>=0x00&&param4<=0xFF)&&(param5>=0x00&&param5<=0xFF))
 				{
 					commandName.add("moveDistance");
-					char[] temp = {botId,0x08,param1,param2,param3,param4,param5};
+					int[] temp = {0x08,param1,param2,param3,param4,param5};
 					commandBuffer.add(temp);
 				}
 				break;
 			case("execute"):
 				{
 					commandName.add("execute");
-					char[] temp = {botId,0xFF,0x00,0x00,0x00,0x00,0x00};
+					int[] temp = {0xFF};
 					commandBuffer.add(temp);
 				}
 				break;
@@ -160,59 +174,39 @@ public class Command
 		}
 	}
 	
-	public static void ConstructCommand(String command, char botId, char param1,char param2, char param3, char param4)
+	public static void ConstructCommand(String command, int param1, int param2, int param3, int param4)
 	{
-	     ConstructCommand(command,botId,param1,param2,param3,param4,(char)0);
+	     ConstructCommand(command,param1,param2,param3,param4,0x00);
 	}
 		
-	public static void ConstructCommand(String command, char botId, char param1,char param2, char param3)
+	public static void ConstructCommand(String command, int param1, int param2, int param3)
 	{
-	    ConstructCommand(command,botId,param1,param2,param3,(char)0x00,(char)0x00);
+	    ConstructCommand(command,param1,param2,param3,0x00,0x00);
 	}
 		
-	public static void ConstructCommand(String command, char botId, char param1)
+	public static void ConstructCommand(String command, int param1)
 	{
-	    ConstructCommand(command,botId,param1,(char)0x00,(char)0x00,(char)0x00,(char)0x00);
+	    ConstructCommand(command,param1,0x00,0x00,0x00,0x00);
 	}
 		
-	public static void ConstructCommand(String command, char botId)
+	public static void ConstructCommand(String command)
 	{
-	    ConstructCommand(command,botId,(char)0x00,(char)0x00,(char)0x00,(char)0x00,(char)0x00);
+	    ConstructCommand(command,0x00,0x00,0x00,0x00,0x00);
 	}
 		
-	public static void SendCommands()
-	{
-		CommunicatorAPI xbee = new CommunicatorAPI();
-		int[] data = new int[6]; 
-		int destinationIndex = 0;
-			for(int index = 0; index < commandBuffer.size(); index++)
-			{
-				char[] temp = commandBuffer.get(index);
-				if(index == 0)
-					destinationIndex = temp[0]-1;
-				else
-					data[index] = temp[index];
-			}
-		xbee.SendMessage(data,destinationAddresses[destinationIndex],0x01);
-		xbee.EndCommunication();
-		commandName.clear();
-		commandBuffer.clear();
+	public static void SendCommands(int botAddressIndex) throws InterruptedException
+	{ 
+		for(int i = 0; i < commandBuffer.size(); i++)
+		{
+			xbee.SendMessage(commandBuffer.get(i),xbee.botIdOrderedNodeAddresses[botAddressIndex],1);
+		}
 	}
 		
 	public static void PrintCommandBuffer()
 	{
 	    for(int index = 0; index < commandBuffer.size(); index++)	
-		{
-		    String str = new String(commandBuffer.get(index));
-			str = String.format("%040x", new BigInteger(1, str.getBytes()));	
-			System.out.println("\n"+commandName.get(index)+":\n	"+str.substring(24, str.length()));
+		{	
+			System.out.println("\n"+commandName.get(index)+":\n	"+ByteUtils.toBase16(commandBuffer.get(index)));
 		}
-	}
-		
-	public static void RemoteControlMode(int botId)
-	{
-	    RemoteController.SetDestinationAddresses(destinationAddresses);
-		RemoteController.InitializeControllers();
-		RemoteController.SendAPIMoveCommands(botId);
 	}
 }

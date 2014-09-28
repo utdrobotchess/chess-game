@@ -26,8 +26,9 @@ public class CommunicatorAPI
         CommunicatorAPI communicator =  new CommunicatorAPI("COM17");
         communicator.FindAllNodes();
         //communicator.GetBotAddresses(nodeAddresses);
-
-        // Test to print all nodes in network
+        
+        
+        //Test to print all nodes in network
            System.out.println("After running FindAllNodes().");
            /*for(int i = 1; i < numOfConnectedNodes; i++)
                System.out.println(i+":  "+ByteUtils.toBase16(nodeAddresses[i]));*/
@@ -35,9 +36,10 @@ public class CommunicatorAPI
         //Test to print all nodes in network
             communicator.GetBotAddresses();
             System.out.println();
-            for(int i = 0; i < botIdOrderedNodeAddresses.length; i++)
-            System.out.println(i+": "+ByteUtils.toBase16(botIdOrderedNodeAddresses[i]));
+            for(int i = 0; i < communicator.botIdOrderedNodeAddresses.length; i++)
+            System.out.println(i+": "+ByteUtils.toBase16(communicator.botIdOrderedNodeAddresses[i]));
     
+        //Test to find available bots in botIdOrderedNodeAddresses
             
         /*Test sending the ID query message
         int[] temp = new int[] {0x0A,0x00,0x00,0x00,0x00,0x00};
@@ -46,7 +48,7 @@ public class CommunicatorAPI
         communicator.SendMessage(execute,nodeAddresses[1],0);           
         */
           
-        communicator.EndCommunication();
+        CommunicatorAPI.EndCommunication();
     }
 
     /*----------------------------------------------------------------------------------------------
@@ -60,7 +62,7 @@ public class CommunicatorAPI
     private static int numOfConnectedNodes = 0;
     
     private static int[][] nodeAddresses = new int[33][8];
-    private static int[][] botIdOrderedNodeAddresses = new int[32][8];
+    public int[][] botIdOrderedNodeAddresses = new int[32][8];
       
     /*----------------------------------------------------------------------------------------------
     Class Member Methods
@@ -154,37 +156,38 @@ public class CommunicatorAPI
         {
             int[] idRequest = new int[] {0x0A};
             int[] execute = new int[] {0xff};
-            SendMessage(idRequest,nodeAddresses[index]);
-            SendMessage(execute,nodeAddresses[index]);
+            SendMessage(idRequest,nodeAddresses[index],index);
+            SendMessage(execute,nodeAddresses[index],index);
             
             int[] message = ReadMessage();
             
-            while(message[0] == 0)
-            {
-                for(int correction = 0; correction < 3; correction++)
+            int count = 0; boolean done = false;
+
+                while(message[0] == 0 && !done)
                 {
-                    if(message[0] == 0 && correction < 2)
+                    if(message[0] == 0 && count < 3)
                     {
-                        SendMessage(idRequest,nodeAddresses[index]);
-                        SendMessage(execute,nodeAddresses[index]);
+                        SendMessage(idRequest,nodeAddresses[index], index);
+                        SendMessage(execute,nodeAddresses[index], index);
                         message = ReadMessage();
-                    }
-                    else if(message[0] == 0 && correction == 2)
-                    {
-                        System.out.println("can't get botId from bot with address: "+ nodeAddresses[index]);
-                        break;
+                        count++;
                     }
                     else
-                        break;
+                    {
+                        System.out.println("can't get botId from address:"+ByteUtils.toBase16(nodeAddresses[index]));
+                        done = true;
+                    }
                 }
+                
+            if(message[0] != 0)
+            {
+                System.out.println(index+": This is Bot_"+message[0]);
+                botIdOrderedNodeAddresses[(message[0]-1)] = nodeAddresses[index];
             }
-            
-            System.out.println(index+": This is Bot_"+message[0]);
-            botIdOrderedNodeAddresses[(message[0]-1)] = nodeAddresses[index];
-            message = new int[] {0,0,0,0,0,0};
         }
         return botIdOrderedNodeAddresses;
     }
+    
     public synchronized void SendMessage(int[] bytearr, int[] destinationAddress, int frameId)
     {
         int[] information = bytearr;
@@ -222,6 +225,20 @@ public class CommunicatorAPI
             System.exit(0);
         }
     }
+    
+    public ArrayList<Integer> GetAvailableBotIndices()
+    {
+        ArrayList<Integer> availableBotAddressLocations = new ArrayList<Integer>();
+        for(int index = 0; index < botIdOrderedNodeAddresses.length; index++)
+        {
+            for(int j = 0; j < nodeAddresses.length;j++)
+            {
+                if(botIdOrderedNodeAddresses[index] == nodeAddresses[j])
+                    availableBotAddressLocations.add(index);
+            }
+        }
+        return availableBotAddressLocations;
+    }
 
     public static void SetComPort(String _comport)
     {
@@ -233,7 +250,7 @@ public class CommunicatorAPI
         return comPort;
     }
     
-    public void EndCommunication()
+    public static void EndCommunication()
     {
         xbee.close();
     }
