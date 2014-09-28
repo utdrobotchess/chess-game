@@ -32,11 +32,9 @@ public class Chess extends JFrame {
     ChessGame chess;
     String moveTemp;
     Square squareSelected;
-    
+    ChessGameAI gameAI = new ChessGameAI();
     private ArrayList<ChessPiece> itsChessPieces = new ArrayList<>();
     private ArrayList<Square> possibleSquare = new ArrayList<>();
-    static JPanel chessBoard = new JPanel(new GridLayout(8, 8));
-    JPanel chessPanel = new JPanel(new BorderLayout());
     JFrame f = new JFrame();
     static JButton[] square = new JButton[64];
     private int source = 0;
@@ -44,27 +42,28 @@ public class Chess extends JFrame {
     ImageIcon selectedPiece = new ImageIcon();
     private boolean selected = false;
     boolean clickable = false;
+    boolean tryagain = true;
     boolean againstPlayer;
     JLabel whoseTurn = new JLabel("Choose Settings", JLabel.CENTER);
-    JPanel parentPanel = new JPanel(new BorderLayout());
     JPanel rightSidePanel = new JPanel(new BorderLayout());
-    JPanel gridLayoutPanel = new JPanel(new BorderLayout());
     gameSettings gameStartPanel = new gameSettings();
     gameData gameDataPanel = new gameData();
     JMenuBar menuBar = new JMenuBar();
     JMenuItem globalDepth1 = new JMenuItem("1");
     JMenuItem globalDepth3 = new JMenuItem("3");
     JMenuItem globalDepth4 = new JMenuItem("4");
-    
-    JPanel row = new JPanel(new GridLayout(8, 0));
-    JPanel column = new JPanel(new GridLayout(0, 8));
-    ChessGameAI gameAI = new ChessGameAI();
+    String strUpdate = "";
+    String capturedPiece = "";
     JMenu file = new JMenu("Files"), view = new JMenu("View"), settings = new JMenu("Settings"), subMenu;
     public static void main(String[] args) {
        new Chess();
     }
 
     public Chess() {
+        JPanel chessBoard = new JPanel(new GridLayout(8, 8));
+        JPanel parentPanel = new JPanel(new BorderLayout());
+        JPanel chessPanel = new JPanel(new BorderLayout());
+        JPanel gridLayoutPanel = new JPanel(new BorderLayout());
         for (int i = 0; i < flipBoard.length; i++){
             flipBoard[i] = 63 - i;
         }
@@ -125,17 +124,18 @@ public class Chess extends JFrame {
         parentPanel.add(menuBar, BorderLayout.NORTH);
         parentPanel.add(gridLayoutPanel);
         chessPanel.add(chessBoard, BorderLayout.CENTER);
-        
+        JPanel rowLabel = new JPanel(new GridLayout(8, 0));
+        JPanel columnLabel = new JPanel(new GridLayout(0, 8));
         for(int i = 8; i >= 1; i--){
-            row.add(new JLabel(String.valueOf(i)));
+            rowLabel.add(new JLabel(String.valueOf(i)));
         }
-        chessPanel.add(row, BorderLayout.WEST);
+        chessPanel.add(rowLabel, BorderLayout.WEST);
         for(int i = 0; i < 8; i++){
             JLabel label = new JLabel(String.valueOf((char)(i + 'A')), JLabel.CENTER);
-            column.add(label);
+            columnLabel.add(label);
         }
         chessPanel.add(whoseTurn, BorderLayout.NORTH);
-        chessPanel.add(column, BorderLayout.SOUTH);
+        chessPanel.add(columnLabel, BorderLayout.SOUTH);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 100;
@@ -162,7 +162,6 @@ public class Chess extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int result = JOptionPane.showConfirmDialog(null, "Restart the game?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
- 
                 if(result == 0){
                     
                     // Rebuild the chess game
@@ -235,69 +234,71 @@ public class Chess extends JFrame {
         @Override
         public void mouseClicked(MouseEvent e) {
             if(clickable){
-            for (int dest = 0; dest < 64; dest++) {
-                // Search for the position of the square clicked
-                if (e.getSource() == square[dest]) {
-                    
-                    // Retrieve the piece on that square
-                    squareSelected = chess.getBoard().getSquareAt(dest);
+                for (int dest = 0; dest < 64; dest++) {
+                    // Search for the position of the square clicked
+                    if (e.getSource() == square[dest]) {
 
-                    // Player select a square that has his/her own team piece on the team's turn
-                    if(!selected && squareSelected.isOccupied() && 
-                            squareSelected.getOccupant().getTeam() == chess.getState().getActiveTeam()){
-                       selectPiece(dest);
-                    }
-                    // Choose where the selected piece will move to
-                    else if(selected){
-                        
-                        // Check if square selected is in the possible move list
-                        if(chess.getState().getPossibleMoveIndexes().contains(dest)){
-                            deselect();
-                            // Check if the king is in check after
-                            // player finishes a move
-                            if(!chess.isKingInCheck(source, dest)){
-                                System.out.println("check");
-                                chess.undoMove(dest, source);
-                            }
-                            
-                            // Process the move
-                            else{
-                                executeMove(dest);
-                                
-                                // Playing against an AI
-                                if(!againstPlayer){
-                                    toggle();
-                                    gameAI.updateGameBoard(chess.convertToStringArray());
-                                    ChessGameAI.flipBoard();
-                                    long startTime=System.currentTimeMillis();
-                                    moveTemp=ChessGameAI.alphaBeta(ChessGameAI.globalDepth, 1000000, -1000000, "", 0);
-                                    ChessGameAI.makeMove(moveTemp);
-                                    long endTime=System.currentTimeMillis();
-                                  //  System.out.println("My Move: "+UI.moveDecoding(1,moveTemp.substring(0, 5))+" took: "+(endTime-startTime)+" milliseconds");
+                        // Retrieve the piece on that square
+                        squareSelected = chess.getBoard().getSquareAt(dest);
 
-                                    //ChessGameAI.flipBoard();
+                        // Player select a square that has his/her own team piece on the team's turn
+                        if(!selected && squareSelected.isOccupied() && 
+                                squareSelected.getOccupant().getTeam() == chess.getState().getActiveTeam()){
+                           selectPiece(dest);
+                        }
+                        // Choose where the selected piece will move to
+                        else if(selected){
 
-                                 /*   for(int i=0 ;i<8 ;i++){
-                                        System.out.println(Arrays.deepToString(ChessGameAI.BoardRepn[i]));
-                                    }*/
-
-                                    gameAI.updateGameStatus(chess);
-                                    executeAIMove(moveTemp.substring(0, 5));
-                                    toggle();
+                            // Check if square selected is in the possible move list
+                            if(chess.getState().getPossibleMoveIndexes().contains(dest)){
+                                deselect();
+                                // Check if the king is in check after making a move
+                                if(!chess.isKingInCheck(source, dest)){
+                                    System.out.println("check");
+                                    chess.undoMove(dest, source);
                                 }
-                                
-                                // Playing against a player
-                                else
-                                    toggle();
+
+                                // Process the move
+                                else{
+                                    executeMove(dest);
+
+                                    // Playing against an AI
+                                    if(!againstPlayer && clickable){
+                                        toggle();
+                                        while(tryagain){
+                                        gameAI.updateGameBoard(chess.convertToStringArray());
+                                        ChessGameAI.flipBoard();
+                                        long startTime=System.currentTimeMillis();
+                                        moveTemp=ChessGameAI.alphaBeta(ChessGameAI.globalDepth, 1000000, -1000000, "", 0);
+                                        ChessGameAI.makeMove(moveTemp);
+                                        long endTime=System.currentTimeMillis();
+                                      //  System.out.println("My Move: "+UI.moveDecoding(1,moveTemp.substring(0, 5))+" took: "+(endTime-startTime)+" milliseconds");
+
+                                        //ChessGameAI.flipBoard();
+
+                                     /*   for(int i=0 ;i<8 ;i++){
+                                            System.out.println(Arrays.deepToString(ChessGameAI.BoardRepn[i]));
+                                        }*/
+
+                                        gameAI.updateGameStatus(chess);
+                                        executeAIMove(moveTemp.substring(0, 5));
+                                        }
+                                        tryagain = true;
+                                        toggle();
+                                    }
+
+                                    // Playing against a player
+                                    else
+                                        toggle();
+                                }
+                            }
+                            else{
+                                deselect();
                             }
                         }
-                        else{
-                            deselect();
-                        }
+                        break;
                     }
-                    break;
                 }
-            }
             }
         }
 
@@ -324,19 +325,36 @@ public class Chess extends JFrame {
             whoseTurn.setText("White's move");
     }
     public void executeAIMove(String move){
+        System.out.println(moveTemp);
         int sourceX = (move.charAt(0) - 48) * 8;
         int sourceY = (move.charAt(1) - 48);
-        int next = flipBoard[sourceX + sourceY];
+        int dest = flipBoard[sourceX + sourceY];
         
-        squareSelected = chess.getBoard().getSquareAt(next);
-        selectPiece(next);
+        // AI selects the chess piece to move
+        chess.selectPieceAtLocation(dest);
+        // Save the image of the piece and its location
+        selectedPiece =  chess.getBoard().getSquareAt(dest).getOccupant().getImage();
+        source = dest;
         
-        source = next;
+        // Now to move the piece to where
+        selected = true;
+        
+        source = dest;
         int destX = (move.charAt(2) - 48) * 8;
         int destY = (move.charAt(3) - 48);
-        deselect();
-        chess.isKingInCheck(source, flipBoard[destX + destY]);
-        executeMove(flipBoard[destX + destY]);
+        // Check if AI's move is valid
+
+        if(!chess.isKingInCheck(source, flipBoard[destX + destY])){
+            System.out.println("Invalid move");
+            chess.undoMove(flipBoard[destX + destY], source);
+            tryagain = true;
+        }
+        
+        // Execute if the move is valid
+        else{
+            executeMove(flipBoard[destX + destY]);
+            tryagain = false;
+        }
     //    gameAI.updateGameBoard(chess.convertToStringArray());
     }
     public void selectPiece(int dest){
@@ -347,8 +365,11 @@ public class Chess extends JFrame {
         selectedPiece =  squareSelected.getOccupant().getImage();
         source = dest;
         possibleSquare = squareSelected.getOccupant().getPossibleMoveLocations();
-        // Highlight possible moves
+        
+        // Highlight the selected piece
         square[source].setBackground(Color.blue);
+        
+        // Retrieve the list of all possible moves of the selected Piece
         for(int i = 0; i < possibleSquare.size(); i++){
             if(possibleSquare.get(i).isOccupied())
                 square[possibleSquare.get(i).getNumericalLocation()].setBackground(Color.RED);
@@ -360,7 +381,7 @@ public class Chess extends JFrame {
         selected = true;
     }
     
-    public void executeMove(int next){
+    public void executeMove(int dest){
         
          // Check if castling is valid
         if(chess.hasCastled()){
@@ -372,7 +393,7 @@ public class Chess extends JFrame {
 
             // King's new location
             square[source].setIcon(null);
-            square[next].setIcon(selectedPiece);
+            square[dest].setIcon(selectedPiece);
             chess.setCastled(false);
 
             // Record the move to the data panel
@@ -395,12 +416,12 @@ public class Chess extends JFrame {
             }
 
             square[source].setIcon(null);
-            square[next].setIcon(selectedPiece);
+            square[dest].setIcon(selectedPiece);
 
-            ChessPiece originPiece = chess.getBoard().getSquareAt(next).getOccupant();
+            ChessPiece originPiece = chess.getBoard().getSquareAt(dest).getOccupant();
 
             // A piece is captured
-            if(chess.getCapturedPiece() != null){
+            if(chess.isCaptured()){
                 
                 // Update to the data panel
                 if(chess.getCapturedPiece().getTeam() == Team.GREEN){
@@ -410,75 +431,69 @@ public class Chess extends JFrame {
                     gameDataPanel.updateCapturedPiece(chess.getCapturedPiece().getImage(), 1);
                 }
 
-                gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
+                strUpdate = convertChartoStringName(originPiece.toString()) + 
                          " from square " + source +
                          " captures " + convertChartoStringName(chess.getCapturedPiece().toString())
-                    + " at square " + next);
-                gameDataPanel.convert(Integer.toString(source / 8), 
-                        Integer.toString(source % 8), 
-                        chess.getCapturedPiece().toString(),
-                        Integer.toString(next / 8), 
-                        Integer.toString(next % 8));
+                    + " at square " + dest;
+                capturedPiece = chess.getCapturedPiece().toString();
                 chess.setCapture(false);
             }
             else{
-                // Record the move to Display messages
-                gameDataPanel.updateMove(convertChartoStringName(originPiece.toString()) + 
+                strUpdate = convertChartoStringName(originPiece.toString()) + 
                         " from square: " + source
-                    + " move to square " + next);
-
-                // Record the move into Played Move
-                gameDataPanel.convert(Integer.toString(source / 8), 
-                        Integer.toString(source % 8), 
-                        "",
-                        Integer.toString(next / 8), 
-                        Integer.toString(next % 8));
+                    + " move to square " + dest;
+                capturedPiece = "";
             }
+            // Record the move to Display messages
+            gameDataPanel.updateMove(strUpdate);
+
+            // Record the move into Played Move
+            gameDataPanel.convert(Integer.toString(source / 8), 
+                    Integer.toString(source % 8), 
+                    capturedPiece,
+                    Integer.toString(dest / 8), 
+                    Integer.toString(dest % 8));
+            
 
             // Pawn gets promoted
             if(chess.getState().getPawnPromotion()){
-                int promo = JOptionPane.showOptionDialog(null, "What will the pawn be promoted to?", 
-                        "Promotion", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                        new Object[]{"Rook", "Knight", "Bishop", "Queen"}, "Rook");
-
-                Square squareLocation = chess.getBoard().getSquareAt(next);
+                Square squareLocation = chess.getBoard().getSquareAt(dest);
                 ChessPiece oldPawn = squareLocation.getOccupant();
-                if(promo == 0){
-                    Rook rook = new Rook();
-                    rook.setTeam(squareLocation.getOccupant().getTeam());
-                    Rook.assignStringName(rook);
-                    rook.setLocation(squareLocation);
-                    square[next].setIcon(rook.getImage());
+                if(!againstPlayer){
+                    promotePawnTo(new Queen(), dest);
                 }
-                else if(promo == 1){
-                    Knight knight = new Knight();
-                    knight.setTeam(squareLocation.getOccupant().getTeam());
-                    Knight.assignStringName(knight);
-                    knight.setLocation(squareLocation);
-                    square[next].setIcon(knight.getImage());
+                else{
+                    while(true){
+                        int promo = JOptionPane.showOptionDialog(null, "What will the pawn be promoted to?", 
+                                "Promotion", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+                                new Object[]{"Rook", "Knight", "Bishop", "Queen"}, "Rook");
+                        if(promo == 0){
+                            promotePawnTo(new Rook(), dest);
+                            break;
+                        }
+                        else if(promo == 1){
+                            promotePawnTo(new Knight(), dest);
+                            break;
+                        }
+                        else if(promo == 2){
+                            promotePawnTo(new Bishop(), dest);
+                            break;
+                        }
+
+                        else if(promo == 3){
+                            promotePawnTo(new Queen(), dest);
+                            break;
+                        }
+                    }
                 }
-                else if(promo == 2){
-                    Bishop bishop = new Bishop();
-                    bishop.setTeam(squareLocation.getOccupant().getTeam());
-                    Bishop.assignStringName(bishop);
-                    bishop.setLocation(squareLocation);
-                    square[next].setIcon(bishop.getImage());
-                }
-                else if(promo == 3){
-                    Queen queen = new Queen();
-                    queen.setTeam(squareLocation.getOccupant().getTeam());
-                    Queen.assignStringName(queen);
-                    queen.setLocation(squareLocation);
-                    square[next].setIcon(queen.getImage());
-                }
-                chess.updatePawnPromotion(oldPawn, next);
+                chess.updatePawnPromotion(oldPawn, dest);
             }
         }
-        chess.updateStatus(next);
+        chess.updateStatus(dest);
             
         // End if there is a stalemate or a checkmate
         if(chess.getState().isCheckmate()){
-            Team winner = chess.getBoard().getSquareAt(next).getOccupant().getTeam();
+            Team winner = chess.getBoard().getSquareAt(dest).getOccupant().getTeam();
             gameDataPanel.updateMove("Winner: Team " + winner);
             JOptionPane.showMessageDialog(null, "CheckMate: Team " + winner + " wins");
             clickable = false;
@@ -489,8 +504,13 @@ public class Chess extends JFrame {
             clickable = false;
         }
     }
-    public void processPromotion(ChessPiece p){
-        
+    public void promotePawnTo(ChessPiece piece, int dest){
+        Square squareLocation = chess.getBoard().getSquareAt(dest);
+        piece.setTeam(squareLocation.getOccupant().getTeam());
+        ChessPiece.assignStringName(piece, "Q", "Queen.png");
+        piece.setLocation(squareLocation);
+        square[dest].setIcon(piece.getImage());
+    
     }
     // Return the colors of possible moves to original colors.
     public void deselect() {

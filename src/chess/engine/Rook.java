@@ -9,10 +9,6 @@ import javax.swing.ImageIcon;
  * @author Alexandre
  */
 public class Rook extends ChessPiece{
-    private static final String white = prefix + "WRook.png";
-    private static final String black = prefix + "BRook.png";
-    private static ImageIcon WRookPic = new ImageIcon(white);
-    private static ImageIcon BRookPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
     private static final int BOARD_WIDTH = 8;
     protected static Rook spawnAt(Square location) {
@@ -20,7 +16,7 @@ public class Rook extends ChessPiece{
         r.setTeamFromInitialLocation(location);
         r.setLocation(location);
         r.setInitialNumericalLocation();
-        assignStringName(r);
+        assignStringName(r, "R", "Rook.png");
         return r;
     }
     @Override
@@ -40,15 +36,5 @@ public class Rook extends ChessPiece{
     @Override
     public String toString() {
         return ID;
-    }
-     public static void assignStringName(Rook r){
-        if(r.getTeam() == Team.ORANGE){
-            r.setImage(WRookPic);
-            r.setName("R");
-        }
-        else{
-            r.setImage(BRookPic);
-            r.setName("r");
-        }
     }
 }

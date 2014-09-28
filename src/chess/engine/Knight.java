@@ -9,17 +9,13 @@ import javax.swing.ImageIcon;
  * @author Alexandre
  */
 public class Knight extends ChessPiece{
-    private static final String white = prefix + "WKnight.png";
-    private static final String black = prefix + "BKnight.png";
-    private static ImageIcon WKnightPic = new ImageIcon(white);
-    private static ImageIcon BKnightPic = new ImageIcon(black);
     private static final int NUM_NEIGHBOR_DIRECTIONS = 8;
     protected static Knight spawnAt(Square location) {
         Knight k = new Knight();
         k.setTeamFromInitialLocation(location);
         k.setLocation(location);
         k.setInitialNumericalLocation();
-        assignStringName(k);
+        assignStringName(k, "K", "Knight.png");
         return k;
     }
 
@@ -68,15 +64,5 @@ public class Knight extends ChessPiece{
     @Override
     public String toString() {
         return ID;
-    }
-    public static void assignStringName(Knight k){
-        if(k.getTeam() == Team.ORANGE){
-            k.setImage(WKnightPic);
-            k.setName("K");
-        }
-        else{
-            k.setImage(BKnightPic);
-            k.setName("k");
-        }
     }
 }

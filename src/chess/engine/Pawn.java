@@ -9,10 +9,6 @@ import javax.swing.ImageIcon;
  * @author Alexandre
  */
 public class Pawn extends ChessPiece{
-    private static final String white = prefix + "WPawn.png";
-    private static final String black = prefix + "BPawn.png";
-    private static ImageIcon WPawnPic = new ImageIcon(white);
-    private static ImageIcon BPawnPic = new ImageIcon(black);
     private ArrayList<Square> possibleMoveLocations = new ArrayList<>();
     
     // Create a new pawn, assigning it to a team and set its initial location
@@ -22,7 +18,7 @@ public class Pawn extends ChessPiece{
         p.setTeamFromInitialLocation(location);
         p.setLocation(location);
         p.setInitialNumericalLocation();
-        assignStringName(p);
+        assignStringName(p, "P", "Pawn.png");
         return p;
     }
     
@@ -150,15 +146,5 @@ public class Pawn extends ChessPiece{
     @Override
     public String toString() {
         return ID;
-    }
-    public static void assignStringName(Pawn p){
-        if(p.getTeam() == Team.ORANGE){
-            p.setImage(WPawnPic);
-            p.setName("P");
-        }
-        else{
-            p.setImage(BPawnPic);
-            p.setName("p");
-        }
     }
 }

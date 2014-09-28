@@ -9,10 +9,6 @@ import javax.swing.ImageIcon;
  * @author Alexandre
  */
 public class Bishop extends ChessPiece{
-    private static final String white = prefix + "WBishop.png";
-    private static final String black = prefix + "BBishop.png";
-    private static ImageIcon WBishopPic = new ImageIcon(white);
-    private static ImageIcon BBishopPic = new ImageIcon(black);
     private final static int BOARD_WIDTH = 8;
     private final static int NUM_NEIGHBOR_DIRECTIONS = 8;
     protected static Bishop spawnAt(Square location) {
@@ -20,7 +16,7 @@ public class Bishop extends ChessPiece{
         b.setTeamFromInitialLocation(location);
         b.setLocation(location);
         b.setInitialNumericalLocation();
-        assignStringName(b);
+        assignStringName(b, "B", "Bishop.png");
         return b;
     }
 
@@ -41,15 +37,5 @@ public class Bishop extends ChessPiece{
     @Override
     public String toString() {
         return ID;
-    }
-     public static void assignStringName(Bishop b){
-        if(b.getTeam() == Team.ORANGE){
-            b.setImage(WBishopPic);
-            b.setName("B");
-        }
-        else{
-            b.setImage(BBishopPic);
-            b.setName("b");
-        }
     }
 }

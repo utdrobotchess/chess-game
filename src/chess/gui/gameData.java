@@ -108,12 +108,12 @@ public class gameData extends JPanel{
         add(p);
     }
     public void updateMove(String data){
-        moveList += data + "\n";
-        messageText.setText(moveList);
+        moveList = data + "\n";
+        messageText.append(moveList);
     }
     public void convert(String Orow, String Ocolumn, String piece, String Drow, String Dcolumn){
-        record += convertRowPosition(Orow, Ocolumn) + convertRowPosition(Drow, Dcolumn) + piece+ "\n";
-        moveListText.setText(record);
+        record = convertRowPosition(Orow, Ocolumn) + convertRowPosition(Drow, Dcolumn) + piece+ "\n";
+        moveListText.append(record);
     }
     public String convertRowPosition(String row, String column){
         int positionX = 8 - Integer.valueOf(row);

@@ -8,8 +8,8 @@ import javax.swing.ImageIcon;
  * @author Alexandre
  */
 public abstract class ChessPiece implements Comparable<ChessPiece>  {
-   // final static protected String prefix = "C:\\Users\\Alexandre\\Documents\\NetBeansProjects\\Chess\\src\\chess\\engine\\";
-    final static protected String prefix = "C:\\Summer2014\\AI\\Project\\Pawn\\";
+    final static protected String prefix = "C:\\Users\\Alexandre\\Documents\\NetBeansProjects\\Chess\\src\\chess\\engine\\";
+  //  final static protected String prefix = "C:\\Summer2014\\AI\\Project\\Pawn\\";
     private static final int TOTAL_SQUARES = 64;  // For assigning team
     private Square itsLocation;
     private Team itsTeam;
@@ -164,5 +164,16 @@ public abstract class ChessPiece implements Comparable<ChessPiece>  {
     }
     public String setName(String ID){
         return this.ID = ID;
+    }
+    public static void assignStringName(ChessPiece p, String name, String image){
+        if(p.getTeam() == Team.ORANGE){
+            p.setImage(new ImageIcon(prefix + "W" + image));
+            p.setName(name);
+
+        }
+        else{
+            p.setImage(new ImageIcon(prefix + "B" + image));
+            p.setName(name.toLowerCase());
+        }
     }
 }

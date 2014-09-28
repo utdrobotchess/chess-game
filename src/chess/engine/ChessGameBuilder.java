@@ -11,9 +11,9 @@ public class ChessGameBuilder {
     private static final int[] ROOK_LOCATIONS = {0, 7, 56, 63};
     private static final int[] KNIGHT_LOCATIONS = {1, 6, 57, 62};
     private static final int[] BISHOP_LOCATIONS = {2, 5, 58, 61};
-    private static final int[] QUEEN_LOCATIONS = {3, 59};
+    private static final int[] QUEEN_LOCATIONS = {3, 39};
     private static final int[] KING_LOCATIONS = {4, 60};
-    private static final int[] PAWN_LOCATIONS = {8, 9, 10, 11, 12, 13, 14, 15,
+    private static final int[] PAWN_LOCATIONS = {8, 9, 10, 19, 12, 21, 14, 15,
                                                 48, 49, 50, 51, 52, 53, 54, 55};
     private static ChessBoard board;
     ChessGameBuilder(){
