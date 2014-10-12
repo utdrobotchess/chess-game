@@ -195,9 +195,7 @@ public class ChessGame {
         // Check for empassant
         if(isEnpassantInvoked(piece, destination)){
             castEnpasssant(destination);
-
         }
-        
         
         ArrayList<Integer>movePairs = addMovePairs(destination);
         itsState.setMovePairs(movePairs);

@@ -19,7 +19,6 @@ public class Bishop extends ChessPiece{
         assignStringName(b, "B", "Bishop.png");
         return b;
     }
-
     @Override
     protected ArrayList<Square> generatePossibleMoveLocations() {
         ArrayList<Square> possibleMoveLocations = new ArrayList<>();
