@@ -4,6 +4,19 @@
   <property file="build.properties" />
   <property name="src" location="src" />
   <property name="build" location="build" />
+  <property name="lib" location="lib" />
+  <property name="src.test" location="test" />
+  <property name="junit.results" location="test-results" />
+
+  <!-- build the classpath -->
+  <path id="classpath">
+    <fileset dir="${lib}" includes="*.jar" />
+  </path>
+
+  <path id="classpath.test">
+    <path refid="classpath" />
+    <pathelement location="${build}" />
+  </path>
 
   <!-- initialize the environment -->
   <target name="init">
@@ -13,20 +26,36 @@
 
   <!-- compile the source code -->
   <target name="compile" depends="init" description="compile the source" >
-    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- Compile the java code from ${src} and ${src.test} into ${build} -->
     <javac destdir="${build}" >
       <src path="${src}" />
+      <src path="${src.test}" />
+      <classpath refid="classpath" />
     </javac>
   </target>
-
+  
   <!-- compile the source code with debug turned on -->
   <target name="compile.debug" depends="init" description="compile the source with debug" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac debug="on" destdir="${build}" >
       <src path="${src}" />
+      <src path="${src.test}" />
+      <classpath refid="classpath" />
     </javac>
   </target>
 
+  <!-- execute the unit tests -->
+  <target name="test" depends="compile.debug" description="run unit tests">
+    <junit fork="no" errorProperty="test.failed" failureProperty="test.failed" >
+      <classpath refid="classpath.test" />
+      <formatter type="plain" usefile="false" />
+      <batchtest>
+	<fileset dir="${build}" includes="**/*Test.class" />
+      </batchtest>
+    </junit>
+    <fail message="Tests failed. Please see test reports" if="test.failed" />
+  </target>
+  
   <!-- clean up the environment -->
   <target name="clean" description="clean up">
     <!-- delete the ${build} directory tree -->
