@@ -10,8 +10,30 @@ import java.util.ArrayList;
 public abstract class ChessPiece
 {
     private Square location;
-    private ArrayList<Integer> possibleMoves;
+    private ArrayList<Square> possibleMoves;
     private Team team;
+
+    protected void addMovesInDirection(ArrayList<Square> moveList, int direction, int limit)
+    {
+        Square neighbor = location.getNeighbor(direction);
+        int squaresTraveled = 0;
+
+        while (neighbor != null && squaresTraveled < limit) {
+            if (neighbor.isOccupied()) {
+                ChessPiece occupant = neighbor.getOccupant();
+                Team theirTeam = occupant.getTeam();
+
+                if (theirTeam != team)
+                    moveList.add(neighbor);
+
+                break;
+            }
+
+            moveList.add(neighbor);
+            neighbor = neighbor.getNeighbor(direction);
+            squaresTraveled++;
+        }
+    }
 
     protected Square getLocation()
     {
@@ -29,7 +51,7 @@ public abstract class ChessPiece
         location.setOccupant(this);
     }
 
-    protected void setPossibleMoves(ArrayList<Integer> possibleMoves)
+    protected void setPossibleMoves(ArrayList<Square> possibleMoves)
     {
         this.possibleMoves = possibleMoves;
     }
