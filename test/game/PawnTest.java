@@ -54,27 +54,27 @@ public class PawnTest
         Pawn p2 = new Pawn(board.getSquareAt(30));
         Pawn p3 = new Pawn(board.getSquareAt(37));
 
-        int p1Expected[] = {23, 30, 31};
-        int p2Expected[] = {37, 38, 39, 46};
-        int p3Expected[] = {21, 29, 30};
+        final int P1_EXPECTED[] = {23, 30, 31};
+        final int P2_EXPECTED[] = {37, 38, 39, 46};
+        final int P3_EXPECTED[] = {21, 29, 30};
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
         assertEquals(3, p1Actual.size());
 
         for (int i = 0; i < p1Actual.size(); i++)
-            assertEquals(p1Expected[i], p1Actual.get(i).getIntLocation());
+            assertEquals(P1_EXPECTED[i], p1Actual.get(i).getIntLocation());
 
         ArrayList<Square> p2Actual = p2.generateMoveLocations();
         assertEquals(4, p2Actual.size());
 
         for (int i = 0; i < p2Actual.size(); i++)
-            assertEquals(p2Expected[i], p2Actual.get(i).getIntLocation());
+            assertEquals(P2_EXPECTED[i], p2Actual.get(i).getIntLocation());
 
         ArrayList<Square> p3Actual = p3.generateMoveLocations();
         assertEquals(3, p3Actual.size());
         
         for (int i = 0; i < p3Actual.size(); i++)
-            assertEquals(p3Expected[i], p3Actual.get(i).getIntLocation());
+            assertEquals(P3_EXPECTED[i], p3Actual.get(i).getIntLocation());
     }
 
     @Test

@@ -16,7 +16,7 @@ public class Pawn extends ChessPiece
     {
         hasNotMoved = true;
         setLocation(location);
-        setPossibleMoves(new ArrayList<Integer>());
+        setPossibleMoves(new ArrayList<Square>());
         setTeamFromInitialLocation(location);
     }
 
