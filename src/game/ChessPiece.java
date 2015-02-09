@@ -12,6 +12,34 @@ public abstract class ChessPiece
     private Square location;
     private ArrayList<Square> possibleMoves;
     private Team team;
+    private int id;
+    private boolean active;
+
+    public ChessPiece(Square location)
+    {
+        setLocation(location);
+        possibleMoves = new ArrayList<>();
+        setTeamFromInitialLocation(location);
+        active = true;
+    }
+
+    public ChessPiece(Square location, int id)
+    {
+        setLocation(location);
+        this.id = id;
+        possibleMoves = new ArrayList<>();
+        setTeamFromInitialLocation(location);
+        active = true;
+    }
+
+    public ChessPiece(Square location, int id, Team team, boolean active)
+    {
+        setLocation(location);
+        this.id = id;
+        possibleMoves = new ArrayList<>();
+        this.team = team;
+        this.active = active;
+    }
 
     protected void addMovesInDirection(ArrayList<Square> moveList, int direction, int limit)
     {
