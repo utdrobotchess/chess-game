@@ -67,4 +67,10 @@ public class Square implements Comparable<Square>
     {
         this.occupant = occupant;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Square at " + intLocation;
+    }
 }
