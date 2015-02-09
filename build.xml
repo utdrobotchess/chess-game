@@ -1,12 +1,10 @@
 <project name="chess-game" basedir="." default="compile">
 
   <!-- set global properties for this build -->
-  <property file="build.properties" />
   <property name="src" location="src" />
   <property name="build" location="build" />
   <property name="lib" location="lib" />
   <property name="src.test" location="test" />
-  <property name="junit.results" location="test-results" />
 
   <!-- build the classpath -->
   <path id="classpath">
@@ -27,7 +25,7 @@
   <!-- compile the source code -->
   <target name="compile" depends="init" description="compile the source" >
     <!-- Compile the java code from ${src} and ${src.test} into ${build} -->
-    <javac destdir="${build}" >
+    <javac destdir="${build}" includeantruntime="false">
       <src path="${src}" />
       <src path="${src.test}" />
       <classpath refid="classpath" />
@@ -37,7 +35,7 @@
   <!-- compile the source code with debug turned on -->
   <target name="compile.debug" depends="init" description="compile the source with debug" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac debug="on" destdir="${build}" >
+    <javac debug="on" destdir="${build}" includeantruntime="false">
       <src path="${src}" />
       <src path="${src.test}" />
       <classpath refid="classpath" />
