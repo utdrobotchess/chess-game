@@ -18,6 +18,13 @@ public class Square implements Comparable<Square>
         occupant = null;
     }
 
+    protected Square copySquare()
+    {
+        Square copiedSquare = new Square(intLocation);
+        copiedSquare.setOccupant(occupant);
+        return copiedSquare;
+    }
+
     @Override
     public int compareTo(Square otherSquare)
     {
