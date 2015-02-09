@@ -63,6 +63,14 @@ public abstract class ChessPiece
         }
     }
 
+    protected abstract ArrayList<Square> generateMoveLocations();
+    protected abstract ChessPiece copyPiece();
+
+    protected int getID()
+    {
+        return id;
+    }
+
     protected Square getLocation()
     {
         return location;
