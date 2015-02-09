@@ -11,6 +11,8 @@ public class ChessGame
 {
     ChessPiece allPieces[];
 
+    final int NUM_PIECES = 32;
+
     final int ROOK_IDS[] = {0, 7, 24, 31};
     final int KNIGHT_IDS[] = {1, 6, 25, 30};
     final int BISHOP_IDS[] = {2, 5, 26, 29};
@@ -43,7 +45,7 @@ public class ChessGame
 
     private void initializePieces()
     {
-        allPieces = new ChessPiece[32];
+        allPieces = new ChessPiece[NUM_PIECES];
 
         for (int i = 0; i < ROOK_IDS.length; i++) {
             Square position = board.getSquareAt(ROOK_INITIAL_POSITIONS[i]);
@@ -85,15 +87,17 @@ public class ChessGame
     protected ChessGame copyGame()
     {
         final int NUM_SQUARES = 64;
-        final int NUM_PIECES = 32;
 
         ChessBoard copiedBoard = new ChessBoard();
         ChessPiece copiedPieces[] = new ChessPiece[NUM_PIECES];
 
         for (int i = 0; i < NUM_PIECES; i++) {
             copiedPieces[i] = allPieces[i].copyPiece();
-            int intLocation = allPieces[i].getLocation().getIntLocation();
-            copiedPieces[i].setLocation(copiedBoard.getSquareAt(intLocation));
+
+            if (copiedPieces[i].isActive()) {
+                int intLocation = allPieces[i].getLocation().getIntLocation();
+                copiedPieces[i].setLocation(copiedBoard.getSquareAt(intLocation));
+            }
         }
         
         ChessGame copiedGame = new ChessGame(copiedBoard, copiedPieces);
@@ -118,7 +122,7 @@ public class ChessGame
                     moveLocations.remove(i--);
                 }
             }
-        }
+        } 
 
         return moveLocations;
     }
@@ -146,7 +150,7 @@ public class ChessGame
         ChessPiece king = getKing(team);
         
         for (int i = 0; i < allPieces.length; i++) {
-            if (allPieces[i].getTeam() != team) {
+            if (allPieces[i].getTeam() != team && allPieces[i].isActive()) {
                 ArrayList<Square> moveLocations = allPieces[i].generateMoveLocations();
                 if (moveLocations.contains(king.getLocation()))
                     return true;
@@ -154,5 +158,19 @@ public class ChessGame
         }
         
         return false;
+    }
+
+    protected boolean isInCheckmate(Team team)
+    {
+        for (int i = 0; i < NUM_PIECES; i++) {
+            if (allPieces[i].getTeam() == team && allPieces[i].isActive()) {
+                ArrayList<Square> moveLocations = generateMoveLocations(allPieces[i], true);
+
+                if (moveLocations.size() > 0)
+                    return false;
+            }
+        }
+        
+        return true;
     }
 }

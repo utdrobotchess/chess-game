@@ -15,7 +15,7 @@ public class ChessGameTest
     public static void main(String[] args)
     {
         ChessGameTest test = new ChessGameTest();
-        test.testRemoveMovesResultingInCheck();
+        test.testIdentifyCheckMate();
     }
     
     @Test
@@ -189,7 +189,24 @@ public class ChessGameTest
     @Test
     public void testIdentifyCheckMate()
     {
+        ChessGame game = new ChessGame();
 
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+
+        pieces[20].moveTo(board.getSquareAt(36));
+        pieces[14].moveTo(board.getSquareAt(22));
+        pieces[29].moveTo(board.getSquareAt(34));
+        pieces[14].moveTo(board.getSquareAt(30));
+        pieces[27].moveTo(board.getSquareAt(45));
+        pieces[14].moveTo(board.getSquareAt(38));
+
+        Assert.assertFalse(game.isInCheckmate(Team.BLACK));
+        
+        pieces[27].moveTo(board.getSquareAt(13));
+
+        Assert.assertTrue(game.isInCheckmate(Team.BLACK));
+        Assert.assertFalse(game.isInCheckmate(Team.WHITE));
     }
 
     @Test
