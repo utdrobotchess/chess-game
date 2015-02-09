@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 
@@ -32,25 +32,25 @@ public class BishopTest
         ArrayList<Square> b3Actual = b3.generateMoveLocations();
         ArrayList<Square> b4Actual = b4.generateMoveLocations();
 
-        assertEquals(B1_EXPECTED.length, b1Actual.size());
+        Assert.assertEquals(B1_EXPECTED.length, b1Actual.size());
 
         for (int i = 0; i < B1_EXPECTED.length; i++)
-            assertEquals(B1_EXPECTED[i], b1Actual.get(i).getIntLocation());
+            Assert.assertEquals(B1_EXPECTED[i], b1Actual.get(i).getIntLocation());
 
-        assertEquals(B2_EXPECTED.length, b2Actual.size());
+        Assert.assertEquals(B2_EXPECTED.length, b2Actual.size());
 
         for (int i = 0; i < B2_EXPECTED.length; i++)
-            assertEquals(B2_EXPECTED[i], b2Actual.get(i).getIntLocation());
+            Assert.assertEquals(B2_EXPECTED[i], b2Actual.get(i).getIntLocation());
 
-        assertEquals(B3_EXPECTED.length, b3Actual.size());
+        Assert.assertEquals(B3_EXPECTED.length, b3Actual.size());
 
         for (int i = 0; i < B3_EXPECTED.length; i++)
-            assertEquals(B3_EXPECTED[i], b3Actual.get(i).getIntLocation());
+            Assert.assertEquals(B3_EXPECTED[i], b3Actual.get(i).getIntLocation());
 
-        assertEquals(B4_EXPECTED.length, b4Actual.size());
+        Assert.assertEquals(B4_EXPECTED.length, b4Actual.size());
 
         for (int i = 0; i < B4_EXPECTED.length; i++)
-            assertEquals(B4_EXPECTED[i], b4Actual.get(i).getIntLocation());
+            Assert.assertEquals(B4_EXPECTED[i], b4Actual.get(i).getIntLocation());
 
     }
 }

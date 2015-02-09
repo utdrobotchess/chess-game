@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 public class ChessBoardTest
 {
@@ -57,7 +57,7 @@ public class ChessBoardTest
                 if (actualNeighbor != null)
                     actualIntValue = actualNeighbor.getIntLocation();
                 
-                assertEquals(EXPECTED_NEIGHBORS[i][j], actualIntValue);
+                Assert.assertEquals(EXPECTED_NEIGHBORS[i][j], actualIntValue);
             }
         }
     }

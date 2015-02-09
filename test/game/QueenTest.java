@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 
@@ -33,19 +33,19 @@ public class QueenTest
         ArrayList<Square> q2Actual = q2.generateMoveLocations();
         ArrayList<Square> q3Actual = q3.generateMoveLocations();
 
-        assertEquals(Q1_EXPECTED.length, q1Actual.size());
+        Assert.assertEquals(Q1_EXPECTED.length, q1Actual.size());
 
         for (int i = 0; i < Q1_EXPECTED.length; i++)
-            assertEquals(Q1_EXPECTED[i], q1Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q1_EXPECTED[i], q1Actual.get(i).getIntLocation());
  
-        assertEquals(Q2_EXPECTED.length, q2Actual.size());
+        Assert.assertEquals(Q2_EXPECTED.length, q2Actual.size());
 
         for (int i = 0; i < Q2_EXPECTED.length; i++)
-            assertEquals(Q2_EXPECTED[i], q2Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q2_EXPECTED[i], q2Actual.get(i).getIntLocation());
 
-        assertEquals(Q3_EXPECTED.length, q3Actual.size());
+        Assert.assertEquals(Q3_EXPECTED.length, q3Actual.size());
 
         for (int i = 0; i < Q3_EXPECTED.length; i++)
-            assertEquals(Q3_EXPECTED[i], q3Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q3_EXPECTED[i], q3Actual.get(i).getIntLocation());
       }
 }

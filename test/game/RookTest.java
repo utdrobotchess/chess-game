@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 
@@ -32,25 +32,24 @@ public class RookTest
         ArrayList<Square> r3Actual = r3.generateMoveLocations();
         ArrayList<Square> r4Actual = r4.generateMoveLocations();
 
-        assertEquals(R1_EXPECTED.length, r1Actual.size());
+        Assert.assertEquals(R1_EXPECTED.length, r1Actual.size());
 
         for (int i = 0; i < R1_EXPECTED.length; i++)
-            assertEquals(R1_EXPECTED[i], r1Actual.get(i).getIntLocation());
+            Assert.assertEquals(R1_EXPECTED[i], r1Actual.get(i).getIntLocation());
 
-        assertEquals(R2_EXPECTED.length, r2Actual.size());
+        Assert.assertEquals(R2_EXPECTED.length, r2Actual.size());
 
         for (int i = 0; i < R2_EXPECTED.length; i++)
-            assertEquals(R2_EXPECTED[i], r2Actual.get(i).getIntLocation());
+            Assert.assertEquals(R2_EXPECTED[i], r2Actual.get(i).getIntLocation());
         
-        assertEquals(R3_EXPECTED.length, r3Actual.size());
+        Assert.assertEquals(R3_EXPECTED.length, r3Actual.size());
 
         for (int i = 0; i < R3_EXPECTED.length; i++)
-            assertEquals(R3_EXPECTED[i], r3Actual.get(i).getIntLocation());
+            Assert.assertEquals(R3_EXPECTED[i], r3Actual.get(i).getIntLocation());
         
-        assertEquals(R4_EXPECTED.length, r4Actual.size());
+        Assert.assertEquals(R4_EXPECTED.length, r4Actual.size());
 
         for (int i = 0; i < R4_EXPECTED.length; i++)
-            assertEquals(R4_EXPECTED[i], r4Actual.get(i).getIntLocation());
-     
+            Assert.assertEquals(R4_EXPECTED[i], r4Actual.get(i).getIntLocation());
     }
 }

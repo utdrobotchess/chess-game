@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 
@@ -21,9 +21,9 @@ public class PawnTest
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
 
-        assertEquals(2, p1Actual.size());
-        assertEquals(17, p1Actual.get(0).getIntLocation());
-        assertEquals(25, p1Actual.get(1).getIntLocation());
+        Assert.assertEquals(2, p1Actual.size());
+        Assert.assertEquals(17, p1Actual.get(0).getIntLocation());
+        Assert.assertEquals(25, p1Actual.get(1).getIntLocation());
     }
 
     @Test
@@ -39,10 +39,10 @@ public class PawnTest
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
         ArrayList<Square> p2Actual = p2.generateMoveLocations();
 
-        assertEquals(1, p1Actual.size());
-        assertEquals(46, p1Actual.get(0).getIntLocation());
+        Assert.assertEquals(1, p1Actual.size());
+        Assert.assertEquals(46, p1Actual.get(0).getIntLocation());
         
-        assertEquals(0, p2Actual.size());
+        Assert.assertEquals(0, p2Actual.size());
     }
     
     @Test
@@ -59,22 +59,22 @@ public class PawnTest
         final int P3_EXPECTED[] = {21, 29, 30};
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
-        assertEquals(3, p1Actual.size());
+        Assert.assertEquals(3, p1Actual.size());
 
         for (int i = 0; i < p1Actual.size(); i++)
-            assertEquals(P1_EXPECTED[i], p1Actual.get(i).getIntLocation());
+            Assert.assertEquals(P1_EXPECTED[i], p1Actual.get(i).getIntLocation());
 
         ArrayList<Square> p2Actual = p2.generateMoveLocations();
-        assertEquals(4, p2Actual.size());
+        Assert.assertEquals(4, p2Actual.size());
 
         for (int i = 0; i < p2Actual.size(); i++)
-            assertEquals(P2_EXPECTED[i], p2Actual.get(i).getIntLocation());
+            Assert.assertEquals(P2_EXPECTED[i], p2Actual.get(i).getIntLocation());
 
         ArrayList<Square> p3Actual = p3.generateMoveLocations();
-        assertEquals(3, p3Actual.size());
+        Assert.assertEquals(3, p3Actual.size());
         
         for (int i = 0; i < p3Actual.size(); i++)
-            assertEquals(P3_EXPECTED[i], p3Actual.get(i).getIntLocation());
+            Assert.assertEquals(P3_EXPECTED[i], p3Actual.get(i).getIntLocation());
     }
 
     @Test
@@ -88,9 +88,9 @@ public class PawnTest
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
 
-        assertEquals(2, p1Actual.size());
-        assertEquals(36, p1Actual.get(0).getIntLocation());
-        assertEquals(44, p1Actual.get(1).getIntLocation());
+        Assert.assertEquals(2, p1Actual.size());
+        Assert.assertEquals(36, p1Actual.get(0).getIntLocation());
+        Assert.assertEquals(44, p1Actual.get(1).getIntLocation());
     }
 
     @Test
@@ -103,8 +103,8 @@ public class PawnTest
         
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
 
-        assertEquals(1, p1Actual.size());
-        assertEquals(44, p1Actual.get(0).getIntLocation());
+        Assert.assertEquals(1, p1Actual.size());
+        Assert.assertEquals(44, p1Actual.get(0).getIntLocation());
     }
 }
     

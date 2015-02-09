@@ -5,8 +5,8 @@
 
 package game;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 
@@ -32,24 +32,24 @@ public class KnightTest
         ArrayList<Square> k3Actual = k3.generateMoveLocations();
         ArrayList<Square> k4Actual = k4.generateMoveLocations();
         
-        assertEquals(K1_EXPECTED.length, k1Actual.size());
+        Assert.assertEquals(K1_EXPECTED.length, k1Actual.size());
 
         for (int i = 0; i < K1_EXPECTED.length; i++)
-            assertEquals(K1_EXPECTED[i], k1Actual.get(i).getIntLocation());
+            Assert.assertEquals(K1_EXPECTED[i], k1Actual.get(i).getIntLocation());
 
-        assertEquals(K2_EXPECTED.length, k2Actual.size());
+        Assert.assertEquals(K2_EXPECTED.length, k2Actual.size());
 
         for (int i = 0; i < K2_EXPECTED.length; i++)
-            assertEquals(K2_EXPECTED[i], k2Actual.get(i).getIntLocation());
+            Assert.assertEquals(K2_EXPECTED[i], k2Actual.get(i).getIntLocation());
         
-        assertEquals(K3_EXPECTED.length, k3Actual.size());
+        Assert.assertEquals(K3_EXPECTED.length, k3Actual.size());
 
         for (int i = 0; i < K3_EXPECTED.length; i++)
-            assertEquals(K3_EXPECTED[i], k3Actual.get(i).getIntLocation());
+            Assert.assertEquals(K3_EXPECTED[i], k3Actual.get(i).getIntLocation());
 
-        assertEquals(K4_EXPECTED.length, k4Actual.size());
+        Assert.assertEquals(K4_EXPECTED.length, k4Actual.size());
 
         for (int i = 0; i < K4_EXPECTED.length; i++)
-            assertEquals(K4_EXPECTED[i], k4Actual.get(i).getIntLocation());
+            Assert.assertEquals(K4_EXPECTED[i], k4Actual.get(i).getIntLocation());
     }
 }
