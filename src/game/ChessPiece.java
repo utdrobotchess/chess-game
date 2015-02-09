@@ -80,11 +80,36 @@ public abstract class ChessPiece
     {
         return team;
     }
+
+    protected boolean isActive()
+    {
+        return active;
+    }
+
+    protected void moveTo(Square location)
+    {
+        if (location.isOccupied()) {
+            ChessPiece occupant = location.getOccupant();
+            occupant.setLocation(null);
+            occupant.setActive(false);
+        }
+        
+        this.location.setOccupant(null);
+        setLocation(location);
+        location.setOccupant(this);
+    }
+
+    protected void setActive(boolean active)
+    {
+        this.active = active;
+    }
     
     protected void setLocation(Square location)
     {
         this.location = location;
-        location.setOccupant(this);
+
+        if (location != null)
+            location.setOccupant(this);
     }
 
     protected void setPossibleMoves(ArrayList<Square> possibleMoves)
