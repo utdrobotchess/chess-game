@@ -12,9 +12,23 @@ public class Bishop extends ChessPiece
 {
     public Bishop(Square location)
     {
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+        super(location);
+    }
+    
+    public Bishop(Square location, int id)
+    {
+        super(location, id);
+    }
+
+    public Bishop(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        ChessPiece copiedPiece = new Bishop(getLocation(), getID(), getTeam(), isActive());
+        return copiedPiece;
     }
 
     protected ArrayList<Square> generateMoveLocations()

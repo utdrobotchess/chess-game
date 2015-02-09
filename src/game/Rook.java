@@ -12,9 +12,23 @@ public class Rook extends ChessPiece
 {
     public Rook(Square location)
     {
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+        super(location);
+    }
+    
+    public Rook(Square location, int id)
+    {
+        super(location, id);
+    }
+
+    public Rook(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        ChessPiece copiedPiece = new Rook(getLocation(), getID(), getTeam(), isActive());
+        return copiedPiece;
     }
 
     protected ArrayList<Square> generateMoveLocations()

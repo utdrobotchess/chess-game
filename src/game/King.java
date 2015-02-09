@@ -12,9 +12,23 @@ public class King extends ChessPiece
 {
     public King(Square location)
     {
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+        super(location);
+    }
+    
+    public King(Square location, int id)
+    {
+        super(location, id); 
+    }
+
+    public King(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        ChessPiece copiedPiece = new King(getLocation(), getID(), getTeam(), isActive());
+        return copiedPiece;
     }
 
     protected ArrayList<Square> generateMoveLocations()

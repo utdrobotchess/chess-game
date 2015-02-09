@@ -12,9 +12,23 @@ public class Queen extends ChessPiece
 {
     public Queen(Square location)
     {
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+        super(location);
+    }
+    
+    public Queen(Square location, int id)
+    {
+        super(location, id); 
+    }
+
+    public Queen(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        ChessPiece copiedPiece = new Queen(getLocation(), getID(), getTeam(), isActive());
+        return copiedPiece;
     }
 
     protected ArrayList<Square> generateMoveLocations()

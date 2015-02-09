@@ -12,9 +12,23 @@ public class Knight extends ChessPiece
 {
     public Knight(Square location)
     {
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+        super(location);
+    } 
+    
+    public Knight(Square location, int id)
+    {
+        super(location, id);
+    }
+
+    public Knight(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        ChessPiece copiedPiece = new Knight(getLocation(), getID(), getTeam(), isActive());
+        return copiedPiece;
     }
 
     protected ArrayList<Square> generateMoveLocations()

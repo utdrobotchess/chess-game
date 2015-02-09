@@ -11,13 +11,30 @@ import java.util.Collections;
 public class Pawn extends ChessPiece
 {
     boolean hasNotMoved;
-    
+
     public Pawn(Square location)
     {
+        super(location);
         hasNotMoved = true;
-        setLocation(location);
-        setPossibleMoves(new ArrayList<Square>());
-        setTeamFromInitialLocation(location);
+    }
+    
+    public Pawn(Square location, int id)
+    {
+        super(location, id);
+        hasNotMoved = true;
+    }
+
+    public Pawn(Square location, int id, Team team, boolean active)
+    {
+        super(location, id, team, active);
+        hasNotMoved = true;
+    }
+
+    protected ChessPiece copyPiece()
+    {
+        Pawn copiedPawn = new Pawn(getLocation(), getID(), getTeam(), isActive());
+        copiedPawn.setHasNotMoved(hasNotMoved);
+        return (ChessPiece) copiedPawn;
     }
 
     protected ArrayList<Square> generateMoveLocations()
