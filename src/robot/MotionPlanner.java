@@ -122,10 +122,13 @@ public class MotionPlanner
         for (int i = 0; i < movesNeeded.size(); i++) {
             Move thisMove = movesNeeded.get(i);
             
-            plan.add(thisMove.origin);
-
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
+
+            if (squareSequence.size() == 0)
+                return new ArrayList<Integer>();
+            
+            plan.add(thisMove.origin);
 
             for (int j = 0; j < squareSequence.size(); j++)
                 plan.add(squareSequence.get(j));
@@ -136,7 +139,7 @@ public class MotionPlanner
 
     private ArrayList<Integer> dijkstra(int origin, int destination)
     {
-        Vertex vertices[] = new Vertex[boardRows * boardColumns];
+        Vertex vertices[] = new Vertex[REGULAR_SQUARE_COUNT];
         PriorityQueue<Vertex> queue = new PriorityQueue<>(boardRows * boardColumns,
                                                           new VertexComparator());
 
