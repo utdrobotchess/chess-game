@@ -1,43 +1,46 @@
 <project name="chess-game" basedir="." default="compile">
 
   <!-- set global properties for this build -->
-  <property name="src" location="src" />
-  <property name="build" location="build" />
-  <property name="lib" location="lib" />
-  <property name="src.test" location="test" />
+  <property name="src.dir" value="src" />
+  <property name="test.dir" value="test" />
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="lib.dir" value="lib" />
+  <property name="main-class" value="manager.ApplicationManager" />
 
   <!-- build the classpath -->
   <path id="classpath">
-    <fileset dir="${lib}" includes="*.jar" />
+    <fileset dir="${lib.dir}" includes="*.jar" />
   </path>
 
   <path id="classpath.test">
     <path refid="classpath" />
-    <pathelement location="${build}" />
+    <pathelement location="${classes.dir}" />
   </path>
 
   <!-- initialize the environment -->
   <target name="init">
     <tstamp/>
-    <mkdir dir="${build}"/>
+    <mkdir dir="${classes.dir}"/>
   </target>
 
   <!-- compile the source code -->
   <target name="compile" depends="init" description="compile the source" >
-    <!-- Compile the java code from ${src} and ${src.test} into ${build} -->
-    <javac destdir="${build}" includeantruntime="false">
-      <src path="${src}" />
-      <src path="${src.test}" />
+    <!-- Compile the java code from ${src.dir} and ${test.dir} into ${class.dir} -->
+    <javac destdir="${classes.dir}" includeantruntime="false">
+      <src path="${src.dir}" />
+      <src path="${test.dir}" />
       <classpath refid="classpath" />
     </javac>
   </target>
   
   <!-- compile the source code with debug turned on -->
   <target name="compile.debug" depends="init" description="compile the source with debug" >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac debug="on" destdir="${build}" includeantruntime="false">
-      <src path="${src}" />
-      <src path="${src.test}" />
+    <!-- Compile the java code from ${src.dir} and ${test.dir} into ${class.dir} -->
+    <javac debug="on" destdir="${classes.dir}" includeantruntime="false">
+      <src path="${src.dir}" />
+      <src path="${test.dir}" />
       <classpath refid="classpath" />
     </javac>
   </target>
@@ -48,15 +51,30 @@
       <classpath refid="classpath.test" />
       <formatter type="plain" usefile="false" />
       <batchtest>
-	<fileset dir="${build}" includes="**/*Test.class" />
+	<fileset dir="${classes.dir}" includes="**/*Test.class" />
       </batchtest>
     </junit>
     <fail message="Tests failed. Please see test reports" if="test.failed" />
+  </target>
+
+  <!-- jar the application -->
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <manifest>
+	<attribute name="Main-Class" value="${main-class}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- execute the program -->
+  <target name="run" depends="jar" description="run the application">
+    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" />
   </target>
   
   <!-- clean up the environment -->
   <target name="clean" description="clean up">
     <!-- delete the ${build} directory tree -->
-    <delete dir="${build}" />
+    <delete dir="${build.dir}" />
   </target>
 </project>
