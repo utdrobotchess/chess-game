@@ -10,25 +10,65 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
-public class MotionPlanner
+import manager.RobotState;
+
+public class MotionPlanner extends Thread
 {
     final int INF = 1000;
     final int REGULAR_SQUARE_COUNT = 64;
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
     
+    RobotState robotState;
     int boardRows;
     int boardColumns;
     boolean occupancyGrid[]; // indicates which squares are occupied
     ArrayList<Move> movesNeeded;
     
-    public MotionPlanner(int currentLocations[], int desiredLocations[],
-                         int boardRows, int boardColumns)
+    public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
+    {
+        this.robotState = robotState;
+        this.boardRows = boardRows;
+        this.boardColumns = boardColumns;
+    }
+
+    public MotionPlanner(int current[], int desired[], int boardRows, int boardColumns)
     {
         this.boardRows = boardRows;
         this.boardColumns = boardColumns;
-        occupancyGrid = fillOccupancyGrid(currentLocations);
-        movesNeeded = generateMoves(currentLocations, desiredLocations);
+
+        movesNeeded = generateMoves(current, desired);
+    }
+
+    @Override
+    public void run()
+    {
+        // TODO enable updating of board size
+        
+        while (true) {
+            if (robotState.isMotionAvailable()) {
+                Motion nextMotion = robotState.removeNextMotion();
+
+                occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
+                movesNeeded = generateMoves(nextMotion.getCurrent(),
+                                            nextMotion.getDesired());
+
+                ArrayList<Integer> path = plan();
+
+                ArrayList<Command> commands = generateCommandsFromPath(path);
+
+                for (int i = 0; i < commands.size(); i++)
+                    robotState.addNewCommand(commands.get(i));
+
+                // TODO do we need to add an execute command here?
+            }
+            
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                
+            }
+        }
     }
 
     private boolean[] fillOccupancyGrid(int currentLocations[])
@@ -58,7 +98,7 @@ public class MotionPlanner
     private ArrayList<Edge> computeEdges(int vertex)
     {
         final int LATERAL_WEIGHT = 2;
-        final int DIAGONAL_WEIGHT = 3;
+        final int DIAGONAL_WEIGHT = 5;
         
         ArrayList<Edge> edges = new ArrayList<>();
 
@@ -124,10 +164,10 @@ public class MotionPlanner
             
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
-
-            if (squareSequence.size() == 0)
+            if (squareSequence.size() < 2)
                 return new ArrayList<Integer>();
             
+            plan.add(thisMove.pieceID);
             plan.add(thisMove.origin);
 
             for (int j = 0; j < squareSequence.size(); j++)
@@ -203,6 +243,36 @@ public class MotionPlanner
         }
 
         return path;
+    }
+
+    private ArrayList<Command> generateCommandsFromPath(ArrayList<Integer> path)
+    {
+        ArrayList<Command> commands = new ArrayList<>();
+
+        // path must include at least robot id, plus 2 path squares
+        if (path.size() < 3)
+            return commands;
+
+        int robotID = path.get(0);
+        int currentMoveOrigin = path.get(1);
+        int currentMoveDirection = 0;
+
+        for (int i = 2; i < path.size(); i++) {
+            int currentSquare = path.get(i);
+            int newMoveDirection = currentSquare - path.get(i-1);
+
+            if (currentMoveDirection != 0) {
+                if (newMoveDirection != currentMoveDirection)
+                    commands.add(new MoveToSquareCommand(robotID, path.get(i-1)));
+
+                if (i == path.size() - 1)
+                    commands.add(new MoveToSquareCommand(robotID, path.get(i)));
+            }
+            
+            currentMoveDirection = newMoveDirection;
+        }
+        
+        return commands;
     }
 }
 
