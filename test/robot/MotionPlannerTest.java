@@ -18,7 +18,7 @@ public class MotionPlannerTest
         test.testSmallBoard();
     }
     
-    @Test
+    //@Test
     public void testSimplePath()
     {
         int current[] = {0};
@@ -36,7 +36,7 @@ public class MotionPlannerTest
             Assert.assertEquals(expected[i], plan.get(i).intValue());
     }
 
-    @Test
+    //@Test
     public void testNoPath()
     {
         int current[] = {0, 1, 8, 9};
@@ -54,7 +54,7 @@ public class MotionPlannerTest
             Assert.assertEquals(expected[i], plan.get(i).intValue());
     }
 
-    @Test
+    //@Test
     public void testMoveToOccupied()
     {
         int current[] = {0, 20};
@@ -71,7 +71,7 @@ public class MotionPlannerTest
             Assert.assertEquals(expected[i], plan.get(i).intValue());
     }
 
-    @Test
+    //@Test
     public void testMoveAroundObstructions()
     {
         int current[] = {0, 8, 9, 10, 11, 12, 20, 28, 36, 33, 34, 35, 25};
@@ -88,7 +88,7 @@ public class MotionPlannerTest
             Assert.assertEquals(expected[i], plan.get(i).intValue());
     }
 
-    @Test
+    //@Test
     public void testSmallBoard()
     {
         int current[] = {0, 8, 9, 10, 11, 19, 27, 26, 25};
@@ -111,7 +111,7 @@ public class MotionPlannerTest
         
     }
 
-    @Test
+    //@Test
     public void testCastlingSimple()
     {
 
