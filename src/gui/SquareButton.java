@@ -12,9 +12,18 @@ import java.awt.Dimension;
 
 public class SquareButton extends JButton
 {
-    protected SquareButton(Color color)
+    int index;
+    
+    protected SquareButton(int index, Color color)
     {
+        this.index = index;
+        
         setBackground(color);
         setBorderPainted(false);
+    }
+
+    protected int getIndex()
+    {
+        return index; 
     }
 }

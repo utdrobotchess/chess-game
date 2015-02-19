@@ -28,7 +28,7 @@ public class BoardPanel extends JPanel
 
         for (int i = 0; i < squares.length; i++) {
             Color squareColor = whiteSquare ? Color.WHITE : Color.BLACK;
-            squares[i] = new SquareButton(squareColor);
+            squares[i] = new SquareButton(i, squareColor);
             squares[i].addActionListener(new ButtonListener());
             add(squares[i]);
 
@@ -41,7 +41,8 @@ public class BoardPanel extends JPanel
     {
         public void actionPerformed(ActionEvent e)
         {
-            System.out.println("button clicked");
+            SquareButton buttonPressed = (SquareButton) e.getSource();
+            System.out.println(buttonPressed.getIndex());
         }
     }
 }
