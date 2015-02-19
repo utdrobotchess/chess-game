@@ -5,7 +5,7 @@
 
 package manager;
 
-public class GameManager
+public class GameManager extends Thread
 {
     ApplicationState applicationState;
     UIState uiState;
@@ -18,5 +18,11 @@ public class GameManager
         this.applicationState = applicationState;
         this.uiState = uiState;
         this.gameState = gameState;
+    }
+
+    @Override
+    public void run()
+    {
+        
     }
 }

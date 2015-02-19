@@ -18,10 +18,19 @@ public class ApplicationManager
     
     private ApplicationManager()
     {
+        applicationState = new ApplicationState();
+        uiState = new UIState();
+        robotState = new RobotState();
+        gameState = new GameState();
         
         uiManager = new UIManager(applicationState, uiState, robotState, gameState);
         robotManager = new RobotManager(applicationState, uiState, robotState);
         gameManager = new GameManager(applicationState, uiState, gameState);
+
+        uiManager.start();
+        robotManager.start();
+        gameManager.start();
+
     }
 
     public static void main(String[] args)

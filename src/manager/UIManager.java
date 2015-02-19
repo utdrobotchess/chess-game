@@ -9,7 +9,7 @@ import java.util.Observer;
 
 import gui.MainFrame;
 
-public class UIManager
+public class UIManager extends Thread
 {
     private ApplicationState applicationState;
     private GameState gameState;
@@ -26,7 +26,11 @@ public class UIManager
         this.gameState = gameState;
         this.robotState = robotState;
         this.uiState = uiState;
-        
+    }
+
+    @Override
+    public void run()
+    {
         mainFrame = new MainFrame(uiState);
     }
 }
