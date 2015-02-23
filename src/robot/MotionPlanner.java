@@ -32,20 +32,16 @@ public class MotionPlanner extends Thread
         this.boardColumns = boardColumns;
     }
 
-    public MotionPlanner(int current[], int desired[], int boardRows, int boardColumns)
-    {
-        this.boardRows = boardRows;
-        this.boardColumns = boardColumns;
-
-        movesNeeded = generateMoves(current, desired);
-    }
-
     @Override
     public void run()
     {
-        // TODO enable updating of board size
-        
         while (true) {
+            if (boardRows != robotState.getBoardRows() ||
+                boardColumns != robotState.getBoardColumns()) {
+                boardRows = robotState.getBoardRows();
+                boardColumns = robotState.getBoardColumns();
+            }
+                
             if (robotState.isMotionAvailable()) {
                 Motion nextMotion = robotState.pollNextMotion();
 
@@ -60,7 +56,9 @@ public class MotionPlanner extends Thread
                 for (int i = 0; i < commands.size(); i++)
                     robotState.addNewCommand(commands.get(i));
 
-                // TODO do we need to add an execute command here?
+                // XXX path.get(0) is a clunky way of identifying the robot
+                // needs fix moving forward
+                robotState.addNewCommand(new ExecuteCommand(path.get(0)));
             }
             
             try {
