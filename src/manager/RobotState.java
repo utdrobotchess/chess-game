@@ -48,12 +48,12 @@ public class RobotState
         return ready;
     }
 
-    public synchronized Command removeNextCommand()
+    public synchronized Command pollNextCommand()
     {
         return commandQueue.poll();
     }
 
-    public synchronized Motion removeNextMotion()
+    public synchronized Motion pollNextMotion()
     {
         return motionQueue.poll();
     }

@@ -47,7 +47,7 @@ public class MotionPlanner extends Thread
         
         while (true) {
             if (robotState.isMotionAvailable()) {
-                Motion nextMotion = robotState.removeNextMotion();
+                Motion nextMotion = robotState.pollNextMotion();
 
                 occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
                 movesNeeded = generateMoves(nextMotion.getCurrent(),
