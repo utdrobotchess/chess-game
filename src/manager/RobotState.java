@@ -16,6 +16,8 @@ public class RobotState
     private boolean ready;
     private Queue<Command> commandQueue;
     private Queue<Motion> motionQueue;
+    private int boardRows;
+    private int boardColumns;
     
     public RobotState()
     {
@@ -31,6 +33,16 @@ public class RobotState
     public synchronized void addNewMotion(Motion newMotion)
     {
         motionQueue.offer(newMotion);
+    }
+
+    public synchronized int getBoardColumns()
+    {
+        return boardColumns;
+    }
+
+    public synchronized int getBoardRows()
+    {
+        return boardRows;
     }
 
     public synchronized boolean isCommandAvailable()
@@ -61,5 +73,15 @@ public class RobotState
     public synchronized void setReady(boolean ready)
     {
         this.ready = ready;
+    }
+
+    public synchronized void setBoardColumns(int boardColumns)
+    {
+        this.boardColumns = boardColumns;
+    }
+
+    public synchronized void setBoardRows(int boardRows)
+    {
+        this.boardRows = boardRows;
     }
 }
