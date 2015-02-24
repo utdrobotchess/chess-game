@@ -7,6 +7,7 @@
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="jar.dir" value="${build.dir}/jar" />
   <property name="lib.dir" value="lib" />
+  <property name="resources.dir" value="resources" />
   <property name="main-class" value="manager.ApplicationManager" />
 
   <!-- build the classpath -->
@@ -60,6 +61,18 @@
   <!-- jar the application -->
   <target name="jar" depends="compile">
     <mkdir dir="${jar.dir}" />
+    <jar compress="false" destfile="${lib.dir}/resources.jar">
+      <fileset dir="${resources.dir}">
+	<include name="**/*.*" />
+      </fileset>
+    </jar>
+
+    <copy todir="${jar.dir}">
+      <fileset dir="${lib.dir}">
+	<include name="**/*.jar" />
+      </fileset>
+    </copy>
+
     <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
       <manifest>
 	<attribute name="Main-Class" value="${main-class}" />
