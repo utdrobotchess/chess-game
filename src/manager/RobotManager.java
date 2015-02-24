@@ -5,6 +5,7 @@
 
 package manager;
 
+import robot.ChessbotCommunicator;
 import robot.MotionPlanner;
 import robot.Motion;
 
@@ -29,7 +30,10 @@ public class RobotManager extends Thread
         MotionPlanner planner = new MotionPlanner(robotState, 8, 8);
         planner.start();
 
-        // TODO insert Communicator thread here
+        ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
+                                                                     "/dev/ttyUSB0",
+                                                                     57600);
+        communicator.run(1);
 
         while (true) {
             try {

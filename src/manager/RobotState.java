@@ -16,6 +16,8 @@ public class RobotState
 {
     private boolean ready;
     private boolean closeCommunication = false;
+    private int boardColumns;
+    private int boardRows;
 
     private Queue<Command> commandQueue;
     private Queue<Motion> motionQueue;
@@ -43,6 +45,16 @@ public class RobotState
     	responseQueue.offer(newResponse);
     }
 
+    public synchronized int getBoardColumns()
+    {
+        return boardColumns;
+    }
+
+    public synchronized int getBoardRows()
+    {
+        return boardRows;
+    }
+    
     public synchronized boolean isCommandAvailable()
     {
         return !commandQueue.isEmpty();
@@ -87,7 +99,18 @@ public class RobotState
     {
     	return closeCommunication;
     }
+
+    public synchronized void setBoardColumns(int columns)
+    {
+        this.boardColumns = columns;
+    }
+
+    public synchronized void setBoardRows(int rows)
+    {
+        this.boardRows = rows;
+    }
     
+ 
     public synchronized void setCloseCommunication(boolean closeCommunication)
     {
     	this.closeCommunication = closeCommunication;

@@ -18,19 +18,19 @@ import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeeException;
+import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.XBeeTimeoutException;
 import com.rapplogic.xbee.api.wpan.NodeDiscover;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
-import com.rapplogic.xbee.test.NodeDiscoverTest;
 import com.rapplogic.xbee.util.ByteUtils;
 
 
 public class ChessbotCommunicator extends Thread
 {
-    public static void main(String[] args) throws XBeeException, InterruptedException  
+/*    public static void main(String[] args) throws XBeeException, InterruptedException  
     {
         PropertyConfigurator.configure("log/log4j.properties");
         ChessbotCommunicator comms =  new ChessbotCommunicator("/dev/ttyUSB0", 57600);
@@ -56,7 +56,7 @@ public class ChessbotCommunicator extends Thread
         {
 			e.printStackTrace();
 		}
-    }
+        }*/
 
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
     
@@ -110,15 +110,19 @@ public class ChessbotCommunicator extends Thread
 		}
 	};
 
-    public ChessbotCommunicator(String comport, int baudRate) 
+    public ChessbotCommunicator(RobotState robotState, String comport, int baudRate) 
     {
+        PropertyConfigurator.configure("log/log4j.properties");
+        
+        this.robotState = robotState;
+        
         try 
         {
             xbee.open(comport, baudRate);
         }
         catch (XBeeException e) 
         {
-            log.debug("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + _comport);
+            log.debug("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + comport);
             e.printStackTrace();
         }
 
@@ -130,16 +134,20 @@ public class ChessbotCommunicator extends Thread
         setComPort(comport);
     }
 
-    public void run(int numOfNodes) throws IOException, XBeeException, InterruptedException
+    public void run(int numOfNodes) 
     {
     	if(robotState == null)
     	{
     		return;
     	}
-    	
-    	initializeCommunication(3, 10000, numOfNodes);
-    	robotState.setReady(true);
-    	xbee.addPacketListener(listenForIncomingResponses);
+
+        try {
+            initializeCommunication(3, 10000, numOfNodes);
+            robotState.setReady(true);
+            xbee.addPacketListener(listenForIncomingResponses);
+        } catch (Exception ex) {
+
+        }
 
     	while(true)
     	{
@@ -148,7 +156,12 @@ public class ChessbotCommunicator extends Thread
     		if(robotState.isCommandAvailable())
     		{
     			Command cmd = robotState.pollNextCommand();
-    			sendCommandAndWaitForAck(cmd, 5000, 3);
+
+                try {
+                    sendCommandAndWaitForAck(cmd, 5000, 3);
+                } catch (Exception ex) {
+                    
+                }
 
     			if(( (cmd.generatePayload()[0] == (new MoveToSquareCommand(0,0)).generatePayload()[0]) ))
     			{
@@ -172,13 +185,22 @@ public class ChessbotCommunicator extends Thread
     						robotState.setReady(true);
     						break;
     					}
-    					Thread.sleep(10);
+
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException ex) {
+
+                        }
     				}
     				
     			}
 			} 
 
-	        Thread.sleep(10);
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                
+            }
 	        	
 	        if(robotState.getCloseCommunication())
 	        {
