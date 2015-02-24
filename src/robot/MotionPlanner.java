@@ -51,14 +51,19 @@ public class MotionPlanner extends Thread
 
                 ArrayList<Integer> path = plan();
 
-                ArrayList<Command> commands = generateCommandsFromPath(path);
+                if (path.size() > 0) {
+                    ArrayList<Command> commands = generateCommandsFromPath(path);
 
-                for (int i = 0; i < commands.size(); i++)
-                    robotState.addNewCommand(commands.get(i));
+                    for (int i = 0; i < commands.size(); i++)
+                        robotState.addNewCommand(commands.get(i));
 
-                // XXX path.get(0) is a clunky way of identifying the robot
-                // needs fix moving forward
-                robotState.addNewCommand(new ExecuteCommand(path.get(0)));
+
+                    // XXX path.get(0) is a clunky way of identifying the robot
+                    // needs fix moving forward
+                    robotState.addNewCommand(new ExecuteCommand(path.get(0)));
+                } else {
+                    System.out.println("no path");
+                }
             }
             
             try {
@@ -96,7 +101,7 @@ public class MotionPlanner extends Thread
     private ArrayList<Edge> computeEdges(int vertex)
     {
         final int LATERAL_WEIGHT = 2;
-        final int DIAGONAL_WEIGHT = 5;
+        final int DIAGONAL_WEIGHT = 3;
         
         ArrayList<Edge> edges = new ArrayList<>();
 
@@ -251,7 +256,7 @@ public class MotionPlanner extends Thread
         if (path.size() < 3)
             return commands;
 
-        int robotID = path.get(0);
+        int robotID = -1; // XXX temporary hack - normally path.get(0);
         int currentMoveOrigin = path.get(1);
         int currentMoveDirection = 0;
 
@@ -269,6 +274,8 @@ public class MotionPlanner extends Thread
             
             currentMoveDirection = newMoveDirection;
         }
+
+        System.out.println(commands);
         
         return commands;
     }

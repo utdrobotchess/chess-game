@@ -10,6 +10,15 @@ public class MoveToSquareCommand extends Command
     final int MAX_DESTINATION = 63;
     final int MIN_DESTINATION = 0;
     private int destination;
+
+    public MoveToSquareCommand(int destination)
+    {
+        commandID = 0x9;
+        payloadLength = 0x2;
+        
+        this.robotID = -1;
+        this.destination = destination;
+    }
     
     public MoveToSquareCommand(int robotID, int destination)
     {
@@ -31,5 +40,11 @@ public class MoveToSquareCommand extends Command
         payload[1] = destination;
         
         return payload;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Move to " + destination;
     }
 }
