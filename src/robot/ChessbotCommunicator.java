@@ -29,14 +29,14 @@ public class ChessbotCommunicator extends Thread
 {
     public static void main(String[] args) throws XBeeException, InterruptedException  
     {
-        PropertyConfigurator.configure("log4j.properties");
-        ChessbotCommunicator comms =  new ChessbotCommunicator("/dev/tty.usbserial-A800f3fq", 57600);
+        PropertyConfigurator.configure("log/log4j.properties");
+        ChessbotCommunicator comms =  new ChessbotCommunicator("/dev/ttyUSB0", 57600);
         comms.initializeCommunication(5, 5000);
 
         comms.endCommunication();
     }
 
-    private final static Logger log = Logger.getLogger(NodeDiscoverTest.class);
+    private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
     
     private XBee xbee = new XBee();
 
@@ -81,7 +81,7 @@ public class ChessbotCommunicator extends Thread
         }
         catch (XBeeException e) 
         {
-            System.out.println("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + _comport);
+            log.debug("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + _comport);
             e.printStackTrace();
         }
 
@@ -90,9 +90,8 @@ public class ChessbotCommunicator extends Thread
 
     public void run()
     {
-    	while(true)
+        while(true)
     	{
-
         	try
         	{
         		Thread.sleep(10);
