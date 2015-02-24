@@ -10,19 +10,22 @@ import java.util.Queue;
 
 import robot.Command;
 import robot.Motion;
+import robot.Response;
 
 public class RobotState
 {
     private boolean ready;
+    private boolean closeCommunication = false;
+
     private Queue<Command> commandQueue;
     private Queue<Motion> motionQueue;
-    private int boardRows;
-    private int boardColumns;
+    private Queue<Response> responseQueue;
     
     public RobotState()
     {
         commandQueue = new LinkedList<>();
         motionQueue = new LinkedList<>();
+        responseQueue = new LinkedList<>();
     }
 
     public synchronized void addNewCommand(Command newCommand)
@@ -34,15 +37,10 @@ public class RobotState
     {
         motionQueue.offer(newMotion);
     }
-
-    public synchronized int getBoardColumns()
+    
+    public synchronized void addNewResponse(Response newResponse)
     {
-        return boardColumns;
-    }
-
-    public synchronized int getBoardRows()
-    {
-        return boardRows;
+    	responseQueue.offer(newResponse);
     }
 
     public synchronized boolean isCommandAvailable()
@@ -53,6 +51,11 @@ public class RobotState
     public synchronized boolean isMotionAvailable()
     {
         return !motionQueue.isEmpty();
+    }
+    
+    public synchronized boolean isResponseAvailable()
+    {
+    	return !responseQueue.isEmpty();
     }
 
     public synchronized boolean isReady()
@@ -69,19 +72,29 @@ public class RobotState
     {
         return motionQueue.poll();
     }
+    
+    public synchronized Response pollNextResponse()
+    {
+    	return responseQueue.poll();
+    }
+    
+    public synchronized Response peekNextResponse()
+    {
+    	return responseQueue.peek();
+    }
+    
+    public synchronized boolean getCloseCommunication()
+    {
+    	return closeCommunication;
+    }
+    
+    public synchronized void setCloseCommunication(boolean closeCommunication)
+    {
+    	this.closeCommunication = closeCommunication;
+    }
 
     public synchronized void setReady(boolean ready)
     {
         this.ready = ready;
-    }
-
-    public synchronized void setBoardColumns(int boardColumns)
-    {
-        this.boardColumns = boardColumns;
-    }
-
-    public synchronized void setBoardRows(int boardRows)
-    {
-        this.boardRows = boardRows;
     }
 }
