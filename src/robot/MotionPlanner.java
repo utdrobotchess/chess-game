@@ -167,7 +167,8 @@ public class MotionPlanner extends Thread
             
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
-            if (squareSequence.size() < 2)
+
+            if (squareSequence.size() < 1)
                 return new ArrayList<Integer>();
             
             plan.add(thisMove.pieceID);
@@ -264,14 +265,13 @@ public class MotionPlanner extends Thread
             int currentSquare = path.get(i);
             int newMoveDirection = currentSquare - path.get(i-1);
 
-            if (currentMoveDirection != 0) {
+            if (currentMoveDirection != 0)
                 if (newMoveDirection != currentMoveDirection)
                     commands.add(new MoveToSquareCommand(robotID, path.get(i-1)));
-
-                if (i == path.size() - 1)
-                    commands.add(new MoveToSquareCommand(robotID, path.get(i)));
-            }
             
+            if (i == path.size() - 1)
+                commands.add(new MoveToSquareCommand(robotID, path.get(i)));
+           
             currentMoveDirection = newMoveDirection;
         }
 
