@@ -36,6 +36,7 @@ public class RemoteController
     public int[] ComputeWheelVelocities()
     {
         int[] wheelVelPayload = new int[4];
+        int direction, rotation, forwardVel, rotationVel;
 
         if(controller.getAxisValue(0) < 0)
         {
