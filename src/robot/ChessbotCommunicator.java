@@ -301,10 +301,11 @@ public class ChessbotCommunicator extends Thread
     {
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
-    	ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
     	
     	for(int i = 0; i < numOfRetries; i++)
     	{
+            ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
+
     		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
     		{
     			log.debug("Success " + address +  " with Payload " + cmd.generatePayload());
@@ -329,10 +330,11 @@ public class ChessbotCommunicator extends Thread
     {
     	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
-    	ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
     	for(int i = 0; i < numOfRetries; i++)
     	{
+            ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
+
     		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
     		{
     			log.debug("Success: " + botIDLookupList.get(cmd.getRobotID()));
