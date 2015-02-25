@@ -13,6 +13,11 @@ public abstract class Command
     
     protected abstract int[] generatePayload();
 
+    protected void setRobotID(int robotID)
+    {
+        this.robotID = robotID;
+    }
+
     protected int getRobotID()
     {
         return robotID;
