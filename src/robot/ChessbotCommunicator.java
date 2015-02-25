@@ -156,11 +156,12 @@ public class ChessbotCommunicator extends Thread
     		if(robotState.isCommandAvailable())
     		{
     			Command cmd = robotState.pollNextCommand();
+                cmd.setRobotID(3); //This is temporary, since it means that all messages will be sent to robot 3. 
 
                 try {
                     sendCommandAndWaitForAck(cmd, 5000, 3);
                 } catch (Exception ex) {
-                    
+                    log.debug(ex);
                 }
 
     			if(( (cmd.generatePayload()[0] == (new MoveToSquareCommand(0,0)).generatePayload()[0]) ))
@@ -245,7 +246,7 @@ public class ChessbotCommunicator extends Thread
 		
 		while((nodeAddresses.size() < numOfNodes) && (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
 		{
-			Thread.sleep(1000);
+			Thread.sleep(100);
 		}
 		
 		xbee.removePacketListener(listenForIncomingNodes);
