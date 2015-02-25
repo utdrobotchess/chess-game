@@ -7,7 +7,7 @@ package robot;
 
 public class RCModeCommand extends Command
 {
-    public RCModeCommand()
+    public RCModeCommand(int payload[])
     {
         
     }

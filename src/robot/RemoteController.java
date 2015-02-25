@@ -1,15 +1,20 @@
-package chess.communication;
+package robot;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
 
-public class RemoteController 
+import manager.RobotState;
+
+public class RemoteController extends Thread 
 {
     public static Controller controller;
+    RobotState robotState;
 
-    public RemoteController()
+    public RemoteController(RobotState robotState)
     {
+        this.robotState = robotState;
+
         try 
         {
             Controllers.create();
@@ -29,7 +34,20 @@ public class RemoteController
         }
         else
         {
-            System.out.println("Could not ind any controllers");
+            System.out.println("Could not find any controllers");
+        }
+    }
+    
+    public void run()
+    {
+        while (true) {
+            robotState.addNewCommand(new RCModeCommand(ComputeWheelVelocities()));
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+            
+            }
         }
     }
 
