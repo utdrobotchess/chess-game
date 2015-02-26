@@ -30,34 +30,6 @@ import com.rapplogic.xbee.util.ByteUtils;
 
 public class ChessbotCommunicator extends Thread
 {
-/*    public static void main(String[] args) throws XBeeException, InterruptedException  
-    {
-        PropertyConfigurator.configure("log/log4j.properties");
-        ChessbotCommunicator comms =  new ChessbotCommunicator("/dev/ttyUSB0", 57600);
-
-        //comms.initializeCommunication(1, 7000, 1);
-
-        MoveToSquareCommand cmd1 = new MoveToSquareCommand(3, 10);
-        //CrossSquaresCommand cmd1 = new CrossSquaresCommand(3, 2);
-        ExecuteCommand cmd1Exe = new ExecuteCommand(3);
-        
-        //comms.endCommunication();
-        
-        RobotState rs = new RobotState();
-        rs.addNewCommand(cmd1);
-        rs.addNewCommand(cmd1Exe);
-        comms.setRobotState(rs);
-        
-        try 
-        {
-			comms.run(1);
-		}
-        catch (IOException e) 
-        {
-			e.printStackTrace();
-		}
-        }*/
-
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
     
     private XBee xbee = new XBee();
@@ -156,13 +128,17 @@ public class ChessbotCommunicator extends Thread
 
                 try {
                     sendCommandAndWaitForAck(cmd, 5000, 3);
+
+                    if (cmd instanceof RCCommand)
+                        sendCommand(cmd);
+
                 } catch (Exception ex) {
                     log.debug(ex);
                 }
-                
+                    
                 if (cmd instanceof MoveToSquareCommand)
                     waitForMovement = true;
-    				
+
                 if (cmd instanceof ExecuteCommand && waitForMovement) {
     				robotState.setReady(false);
     				long startTime = System.currentTimeMillis();
@@ -282,6 +258,14 @@ public class ChessbotCommunicator extends Thread
         throws XBeeException, InterruptedException
     {
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
+    	tx.setFrameId(0);
+    	xbee.sendAsynchronous(tx);
+    }
+
+    public void sendCommand(Command cmd)
+        throws XBeeException, InterruptedException
+    {
+    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
     	tx.setFrameId(0);
     	xbee.sendAsynchronous(tx);
     }
