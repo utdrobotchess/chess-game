@@ -15,6 +15,7 @@ import robot.Response;
 public class RobotState
 {
     private boolean ready;
+    private boolean rcMode;
     private boolean closeCommunication = false;
     private int boardColumns;
     private int boardRows;
@@ -69,6 +70,11 @@ public class RobotState
     {
     	return !responseQueue.isEmpty();
     }
+    
+    public synchronized boolean isRCMode()
+    {
+        return rcMode;
+    }
 
     public synchronized boolean isReady()
     {
@@ -119,5 +125,10 @@ public class RobotState
     public synchronized void setReady(boolean ready)
     {
         this.ready = ready;
+    }
+    
+    public synchronized void setRCMode(boolean rcMode)
+    {
+        this.rcMode = rcMode;
     }
 }

@@ -18,6 +18,7 @@ import manager.UIState;
 import manager.RobotState;
 
 import robot.RemoteController;
+import robot.ExitRCModeCommand;
 
 public class MainFrame extends JFrame
 {
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame
     JMenuItem newGameMenuItem;
     JMenuItem demoModeMenuItem;
     JMenuItem rcModeMenuItem;
+    JMenuItem exitRCModeMenuItem;
     JMenuItem exitMenuItem;
 
     MenuItemListener menuListener;
@@ -82,11 +84,13 @@ public class MainFrame extends JFrame
         newGameMenuItem = new JMenuItem("New Game");
         demoModeMenuItem = new JMenuItem("Demo Mode");
         rcModeMenuItem = new JMenuItem("RC Mode");
+        exitRCModeMenuItem = new JMenuItem("Exit RC Mode");
         exitMenuItem = new JMenuItem("Exit");
 
         fileMenu.add(newGameMenuItem);
         fileMenu.add(demoModeMenuItem);
         fileMenu.add(rcModeMenuItem);
+        fileMenu.add(exitRCModeMenuItem);
         fileMenu.add(exitMenuItem);
 
         menuBar.add(fileMenu);
@@ -100,6 +104,7 @@ public class MainFrame extends JFrame
         newGameMenuItem.addActionListener(menuListener);
         demoModeMenuItem.addActionListener(menuListener);
         rcModeMenuItem.addActionListener(menuListener);
+        exitRCModeMenuItem.addActionListener(menuListener);
         exitMenuItem.addActionListener(menuListener);
     }
 
@@ -117,7 +122,13 @@ public class MainFrame extends JFrame
             
             if (e.getSource() == rcModeMenuItem) {
                 RemoteController rc = new RemoteController(robotState);
+                robotState.setRCMode(true);
                 rc.run();
+            }
+            
+            if (e.getSource() == exitRCModeMenuItem && robotState.isRCMode()) {
+                robotState.addNewCommand(new ExitRCModeCommand(3));
+                robotState.setRCMode(false);
             }
 
             if (e.getSource() == exitMenuItem) {
