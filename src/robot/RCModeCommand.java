@@ -7,14 +7,14 @@ package robot;
 
 public class RCModeCommand extends Command
 {
-    public RCModeCommand(int payload[])
+    public RCModeCommand(int robotID)
     {
-        
+       commandID = 0xB; 
     }
 
     @Override
     protected int[] generatePayload()
     {
-        return null;
+        return new int[] {commandID};
     }
 }
