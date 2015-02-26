@@ -89,6 +89,9 @@ public class RemoteController extends Thread
         }
 
         wheelVelPayload = new int[] {direction, forwardVel, rotation, rotationVel};
+        
+        System.out.printf("%x, %x, %x, %x\n", wheelVelPayload[0], wheelVelPayload[1], wheelVelPayload[2], wheelVelPayload[3]);
+
         return wheelVelPayload;
     }
 

@@ -33,7 +33,7 @@ public class RobotManager extends Thread
         ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
                                                                      "/dev/ttyUSB0",
                                                                      57600);
-        communicator.run(1);
+        communicator.run(5);
 
         while (true) {
             try {

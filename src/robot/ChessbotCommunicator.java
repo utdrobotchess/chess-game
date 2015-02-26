@@ -127,11 +127,12 @@ public class ChessbotCommunicator extends Thread
                 cmd.setRobotID(3); //This is temporary, since it means that all messages will be sent to robot 3. 
 
                 try {
-                    sendCommandAndWaitForAck(cmd, 5000, 3);
-
-                    if (cmd instanceof RCCommand)
+                    if (cmd instanceof RCCommand) {
                         sendCommand(cmd);
-
+                    } else {
+                        sendCommandAndWaitForAck(cmd, 5000, 3);
+                        System.out.printf("%x\n", cmd.generatePayload()[0]);
+                    }
                 } catch (Exception ex) {
                     log.debug(ex);
                 }
@@ -265,7 +266,8 @@ public class ChessbotCommunicator extends Thread
     public void sendCommand(Command cmd)
         throws XBeeException, InterruptedException
     {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
+    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), 
+                                             cmd.generatePayload());
     	tx.setFrameId(0);
     	xbee.sendAsynchronous(tx);
     }
