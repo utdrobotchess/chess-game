@@ -35,6 +35,7 @@ public class UIState
 
     final int NUM_PIECES = 32;
     int pieceLocations[];
+    int pieceIDs[];
 
     MainFrame mainFrame;
     boolean demoMode;
@@ -49,8 +50,12 @@ public class UIState
         demoModeSetup = false;
         
         pieceLocations = new int[NUM_PIECES];
+        pieceIDs = new int[64];
 
         for (int location : pieceLocations)
+            location = -1;
+        
+        for (int location : pieceIDs)
             location = -1;
         
         configureImages();
@@ -99,7 +104,7 @@ public class UIState
     
     public synchronized int getPieceIDFromLocation(int location)
     {
-        return Arrays.asList(pieceLocations).indexOf(location);
+        return pieceIDs[locations];
     }
 
     public synchronized int getSelectedIndex()
@@ -135,6 +140,7 @@ public class UIState
     public synchronized void setPieceLocation(int pieceID, int location)
     {
         pieceLocations[pieceID] = location;
+        pieceIDs[location] = pieceID;
     }
 
     public synchronized void setSelectedIndex(int selectedIndex)
