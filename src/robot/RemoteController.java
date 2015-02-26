@@ -43,6 +43,7 @@ public class RemoteController extends Thread
     public void run()
     {
         robotState.addNewCommand(new RCModeCommand(3));
+        robotState.addNewCommand(new ExecuteCommand(3));
 
         while (true) {
             robotState.addNewCommand(new RCCommand(3, ComputeWheelVelocities()));

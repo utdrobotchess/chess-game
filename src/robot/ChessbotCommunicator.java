@@ -34,9 +34,9 @@ public class ChessbotCommunicator extends Thread
     
     private XBee xbee = new XBee();
 
-    private ArrayList<XBeeAddress64> nodeAddresses = new ArrayList<XBeeAddress64>();
-    private ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<XBeeAddress64>();
-    private ArrayList<XBeeAddress64> botIDLookupList = new ArrayList<XBeeAddress64>(32);
+    private ArrayList<XBeeAddress64> nodeAddresses = new ArrayList<>();
+    private ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<>();
+    private ArrayList<XBeeAddress64> botIDLookupList = new ArrayList<>();
     
     private RobotState robotState;
 
@@ -47,11 +47,11 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response) 
 		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) 
-			{
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
 				log.debug("RX response is: " + rx);
-				robotState.addNewResponse(new Response(rx.getData(), botIDLookupList.indexOf(rx.getRemoteAddress64())));
+				robotState.addNewResponse(new Response(rx.getData(),
+                                                       botIDLookupList.indexOf(rx.getRemoteAddress64())));
 			}
 		}
 	};
@@ -60,8 +60,7 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response) 
 		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) 
-			{
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
 				log.debug("RX response is: " + rx);
 				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
@@ -73,8 +72,7 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response) 
 		{
-			if (response.getApiId() == ApiId.AT_RESPONSE) 
-			{
+			if (response.getApiId() == ApiId.AT_RESPONSE) {
 				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
 				log.debug("Node discover response is: " + nd);
 				nodeAddresses.add(nd.getNodeAddress64());
@@ -88,20 +86,15 @@ public class ChessbotCommunicator extends Thread
         
         this.robotState = robotState;
         
-        try 
-        {
+        try {
             xbee.open(comport, baudRate);
-        }
-        catch (XBeeException e) 
-        {
+        } catch (XBeeException e) {
             log.debug("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + comport);
             e.printStackTrace();
         }
 
         for(int i = 0; i < 32; i++)
-        {
         	botIDLookupList.add(null);
-        }
         
         setComPort(comport);
     }
@@ -116,7 +109,7 @@ public class ChessbotCommunicator extends Thread
             robotState.setReady(true);
             xbee.addPacketListener(listenForIncomingResponses);
         } catch (Exception ex) {
-
+            // XXX we need to handle our exceptions
         }
 
     	while (true) {
@@ -124,14 +117,12 @@ public class ChessbotCommunicator extends Thread
 			
     		if(robotState.isCommandAvailable()) {
     			Command cmd = robotState.pollNextCommand();
-                cmd.setRobotID(3); //This is temporary, since it means that all messages will be sent to robot 3. 
 
                 try {
                     if (cmd instanceof RCCommand) {
                         sendCommand(cmd);
                     } else {
                         sendCommandAndWaitForAck(cmd, 5000, 3);
-                        System.out.printf("%x\n", cmd.generatePayload()[0]);
                     }
                 } catch (Exception ex) {
                     log.debug(ex);

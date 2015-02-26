@@ -70,7 +70,12 @@ public class BoardPanel extends JPanel
 
     protected void initializeDemo()
     {
-        squares[0].setIcon(uiState.getPieceImage("green-pawn"));
+        int locations[] = {1, 2}; // XXX This is what we change depending on which robots are here
+        
+        for (int i = 0; i < locations.length; i++) {
+            squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
+            uiState.setPieceLocation(locations[i], locations[i]);
+        }
     }
 
     class ButtonListener implements ActionListener
@@ -94,11 +99,11 @@ public class BoardPanel extends JPanel
 
                     int current[] = {selectedIndex};
                     int desired[] = {buttonPressed.getIndex()};
-
-                    System.out.println("current: " + selectedIndex);
-                    System.out.println("desired: " + buttonPressed.getIndex());
                     
                     robotState.addNewMotion(new Motion(current, desired));
+                    
+                    uiState.setPieceLocation(uiState.getPieceIDFromLocation(selectedIndex),
+                                             buttonPressed.getIndex());
                 }
             }
         }

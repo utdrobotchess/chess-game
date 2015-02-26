@@ -7,6 +7,7 @@ package manager;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Arrays;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -68,7 +69,7 @@ public class UIState
         resizeImages(MainFrame.SQUARE_SIZE, MainFrame.SQUARE_SIZE);
     }
 
-    public void resizeImages(int scaledWidth, int scaledHeight)
+    public synchronized void resizeImages(int scaledWidth, int scaledHeight)
     {
         for (int i = 0; i < imageNames.length; i++) {
             BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight,
@@ -81,47 +82,62 @@ public class UIState
         }
     }
     
-    public MainFrame getMainFrame()
+    public synchronized MainFrame getMainFrame()
     {
         return mainFrame;
     }
 
-    public Icon getPieceImage(String pieceName)
+    public synchronized Icon getPieceImage(String pieceName)
     {
         return imageMap.get(pieceName);
     }
+    
+    public synchronized int getPieceLocation(int pieceID)
+    {
+        return pieceLocations[pieceID];
+    }
+    
+    public synchronized int getPieceIDFromLocation(int location)
+    {
+        return Arrays.asList(pieceLocations).indexOf(location);
+    }
 
-    public int getSelectedIndex()
+    public synchronized int getSelectedIndex()
     {
         return selectedIndex;
     }
 
-    public boolean isDemoMode()
+    public synchronized boolean isDemoMode()
     {
         return demoMode;
     }
 
-    public boolean isDemoModeSetup()
+    public synchronized boolean isDemoModeSetup()
     {
         return demoModeSetup;
     }
 
-    public void setDemoMode(boolean demoMode)
+    public synchronized void setDemoMode(boolean demoMode)
     {
         this.demoMode = demoMode;
     }
 
-    public void setDemoModeSetup(boolean demoModeSetup)
+    public synchronized void setDemoModeSetup(boolean demoModeSetup)
     {
         this.demoModeSetup = demoModeSetup;
     }
 
-    public void setMainFrame(MainFrame mf)
+    public synchronized void setMainFrame(MainFrame mf)
     {
         mainFrame = mf;
     }
+    
+    public synchronized void setPieceLocation(int pieceID, int location)
+    {
+        pieceLocations[pieceID] = location;
+    }
 
-    public void setSelectedIndex(int selectedIndex)
+    public synchronized void setSelectedIndex(int selectedIndex)
     {
         this.selectedIndex = selectedIndex;
     }
