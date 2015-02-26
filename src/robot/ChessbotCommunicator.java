@@ -137,9 +137,7 @@ public class ChessbotCommunicator extends Thread
     public void run(int numOfNodes) 
     {
     	if(robotState == null)
-    	{
     		return;
-    	}
 
         try {
             initializeCommunication(3, 10000, numOfNodes);
@@ -149,12 +147,10 @@ public class ChessbotCommunicator extends Thread
 
         }
 
-    	while(true)
-    	{
+    	while (true) {
 			boolean waitForMovement = false;
 			
-    		if(robotState.isCommandAvailable())
-    		{
+    		if(robotState.isCommandAvailable()) {
     			Command cmd = robotState.pollNextCommand();
                 cmd.setRobotID(3); //This is temporary, since it means that all messages will be sent to robot 3. 
 
@@ -163,25 +159,23 @@ public class ChessbotCommunicator extends Thread
                 } catch (Exception ex) {
                     log.debug(ex);
                 }
-
-    			if(( (cmd.generatePayload()[0] == (new MoveToSquareCommand(0,0)).generatePayload()[0]) ))
-    			{
-    				waitForMovement = true;
-    			}
+                
+                if (cmd instanceof MoveToSquareCommand)
+                    waitForMovement = true;
     				
-    			if(( (cmd.generatePayload()[0] == (new ExecuteCommand(0)).generatePayload()[0]) ) && waitForMovement)
-    			{
+                if (cmd instanceof ExecuteCommand && waitForMovement) {
     				robotState.setReady(false);
     				long startTime = System.currentTimeMillis();
     				long timeout = 15000;
-    				Response expectedResponse = new Response(cmd.generatePayload(), cmd.getRobotID());
+    				Response expectedResponse = new Response(cmd.generatePayload(),
+                                                             cmd.getRobotID());
     				
     				waitForMovement = false;
     				
-    				while((System.currentTimeMillis() - startTime) < timeout)
-    				{
-    					if(robotState.peekNextResponse() == expectedResponse)
-    					{
+    				while ((System.currentTimeMillis() - startTime) < timeout) {
+                        // i don't expect this if statement to ever be true
+                        // should probably be a equals() instead of ==
+    					if (robotState.peekNextResponse() == expectedResponse) {
     						robotState.pollNextResponse();
     						robotState.setReady(true);
     						break;
@@ -193,7 +187,6 @@ public class ChessbotCommunicator extends Thread
 
                         }
     				}
-    				
     			}
 			} 
 
@@ -203,8 +196,7 @@ public class ChessbotCommunicator extends Thread
                 
             }
 	        	
-	        if(robotState.getCloseCommunication())
-	        {
+	        if (robotState.getCloseCommunication()) {
 	        	endCommunication();
 	        	robotState.setCloseCommunication(false);
 	        	return;
@@ -212,7 +204,10 @@ public class ChessbotCommunicator extends Thread
     	}
     }
 
-    public int initializeCommunication(int numOfRetries, int nodeDiscoveryTimeout, int numOfNodes) throws XBeeException, InterruptedException
+    public int initializeCommunication(int numOfRetries,
+                                       int nodeDiscoveryTimeout,
+                                       int numOfNodes)
+        throws XBeeException, InterruptedException
     {
     	discoverNodeAddresses(nodeDiscoveryTimeout, numOfNodes);
     	discoverBotAddresses(numOfRetries);
@@ -221,18 +216,16 @@ public class ChessbotCommunicator extends Thread
         log.debug("Bot Id lookup Table: " + botIDLookupList);
 
         if(undiscoveredBots.size() != 0)
-        {
-        	log.warn(undiscoveredBots.size() + " Undiscovered Bot(s): " +  undiscoveredBots);
-        }
+        	log.warn(undiscoveredBots.size() + " Undiscovered Bot(s): "
+                     +  undiscoveredBots);
         else
-        {
         	log.debug("All bots discovered");
-        }
 
         return undiscoveredBots.size();
     }
 
-    public void discoverNodeAddresses(int nodeDiscoveryTimeout, int numOfNodes) throws XBeeException, InterruptedException
+    public void discoverNodeAddresses(int nodeDiscoveryTimeout, int numOfNodes)
+        throws XBeeException, InterruptedException
     {
     	nodeAddresses.clear();
     	numOfNodes = numOfNodes + 1;
@@ -244,37 +237,36 @@ public class ChessbotCommunicator extends Thread
 		
 		long startTime = System.currentTimeMillis();
 		
-		while((nodeAddresses.size() < numOfNodes) && (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
-		{
+		while ((nodeAddresses.size() < numOfNodes) &&
+              (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
 			Thread.sleep(100);
-		}
 		
 		xbee.removePacketListener(listenForIncomingNodes);
 
 		log.debug("Discovered " + (nodeAddresses.size() - 1) + " Node(s)");
     }
 
-    public void discoverBotAddresses(int numOfRetries) throws XBeeException, InterruptedException
+    public void discoverBotAddresses(int numOfRetries)
+        throws XBeeException, InterruptedException
     {    	
     	checkForUndiscoveredBots();
     	
 		for(int i = 0; i < undiscoveredBots.size(); i++)
-		{
-			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ReadBotIDCommand(0), 5000, numOfRetries);
-		}
+			sendCommandAndWaitForAck(undiscoveredBots.get(i),
+                                     new ReadBotIDCommand(0),
+                                     5000, numOfRetries);
 
 		xbee.addPacketListener(listenForIncomingBotIDs);
 
 		for(int i = 0; i < undiscoveredBots.size(); i++)
-		{
-			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ExecuteCommand(0), 5000, numOfRetries);
-		}
+			sendCommandAndWaitForAck(undiscoveredBots.get(i),
+                                     new ExecuteCommand(0),
+                                     5000, numOfRetries);
 
 		Thread.sleep(500);
 		xbee.removePacketListener(listenForIncomingBotIDs);
 		
 		checkForUndiscoveredBots();
-		
     }
 
     public void checkForUndiscoveredBots()
@@ -282,42 +274,36 @@ public class ChessbotCommunicator extends Thread
     	undiscoveredBots.clear();
 
     	for(int i = 1; i < nodeAddresses.size(); i++)
-    	{
     		if(!botIDLookupList.contains(nodeAddresses.get(i)))
-    		{
     			undiscoveredBots.add(nodeAddresses.get(i));
-    		}
-    	}
     }
 
-    public void sendCommand(XBeeAddress64 address, Command cmd) throws XBeeException, InterruptedException
+    public void sendCommand(XBeeAddress64 address, Command cmd)
+        throws XBeeException, InterruptedException
     {
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
     	tx.setFrameId(0);
     	xbee.sendAsynchronous(tx);
     }
 
-    public void sendCommandAndWaitForAck(XBeeAddress64 address, Command cmd, int timeout, int numOfRetries) throws XBeeException, InterruptedException
+    public void sendCommandAndWaitForAck(XBeeAddress64 address, Command cmd,
+                                         int timeout, int numOfRetries)
+        throws XBeeException, InterruptedException
     {
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
     	
-    	for(int i = 0; i < numOfRetries; i++)
-    	{
+    	for(int i = 0; i < numOfRetries; i++) {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
-    		{
-    			log.debug("Success " + address +  " with Payload " + cmd.generatePayload());
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
+    			log.debug("Success " + address +  " with Payload "
+                          + cmd.generatePayload());
     			if(i != 0)
-    			{
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
-    			}
 
     			return;
-    		}
-    		else
-    		{
+    		} else {
 	    		log.debug("Failure: " + address);
 	    		log.debug("retrying...");
 	    	}
@@ -326,27 +312,23 @@ public class ChessbotCommunicator extends Thread
 		log.warn("Failure with " + numOfRetries + " Retry(ies)");
     }
 
-    public void sendCommandAndWaitForAck(Command cmd, int timeout, int numOfRetries) throws XBeeException, InterruptedException
+    public void sendCommandAndWaitForAck(Command cmd, int timeout, int numOfRetries)
+        throws XBeeException, InterruptedException
     {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
+    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), 
+                                             cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
 
-    	for(int i = 0; i < numOfRetries; i++)
-    	{
+    	for(int i = 0; i < numOfRetries; i++) {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
-    		{
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
     			log.debug("Success: " + botIDLookupList.get(cmd.getRobotID()));
     			if(i != 0)
-    			{
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
-    			}
 
     			return;
-    		}
-    		else
-    		{
+    		} else {
 	    		log.debug("Failure: " + botIDLookupList.get(cmd.getRobotID()));
 	    		log.debug("retrying...");
 	    	}
