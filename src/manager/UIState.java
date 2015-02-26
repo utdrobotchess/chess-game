@@ -102,9 +102,18 @@ public class UIState
         return pieceLocations[pieceID];
     }
     
+    public synchronized int[] getAllPieceLocations()
+    {
+        int newArray[] = new int[pieceLocations.length];
+
+        System.arraycopy(pieceLocations, 0, newArray, 0, pieceLocations.length);
+
+        return newArray;
+    }
+    
     public synchronized int getPieceIDFromLocation(int location)
     {
-        return pieceIDs[locations];
+        return pieceIDs[location];
     }
 
     public synchronized int getSelectedIndex()
@@ -139,6 +148,7 @@ public class UIState
     
     public synchronized void setPieceLocation(int pieceID, int location)
     {
+        pieceIDs[pieceLocations[pieceID]] = -1;
         pieceLocations[pieceID] = location;
         pieceIDs[location] = pieceID;
     }

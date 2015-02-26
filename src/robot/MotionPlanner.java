@@ -48,7 +48,7 @@ public class MotionPlanner extends Thread
                 occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
                 movesNeeded = generateMoves(nextMotion.getCurrent(),
                                             nextMotion.getDesired());
-
+                
                 ArrayList<Integer> path = plan();
 
                 if (path.size() > 0) {
@@ -101,7 +101,7 @@ public class MotionPlanner extends Thread
     private ArrayList<Edge> computeEdges(int vertex)
     {
         final int LATERAL_WEIGHT = 2;
-        final int DIAGONAL_WEIGHT = 3;
+        final int DIAGONAL_WEIGHT = 5;
         
         ArrayList<Edge> edges = new ArrayList<>();
 
@@ -257,7 +257,7 @@ public class MotionPlanner extends Thread
         if (path.size() < 3)
             return commands;
 
-        int robotID = -1; // XXX temporary hack - normally path.get(0);
+        int robotID = path.get(0); // XXX temporary hack - normally path.get(0);
         int currentMoveOrigin = path.get(1);
         int currentMoveDirection = 0;
 

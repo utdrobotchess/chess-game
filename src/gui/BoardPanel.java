@@ -97,13 +97,13 @@ public class BoardPanel extends JPanel
                     uiState.setSelectedIndex(-1);
                     buttonPressed.setIcon(uiState.getPieceImage("green-pawn"));
 
-                    int current[] = {selectedIndex};
-                    int desired[] = {buttonPressed.getIndex()};
-                    
-                    robotState.addNewMotion(new Motion(current, desired));
-                    
+                    int current[] = uiState.getAllPieceLocations();
                     uiState.setPieceLocation(uiState.getPieceIDFromLocation(selectedIndex),
                                              buttonPressed.getIndex());
+                    int desired[] = uiState.getAllPieceLocations();
+
+                    robotState.addNewMotion(new Motion(current, desired));
+                    
                 }
             }
         }
