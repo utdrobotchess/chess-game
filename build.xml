@@ -84,7 +84,9 @@
 
   <!-- execute the program -->
   <target name="run" depends="jar" description="run the application">
-    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" />
+    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" >
+      <sysproperty key="java.library.path" value="lib" />
+    </java>
   </target>
   
   <!-- clean up the environment -->
