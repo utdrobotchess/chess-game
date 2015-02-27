@@ -42,11 +42,13 @@ public class RemoteController extends Thread
     
     public void run()
     {
-        robotState.addNewCommand(new RCModeCommand(3));
-        robotState.addNewCommand(new ExecuteCommand(3));
+        robotState.addNewCommand(new RCModeCommand(4));
+        robotState.addNewCommand(new ExecuteCommand(4));
+
+        ZeroJoyStick();
 
         while (true) {
-            robotState.addNewCommand(new RCCommand(3, ComputeWheelVelocities()));
+            robotState.addNewCommand(new RCCommand(4, ComputeWheelVelocities()));
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -60,7 +62,10 @@ public class RemoteController extends Thread
         int[] wheelVelPayload = new int[4];
         int direction, rotation, forwardVel, rotationVel;
 
-        if(controller.getAxisValue(0) < 0)
+        controller.poll();
+        long startTime = System.currentTimeMillis();
+
+        if(controller.getAxisValue(1) < 0)
         {
             direction = 0x01; //forward
         }
@@ -69,7 +74,7 @@ public class RemoteController extends Thread
             direction = 0x00; //backward
         }
 
-        if(controller.getAxisValue(3) < 0)
+        if(controller.getAxisValue(2) < 0)
         {
             rotation = 0x01; //left
         }
@@ -78,8 +83,8 @@ public class RemoteController extends Thread
             rotation = 0x00; //right
         }
 
-        forwardVel = (char)Math.abs(controller.getAxisValue(0) * 255);
-        rotationVel = (char)Math.abs(controller.getAxisValue(3) * 255);
+        forwardVel = (char)Math.abs(controller.getAxisValue(1) * 255);
+        rotationVel = (char)Math.abs(controller.getAxisValue(2) * 255);
 
         if(controller.isButtonPressed(4))
         {
@@ -94,8 +99,17 @@ public class RemoteController extends Thread
         wheelVelPayload = new int[] {direction, forwardVel, rotation, rotationVel};
         
         System.out.printf("%x, %x, %x, %x\n", wheelVelPayload[0], wheelVelPayload[1], wheelVelPayload[2], wheelVelPayload[3]);
-
         return wheelVelPayload;
     }
 
+    public static void ZeroJoyStick()
+    {
+        while(controller.getAxisValue(0) != 0.0 && controller.getAxisValue(1) != 0.0 && controller.getAxisValue(2) != 0.0 && controller.getAxisValue(3) != 0.0)
+        {
+            controller.poll();
+
+            for(int i = 0; i < controller.getAxisCount(); i++)
+                controller.setDeadZone(i, (float)0.3);
+        }
+    }
 }
