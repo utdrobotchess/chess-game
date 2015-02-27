@@ -24,6 +24,8 @@ import java.awt.event.KeyEvent;
 import manager.UIState;
 import manager.RobotState;
 import robot.Motion;
+import robot.CenterCommand;
+import robot.ExecuteCommand;
 
 public class BoardPanel extends JPanel
 {
@@ -70,7 +72,7 @@ public class BoardPanel extends JPanel
 
     protected void initializeDemo()
     {
-        int locations[] = {1, 2}; // XXX This is what we change depending on which robots are here
+        int locations[] = {1, 2, 8, 9}; // XXX This is what we change depending on which robots are here
         
         for (int i = 0; i < locations.length; i++) {
             squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
@@ -87,12 +89,17 @@ public class BoardPanel extends JPanel
 
             if (uiState.isDemoMode()) {
                 int selectedIndex = uiState.getSelectedIndex();
-
-                if (selectedIndex == -1 && buttonPressed.isOccupied()) {
-                    uiState.setSelectedIndex(buttonPressed.getIndex());
-                }
-
-                if (selectedIndex != -1 && !buttonPressed.isOccupied()) {
+                
+                if (buttonPressed.isOccupied()) {
+                    if (buttonPressed.getIndex() == selectedIndex) {
+                        int robotID = uiState.getPieceIDFromLocation(selectedIndex);
+                        robotState.addNewCommand(new CenterCommand(robotID, 180, 90));
+                        robotState.addNewCommand(new ExecuteCommand(robotID));
+                        uiState.setSelectedIndex(-1);
+                    } else {
+                        uiState.setSelectedIndex(buttonPressed.getIndex());
+                    }
+                } else if (selectedIndex != -1) {
                     squares[selectedIndex].setIcon(null);
                     uiState.setSelectedIndex(-1);
                     buttonPressed.setIcon(uiState.getPieceImage("green-pawn"));

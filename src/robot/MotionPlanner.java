@@ -101,7 +101,7 @@ public class MotionPlanner extends Thread
     private ArrayList<Edge> computeEdges(int vertex)
     {
         final int LATERAL_WEIGHT = 2;
-        final int DIAGONAL_WEIGHT = 5;
+        final int DIAGONAL_WEIGHT = 50;
         
         ArrayList<Edge> edges = new ArrayList<>();
 

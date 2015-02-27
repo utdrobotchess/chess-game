@@ -117,6 +117,8 @@ public class ChessbotCommunicator extends Thread
 			
     		if(robotState.isCommandAvailable()) {
     			Command cmd = robotState.pollNextCommand();
+                
+                System.out.println(cmd.getRobotID());
 
                 try {
                     if (cmd instanceof RCCommand) {
