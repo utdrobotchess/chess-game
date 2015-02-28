@@ -20,14 +20,16 @@ public class King extends ChessPiece
         super(location, id); 
     }
 
-    public King(Square location, int id, Team team, boolean active)
+    public King(Square location, int id, Team team, 
+                boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active);
+        super(location, id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPiece = new King(getLocation(), getID(), getTeam(), isActive());
+        ChessPiece copiedPiece = new King(getLocation(), getID(), getTeam(),
+                                          isActive(), hasNotMoved());
         return copiedPiece;
     }
 

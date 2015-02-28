@@ -20,14 +20,16 @@ public class Rook extends ChessPiece
         super(location, id);
     }
 
-    public Rook(Square location, int id, Team team, boolean active)
+    public Rook(Square location, int id, Team team,
+                boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active);
+        super(location, id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPiece = new Rook(getLocation(), getID(), getTeam(), isActive());
+        ChessPiece copiedPiece = new Rook(getLocation(), getID(), getTeam(),
+                                          isActive(), hasNotMoved());
         return copiedPiece;
     }
 

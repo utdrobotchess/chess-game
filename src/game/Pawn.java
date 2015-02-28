@@ -10,31 +10,27 @@ import java.util.Collections;
 
 public class Pawn extends ChessPiece
 {
-    boolean hasNotMoved;
-
     public Pawn(Square location)
     {
         super(location);
-        hasNotMoved = true;
     }
     
     public Pawn(Square location, int id)
     {
         super(location, id);
-        hasNotMoved = true;
     }
 
-    public Pawn(Square location, int id, Team team, boolean active)
+    public Pawn(Square location, int id, Team team,
+                boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active);
-        hasNotMoved = true;
+        super(location, id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        Pawn copiedPawn = new Pawn(getLocation(), getID(), getTeam(), isActive());
-        copiedPawn.setHasNotMoved(hasNotMoved);
-        return (ChessPiece) copiedPawn;
+        ChessPiece copiedPawn = new Pawn(getLocation(), getID(), getTeam(), 
+                                         isActive(), hasNotMoved());
+        return copiedPawn;
     }
 
     protected ArrayList<Square> generateMoveLocations()
@@ -60,7 +56,7 @@ public class Pawn extends ChessPiece
             neighbor = neighbor.getNeighbor(neighborDirection);
 
             // should we add square two spaces in front of us?
-            if (hasNotMoved && neighbor != null && !neighbor.isOccupied())
+            if (hasNotMoved() && neighbor != null && !neighbor.isOccupied())
                 moveList.add(neighbor);
         }
 
@@ -84,10 +80,5 @@ public class Pawn extends ChessPiece
         Collections.sort(moveList);
 
         return moveList;
-    }
-
-    protected void setHasNotMoved(boolean hasNotMoved)
-    {
-        this.hasNotMoved = hasNotMoved;
     }
 }
