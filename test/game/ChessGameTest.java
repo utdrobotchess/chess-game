@@ -290,7 +290,33 @@ public class ChessGameTest
     }
 
     @Test
-    public void testCastlingPassThrough()
+    public void testCastlingStartFromCheck()
+    {
+        final int movingPieces[] = {12, 5, 6, 27};
+        final int moveDestinations[] = {19, 22, 23, 44};
+        final int expectedCastlingMoves[][] = {{}, {}, {6}, {}};
+        
+        ChessGame game = new ChessGame();
+
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+
+        ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[4]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j],
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
+    }
+
+    @Test
+    public void testCastlingPassThroughCheck()
     {
 
     }

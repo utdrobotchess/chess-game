@@ -133,7 +133,7 @@ public class ChessGame
     {
         ArrayList<Square> castlingMoves = new ArrayList<>();
 
-        if (!king.hasNotMoved())
+        if (!king.hasNotMoved() || isInCheck(king.getTeam()))
             return castlingMoves;
 
         int kingSideSquares[] = {5, 6};
