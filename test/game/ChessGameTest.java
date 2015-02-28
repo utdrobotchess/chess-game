@@ -15,7 +15,7 @@ public class ChessGameTest
     public static void main(String[] args)
     {
         ChessGameTest test = new ChessGameTest();
-        test.testIdentifyCheckMate();
+        test.testNoCastlingIfObstructions();
     }
     
     @Test
@@ -210,15 +210,71 @@ public class ChessGameTest
     }
 
     @Test
-    public void testCastlingPriorMoves()
+    public void testNoCastlingIfPriorMoves()
     {
+        final int movingPieces[] = {20, 11, 29, 3, 30, 2, 28, 1, 28, 0, 28, 1};
+        final int moveDestinations[] = {36, 27, 34, 19, 47, 20, 
+                                        52, 16, 60, 1, 52, 0};
+        final int castlingMovesAdded[][] = {{}, {}, {}, {}, {}, {60}, {}, 
+                                            {}, {2}, {}, {}, {}, {}};
 
+        ChessGame game = new ChessGame();
+
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+        
     }
 
     @Test
-    public void testCastlingObstructions()
+    public void testNoCastlingIfObstructions()
     {
+        final int movingPieces[] = {20, 29, 30};
+        final int moveDestinations[] = {36, 34, 47};
+        final int expectedCastlingMoves[][] = {{}, {}, {62}};
 
+        ChessGame game = new ChessGame();
+
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+        
+        ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[28]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+            
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j], 
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
+    }
+
+    @Test
+    public void testCastlingBothSides()
+    {
+        final int movingPieces[] = {1, 2, 3, 5, 6};
+        final int moveDestinations[] = {17, 18, 19, 21, 22};
+        final int expectedCastlingMoves[][] = {{}, {}, {2}, {2}, {2, 6}};
+
+        ChessGame game = new ChessGame();
+
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+
+        ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[4]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j],
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
     }
 
     @Test

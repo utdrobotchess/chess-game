@@ -6,6 +6,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ChessGame
 {
@@ -108,6 +109,7 @@ public class ChessGame
     protected ArrayList<Square> generateMoveLocations(ChessPiece piece, boolean removeChecks)
     {
         ArrayList<Square> moveLocations = piece.generateMoveLocations();
+        // add castling here
         
         if (removeChecks) {
             for (int i = 0; i < moveLocations.size(); i++) {
@@ -125,6 +127,35 @@ public class ChessGame
         } 
 
         return moveLocations;
+    }
+    
+    protected ArrayList<Square> generateCastlingMoves(ChessPiece king)
+    {
+        ArrayList<Square> castlingMoves = new ArrayList<>();
+
+        int kingSideSquares[] = {5, 6};
+        int queenSideSquares[] = {1, 2, 3};
+
+        if (king.getTeam() == Team.WHITE) {
+            for (int i = 0; i < kingSideSquares.length; i++)
+                kingSideSquares[i] += 56;
+            
+            for (int i = 0; i < queenSideSquares.length; i++)
+                queenSideSquares[i] += 56;
+        }
+        
+        if (!board.getSquareAt(kingSideSquares[0]).isOccupied() &&
+            !board.getSquareAt(kingSideSquares[1]).isOccupied()) 
+            castlingMoves.add(board.getSquareAt(kingSideSquares[1]));
+        
+        if (!board.getSquareAt(queenSideSquares[0]).isOccupied() &&
+            !board.getSquareAt(queenSideSquares[1]).isOccupied() &&
+            !board.getSquareAt(queenSideSquares[2]).isOccupied())
+            castlingMoves.add(board.getSquareAt(queenSideSquares[1]));
+
+        Collections.sort(castlingMoves);
+
+        return castlingMoves;
     }
 
     protected ChessPiece[] getAllPieces()
