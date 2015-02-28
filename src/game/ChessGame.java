@@ -148,13 +148,23 @@ public class ChessGame
         }
         
         if (!board.getSquareAt(kingSideSquares[0]).isOccupied() &&
-            !board.getSquareAt(kingSideSquares[1]).isOccupied()) 
-            castlingMoves.add(board.getSquareAt(kingSideSquares[1]));
-        
+            !board.getSquareAt(kingSideSquares[1]).isOccupied()) { 
+            int castlingRookIndex = king.getTeam() == Team.BLACK ? 7 : 31;
+            ChessPiece castlingRook = allPieces[castlingRookIndex];
+
+            if (castlingRook.hasNotMoved())
+                castlingMoves.add(board.getSquareAt(kingSideSquares[1]));
+        }
+
         if (!board.getSquareAt(queenSideSquares[0]).isOccupied() &&
             !board.getSquareAt(queenSideSquares[1]).isOccupied() &&
-            !board.getSquareAt(queenSideSquares[2]).isOccupied())
-            castlingMoves.add(board.getSquareAt(queenSideSquares[1]));
+            !board.getSquareAt(queenSideSquares[2]).isOccupied()) {
+            int castlingRookIndex = king.getTeam() == Team.BLACK ? 0 : 24;
+            ChessPiece castlingRook = allPieces[castlingRookIndex];
+
+            if (castlingRook.hasNotMoved())
+                castlingMoves.add(board.getSquareAt(queenSideSquares[1]));
+        }
 
         Collections.sort(castlingMoves);
 
