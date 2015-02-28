@@ -133,6 +133,9 @@ public class ChessGame
     {
         ArrayList<Square> castlingMoves = new ArrayList<>();
 
+        if (!king.hasNotMoved())
+            return castlingMoves;
+
         int kingSideSquares[] = {5, 6};
         int queenSideSquares[] = {1, 2, 3};
 

@@ -212,17 +212,27 @@ public class ChessGameTest
     @Test
     public void testNoCastlingIfPriorMoves()
     {
-        final int movingPieces[] = {20, 11, 29, 3, 30, 2, 28, 1, 28, 0, 28, 1};
-        final int moveDestinations[] = {36, 27, 34, 19, 47, 20, 
-                                        52, 16, 60, 1, 52, 0};
-        final int castlingMovesAdded[][] = {{}, {}, {}, {}, {}, {60}, {}, 
-                                            {}, {2}, {}, {}, {}, {}};
-
+        final int movingPieces[] = {29, 30, 28, 28};
+        final int moveDestinations[] = {45, 46, 44, 60};
+        final int expectedCastlingMoves[][] = {{}, {62}, {}, {}};
+        
         ChessGame game = new ChessGame();
 
         ChessPiece pieces[] = game.getAllPieces();
         ChessBoard board = game.getBoard();
         
+         ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[28]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+            
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j], 
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
     }
 
     @Test
