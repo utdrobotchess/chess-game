@@ -318,13 +318,53 @@ public class ChessGameTest
     @Test
     public void testCastlingPassThroughCheck()
     {
+        final int movingPieces[] = {25, 26, 27, 19, 3};
+        final int moveDestinations[] = {45, 46, 47, 44, 43};
+        final int expectedCastlingMoves[][] = {{}, {}, {58}, {58}, {}};
+        
+        ChessGame game = new ChessGame();
 
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+
+        ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[28]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j],
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
     }
 
     @Test
     public void testCastlingResultCheck()
     {
+        final int movingPieces[] = {25, 26, 27, 18, 3};
+        final int moveDestinations[] = {45, 46, 47, 44, 42};
+        final int expectedCastlingMoves[][] = {{}, {}, {58}, {58}, {}};
+        
+        ChessGame game = new ChessGame();
 
+        ChessPiece pieces[] = game.getAllPieces();
+        ChessBoard board = game.getBoard();
+
+        ArrayList<Square> actualCastlingMoves;
+
+        for (int i = 0; i < movingPieces.length; i++) {
+            pieces[movingPieces[i]].moveTo(board.getSquareAt(moveDestinations[i]));
+            actualCastlingMoves = game.generateCastlingMoves(pieces[28]);
+            Assert.assertEquals(expectedCastlingMoves[i].length,
+                                actualCastlingMoves.size());
+
+            for (int j = 0; j < expectedCastlingMoves[i].length; j++)
+                Assert.assertEquals(expectedCastlingMoves[i][j],
+                                    actualCastlingMoves.get(j).getIntLocation());
+        }
     }
 
     // en passant

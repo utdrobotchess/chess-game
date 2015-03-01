@@ -113,20 +113,28 @@ public class ChessGame
         
         if (removeChecks) {
             for (int i = 0; i < moveLocations.size(); i++) {
-                ChessGame copiedGame = copyGame();
-                ChessPiece copiedPieces[] = copiedGame.getAllPieces();
-                ChessBoard copiedBoard = copiedGame.getBoard();
-                ChessPiece copiedTestPiece = copiedPieces[piece.getID()];
-                Square copiedDestinationSquare = copiedBoard.getSquareAt(moveLocations.get(i).getIntLocation());
+                ChessGame copiedGame = copyGameAndMovePiece(piece, 
+                                                            moveLocations.get(i));
 
-                copiedTestPiece.moveTo(copiedDestinationSquare);
-                if (copiedGame.isInCheck(copiedTestPiece.getTeam())) {
+                if (copiedGame.isInCheck(piece.getTeam())) {
                     moveLocations.remove(i--);
                 }
             }
         } 
 
         return moveLocations;
+    }
+
+    private ChessGame copyGameAndMovePiece(ChessPiece piece, Square destination)
+    {
+        ChessGame copiedGame = copyGame();
+        ChessPiece copiedPieces[] = copiedGame.getAllPieces();
+        ChessBoard copiedBoard = copiedGame.getBoard();
+        ChessPiece copiedTestPiece = copiedPieces[piece.getID()];
+        Square copiedDestinationSquare = copiedBoard.getSquareAt(destination.getIntLocation());
+        copiedTestPiece.moveTo(copiedDestinationSquare);
+
+        return copiedGame;
     }
     
     protected ArrayList<Square> generateCastlingMoves(ChessPiece king)
@@ -136,39 +144,60 @@ public class ChessGame
         if (!king.hasNotMoved() || isInCheck(king.getTeam()))
             return castlingMoves;
 
-        int kingSideSquares[] = {5, 6};
-        int queenSideSquares[] = {1, 2, 3};
+        int kingSideCastle = determineCastleOnSide(king, true);
+        if (kingSideCastle != -1)
+            castlingMoves.add(board.getSquareAt(kingSideCastle));
 
-        if (king.getTeam() == Team.WHITE) {
-            for (int i = 0; i < kingSideSquares.length; i++)
-                kingSideSquares[i] += 56;
-            
-            for (int i = 0; i < queenSideSquares.length; i++)
-                queenSideSquares[i] += 56;
-        }
-        
-        if (!board.getSquareAt(kingSideSquares[0]).isOccupied() &&
-            !board.getSquareAt(kingSideSquares[1]).isOccupied()) { 
-            int castlingRookIndex = king.getTeam() == Team.BLACK ? 7 : 31;
-            ChessPiece castlingRook = allPieces[castlingRookIndex];
-
-            if (castlingRook.hasNotMoved())
-                castlingMoves.add(board.getSquareAt(kingSideSquares[1]));
-        }
-
-        if (!board.getSquareAt(queenSideSquares[0]).isOccupied() &&
-            !board.getSquareAt(queenSideSquares[1]).isOccupied() &&
-            !board.getSquareAt(queenSideSquares[2]).isOccupied()) {
-            int castlingRookIndex = king.getTeam() == Team.BLACK ? 0 : 24;
-            ChessPiece castlingRook = allPieces[castlingRookIndex];
-
-            if (castlingRook.hasNotMoved())
-                castlingMoves.add(board.getSquareAt(queenSideSquares[1]));
-        }
+        int queenSideCastle = determineCastleOnSide(king, false);
+        if (queenSideCastle != -1)
+            castlingMoves.add(board.getSquareAt(queenSideCastle));
 
         Collections.sort(castlingMoves);
 
         return castlingMoves;
+    }
+    
+    private int determineCastleOnSide(ChessPiece king, boolean kingSide)
+    {
+        int numSideSquares = kingSide ? 2 : 3;
+        int sideSquares[] = new int[numSideSquares];
+
+        if (kingSide) {
+            sideSquares[0] = 5;
+            sideSquares[1] = 6;
+        } else {
+            sideSquares[0] = 1;
+            sideSquares[1] = 2;
+            sideSquares[2] = 3;
+        }
+        
+        if (king.getTeam() == Team.WHITE)
+            for (int i = 0; i < numSideSquares; i++)
+                sideSquares[i] += 56;
+        
+        for (int i = 0; i < numSideSquares; i++)
+            if (board.getSquareAt(sideSquares[i]).isOccupied())
+                return -1;
+        
+        int castlingRookIndex = kingSide ? 7 : 0;
+        
+        if (king.getTeam() == Team.WHITE)
+            castlingRookIndex += 16;
+
+        ChessPiece castlingRook = allPieces[castlingRookIndex];
+
+        if (!castlingRook.hasNotMoved())
+            return -1;
+        
+        for (int i = 0; i < sideSquares.length; i++) {
+            ChessGame copiedGame = copyGameAndMovePiece(king,
+                                                        board.getSquareAt(sideSquares[i]));
+            
+            if (copiedGame.isInCheck(king.getTeam()))
+                return -1;
+        }
+        
+        return sideSquares[1];
     }
 
     protected ChessPiece[] getAllPieces()
