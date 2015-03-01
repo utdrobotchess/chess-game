@@ -67,12 +67,6 @@
       </fileset>
     </jar>
 
-    <copy todir="${jar.dir}">
-      <fileset dir="${lib.dir}">
-	<include name="*.jar" />
-      </fileset>
-    </copy>
-
     <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
       <fileset dir="${classes.dir}" includes="**/*.class" />
       <zipgroupfileset dir="${lib.dir}" includes="**/*.jar" />
