@@ -24,6 +24,7 @@ public class MotionPlanner extends Thread
     int boardColumns;
     boolean occupancyGrid[]; // indicates which squares are occupied
     ArrayList<Move> movesNeeded;
+    private boolean keepAlive;
     
     public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
     {
@@ -35,7 +36,7 @@ public class MotionPlanner extends Thread
     @Override
     public void run()
     {
-        while (true) {
+        while (keepAlive) {
             if (boardRows != robotState.getBoardRows() ||
                 boardColumns != robotState.getBoardColumns()) {
                 boardRows = robotState.getBoardRows();
@@ -66,12 +67,13 @@ public class MotionPlanner extends Thread
                 }
             }
             
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                
-            }
+            try { Thread.sleep(10); } catch (InterruptedException ex) { }
         }
+    }
+
+    public void terminate()
+    {
+        keepAlive = false;
     }
 
     private boolean[] fillOccupancyGrid(int currentLocations[])

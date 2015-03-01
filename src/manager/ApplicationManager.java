@@ -25,7 +25,7 @@ public class ApplicationManager
         
         uiManager = new UIManager(applicationState, uiState, robotState, gameState);
         robotManager = new RobotManager(applicationState, uiState, robotState);
-        gameManager = new GameManager(applicationState, uiState, gameState);
+        gameManager = new GameManager(uiState, gameState);
 
         uiManager.start();
         robotManager.start();

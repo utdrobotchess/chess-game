@@ -27,20 +27,26 @@ public class RobotManager extends Thread
     @Override
     public void run()
     {
-        MotionPlanner planner = new MotionPlanner(robotState, 8, 8);
-        planner.start();
+        while (true) {
+            if (applicationState.isRobotsActive()) {
+                MotionPlanner planner = new MotionPlanner(robotState, 8, 8);
+                planner.run();
 
-        ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
+                // TODO figure out how to detect the XBEE
+                ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
                                                                      "/dev/ttyUSB0",
                                                                      57600);
-        communicator.run(9);
+                communicator.run(9);
 
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception ex) {
-                
+                while (applicationState.isRobotsActive()) {
+                    try { Thread.sleep(10); } catch (InterruptedException ex) {}
+                }
+
+                communicator.terminate();
+                planner.terminate();
             }
+            
+            try { Thread.sleep(10); } catch (InterruptedException ex) {}
         }
     }
 }

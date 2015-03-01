@@ -31,6 +31,6 @@ public class UIManager extends Thread
     @Override
     public void run()
     {
-        mainFrame = new MainFrame(uiState, robotState);
+        mainFrame = new MainFrame(applicationState, uiState, robotState);
     }
 }

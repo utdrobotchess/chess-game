@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import robot.*;
 import manager.RobotState;
 
 import com.rapplogic.xbee.api.ApiId;
@@ -42,49 +41,15 @@ public class ChessbotCommunicator extends Thread
 
     private int baudrate;
     private String comPort;
+    private boolean keepAlive;
     
-	private PacketListener listenForIncomingResponses = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
-				robotState.addNewResponse(new Response(rx.getData(),
-                                                       botIDLookupList.indexOf(rx.getRemoteAddress64())));
-			}
-		}
-	};
-
-	private PacketListener listenForIncomingBotIDs = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
-				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
-			} 
-		}
-	};
-
-	private PacketListener listenForIncomingNodes = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.AT_RESPONSE) {
-				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-				log.debug("Node discover response is: " + nd);
-				nodeAddresses.add(nd.getNodeAddress64());
-			}
-		}
-	};
 
     public ChessbotCommunicator(RobotState robotState, String comport, int baudRate) 
     {
         PropertyConfigurator.configure("log/log4j.properties");
         
         this.robotState = robotState;
+        keepAlive = true;
         
         try {
             xbee.open(comport, baudRate);
@@ -112,7 +77,7 @@ public class ChessbotCommunicator extends Thread
             // XXX we need to handle our exceptions
         }
 
-    	while (true) {
+    	while (keepAlive) {
 			boolean waitForMovement = false;
 			
     		if(robotState.isCommandAvailable()) {
@@ -151,27 +116,20 @@ public class ChessbotCommunicator extends Thread
     						break;
     					}
 
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ex) {
-
-                        }
+                        try { Thread.sleep(10); } catch (InterruptedException ex) { }
     				}
     			}
 			} 
 
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                
-            }
-	        	
-	        if (robotState.getCloseCommunication()) {
-	        	endCommunication();
-	        	robotState.setCloseCommunication(false);
-	        	return;
-	        }
+            try { Thread.sleep(10); } catch (InterruptedException ex) { }
     	}
+
+        endCommunication();
+    }
+    
+    public void terminate()
+    {
+        keepAlive = false;
     }
 
     public int initializeCommunication(int numOfRetries,
@@ -355,4 +313,41 @@ public class ChessbotCommunicator extends Thread
     {
         xbee.close();
     }
+    
+	private PacketListener listenForIncomingResponses = new PacketListener()
+	{
+		public void processResponse(XBeeResponse response) 
+		{
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
+				ZNetRxResponse rx = (ZNetRxResponse) response;
+				log.debug("RX response is: " + rx);
+				robotState.addNewResponse(new Response(rx.getData(),
+                                                       botIDLookupList.indexOf(rx.getRemoteAddress64())));
+			}
+		}
+	};
+
+	private PacketListener listenForIncomingBotIDs = new PacketListener()
+	{
+		public void processResponse(XBeeResponse response) 
+		{
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
+				ZNetRxResponse rx = (ZNetRxResponse) response;
+				log.debug("RX response is: " + rx);
+				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
+			} 
+		}
+	};
+
+	private PacketListener listenForIncomingNodes = new PacketListener()
+	{
+		public void processResponse(XBeeResponse response) 
+		{
+			if (response.getApiId() == ApiId.AT_RESPONSE) {
+				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
+				log.debug("Node discover response is: " + nd);
+				nodeAddresses.add(nd.getNodeAddress64());
+			}
+		}
+	};
 }

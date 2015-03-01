@@ -9,13 +9,17 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JMenu;
+import javax.swing.ButtonGroup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import manager.UIState;
 import manager.RobotState;
+import manager.ApplicationState;
 
 import robot.RemoteController;
 import robot.ExitRCModeCommand;
@@ -26,25 +30,29 @@ public class MainFrame extends JFrame
 
     UIState uiState;
     RobotState robotState;
+    ApplicationState applicationState;
 
     JMenuBar menuBar;
     
     JMenu fileMenu;
-    JMenu viewMenu;
-    JMenu helpMenu;
+    JMenu optionsMenu;
 
     JMenuItem newGameMenuItem;
-    JMenuItem demoModeMenuItem;
-    JMenuItem rcModeMenuItem;
-    JMenuItem exitRCModeMenuItem;
     JMenuItem exitMenuItem;
+    
+    JCheckBoxMenuItem enableRobotsMenuItem;
+    JRadioButtonMenuItem gameModeMenuItem;
+    JRadioButtonMenuItem demoModeMenuItem;
+    JRadioButtonMenuItem rcModeMenuItem;
 
     MenuItemListener menuListener;
 
     BoardPanel boardPanel;
     
-    public MainFrame(UIState uiState, RobotState robotState)
+    public MainFrame(ApplicationState applicationState, 
+                     UIState uiState, RobotState robotState)
     {
+        this.applicationState = applicationState;
         this.uiState = uiState;
         this.robotState = robotState;
         uiState.setMainFrame(this);
@@ -78,34 +86,46 @@ public class MainFrame extends JFrame
         menuBar = new JMenuBar();
 
         fileMenu = new JMenu("File");
-        viewMenu = new JMenu("View");
-        helpMenu = new JMenu("Help");
+        optionsMenu = new JMenu("Options");
 
         newGameMenuItem = new JMenuItem("New Game");
-        demoModeMenuItem = new JMenuItem("Demo Mode");
-        rcModeMenuItem = new JMenuItem("RC Mode");
-        exitRCModeMenuItem = new JMenuItem("Exit RC Mode");
         exitMenuItem = new JMenuItem("Exit");
 
+        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
+        gameModeMenuItem = new JRadioButtonMenuItem("Game Mode");
+        demoModeMenuItem = new JRadioButtonMenuItem("Demo Mode");
+        rcModeMenuItem = new JRadioButtonMenuItem("RC Mode");
+        
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(gameModeMenuItem);
+        bg.add(demoModeMenuItem);
+        bg.add(rcModeMenuItem);
+
+        gameModeMenuItem.setEnabled(false);
+        demoModeMenuItem.setEnabled(false);
+        rcModeMenuItem.setEnabled(false);
+        
         fileMenu.add(newGameMenuItem);
-        fileMenu.add(demoModeMenuItem);
-        fileMenu.add(rcModeMenuItem);
-        fileMenu.add(exitRCModeMenuItem);
         fileMenu.add(exitMenuItem);
+        
+        optionsMenu.add(enableRobotsMenuItem);
+        optionsMenu.add(gameModeMenuItem);
+        optionsMenu.add(demoModeMenuItem);
+        optionsMenu.add(rcModeMenuItem);
 
         menuBar.add(fileMenu);
-        menuBar.add(viewMenu);
-        menuBar.add(helpMenu);
+        menuBar.add(optionsMenu);
 
         setJMenuBar(menuBar);
 
         menuListener = new MenuItemListener();
 
         newGameMenuItem.addActionListener(menuListener);
+        exitMenuItem.addActionListener(menuListener);
+        
+        enableRobotsMenuItem.addActionListener(menuListener);
         demoModeMenuItem.addActionListener(menuListener);
         rcModeMenuItem.addActionListener(menuListener);
-        exitRCModeMenuItem.addActionListener(menuListener);
-        exitMenuItem.addActionListener(menuListener);
     }
 
     class MenuItemListener implements ActionListener
@@ -113,22 +133,22 @@ public class MainFrame extends JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
+            if (e.getSource() == enableRobotsMenuItem) {
+                boolean enable = enableRobotsMenuItem.getState();
+                applicationState.setRobotsActive(enable);
+                gameModeMenuItem.setEnabled(enable);
+                demoModeMenuItem.setEnabled(enable);
+                rcModeMenuItem.setEnabled(enable);
+            }
+
             if (e.getSource() == demoModeMenuItem) {
-                //DemoFrame df = new DemoFrame(uiState, robotState);
-                resizeBoard(4, 4);
+                resizeBoard(4, 4); // TODO allow the user to pick the size of the board
                 boardPanel.initializeDemo();
                 uiState.setDemoMode(true);
             }
             
             if (e.getSource() == rcModeMenuItem) {
-                RemoteController rc = new RemoteController(robotState);
-                robotState.setRCMode(true);
-                rc.run();
-            }
-            
-            if (e.getSource() == exitRCModeMenuItem && robotState.isRCMode()) {
-                robotState.addNewCommand(new ExitRCModeCommand(3));
-                robotState.setRCMode(false);
+                
             }
 
             if (e.getSource() == exitMenuItem) {
