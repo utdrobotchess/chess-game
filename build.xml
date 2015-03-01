@@ -4,8 +4,7 @@
   <property name="src.dir" value="src" />
   <property name="test.dir" value="test" />
   <property name="build.dir" value="build" />
-  <property name="classes.dir" value="${build.dir}/classes" />
-  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="jar.dir" value="dist" />
   <property name="lib.dir" value="lib" />
   <property name="resources.dir" value="resources" />
   <property name="main-class" value="manager.ApplicationManager" />
@@ -17,19 +16,19 @@
 
   <path id="classpath.test">
     <path refid="classpath" />
-    <pathelement location="${classes.dir}" />
+    <pathelement location="${build.dir}" />
   </path>
 
   <!-- initialize the environment -->
   <target name="init">
     <tstamp/>
-    <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${build.dir}"/>
   </target>
 
   <!-- compile the source code -->
   <target name="compile" depends="init" description="compile the source" >
     <!-- Compile the java code from ${src.dir} and ${test.dir} into ${class.dir} -->
-    <javac destdir="${classes.dir}" includeantruntime="false">
+    <javac destdir="${build.dir}" includeantruntime="false">
       <src path="${src.dir}" />
       <src path="${test.dir}" />
       <classpath refid="classpath" />
@@ -39,7 +38,7 @@
   <!-- compile the source code with debug turned on -->
   <target name="compile.debug" depends="init" description="compile the source with debug" >
     <!-- Compile the java code from ${src.dir} and ${test.dir} into ${class.dir} -->
-    <javac debug="on" destdir="${classes.dir}" includeantruntime="false">
+    <javac debug="on" destdir="${build.dir}" includeantruntime="false">
       <src path="${src.dir}" />
       <src path="${test.dir}" />
       <classpath refid="classpath" />
@@ -47,12 +46,12 @@
   </target>
 
   <!-- execute the unit tests -->
-  <target name="test" depends="compile.debug" description="run unit tests">
+  <target name="test" depends="clean, compile.debug" description="run unit tests">
     <junit fork="no" errorProperty="test.failed" failureProperty="test.failed" >
       <classpath refid="classpath.test" />
       <formatter type="plain" usefile="false" />
       <batchtest>
-	<fileset dir="${classes.dir}" includes="**/*Test.class" />
+	<fileset dir="${build.dir}" includes="**/*Test.class" />
       </batchtest>
     </junit>
     <fail message="Tests failed. Please see test reports" if="test.failed" />
@@ -67,8 +66,8 @@
       </fileset>
     </jar>
 
-    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
-      <fileset dir="${classes.dir}" includes="**/*.class" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${build.dir}">
+      <fileset dir="${build.dir}" includes="**/*.class" />
       <zipgroupfileset dir="${lib.dir}" includes="**/*.jar" />
       <manifest>
 	<attribute name="Main-Class" value="${main-class}" />
@@ -87,5 +86,6 @@
   <target name="clean" description="clean up">
     <!-- delete the ${build} directory tree -->
     <delete dir="${build.dir}" />
+    <delete dir="${jar.dir}" />
   </target>
 </project>
