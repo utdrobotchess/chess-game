@@ -15,7 +15,7 @@ public class CenterCommand extends Command
 
     public CenterCommand(int robotID, int firstEdgeDegrees, int secondEdgeDegrees)
     {
-        commandID = 0x3; 
+        commandID = 0xe; 
         payloadLength = 0x3;
 
         this.robotID = robotID;

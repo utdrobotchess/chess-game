@@ -49,7 +49,8 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response)
 		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+            {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
 				log.debug("RX response is: " + rx);
 				robotState.addNewResponse(new Response(rx.getData(),
@@ -62,7 +63,8 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response)
 		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
+			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+            {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
 				log.debug("RX response is: " + rx);
 				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
@@ -74,7 +76,8 @@ public class ChessbotCommunicator extends Thread
 	{
 		public void processResponse(XBeeResponse response)
 		{
-			if (response.getApiId() == ApiId.AT_RESPONSE) {
+			if (response.getApiId() == ApiId.AT_RESPONSE)
+            {
 				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
 				log.debug("Node discover response is: " + nd);
 				nodeAddresses.add(nd.getNodeAddress64());
@@ -87,14 +90,23 @@ public class ChessbotCommunicator extends Thread
         PropertyConfigurator.configure("log/log4j.properties");
 
         Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
-        
-        if(System.getProperty("os.name").equals("Mac OS X"))
-        { 
+
+        String osName = System.getProperty("os.name");
+        String portName = null;
+
+        if (osName.equalsIgnoreCase("Mac OS X"))
+            portName = "tty.usbserial";
+
+        else if (osName.equalsIgnoreCase("Linux"))
+            portName = "ttyUSB";
+
+        if(portName != null)
+        {
             while (portIdentifiers.hasMoreElements())
             {
                 CommPortIdentifier pid = (CommPortIdentifier) portIdentifiers.nextElement();
 
-                if(pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains("tty.usbserial"))
+                if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains(portName))
                 {
                     comport = pid.getName();
                     System.out.println(comport);
@@ -102,9 +114,12 @@ public class ChessbotCommunicator extends Thread
             }
         }
 
-        try {
+        try
+        {
             xbee.open(comport, baudRate);
-        } catch (XBeeException e) {
+        }
+        catch (XBeeException e)
+        {
             log.info("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + comport);
             e.printStackTrace();
         }
@@ -113,7 +128,6 @@ public class ChessbotCommunicator extends Thread
 
         for(int i = 0; i < 32; i++)
         	botIDLookupList.add(null);
-
     }
 
     public void run(int numOfNodes)
@@ -121,67 +135,79 @@ public class ChessbotCommunicator extends Thread
     	if(robotState == null)
     		return;
 
-        try {
+        try
+        {
             initializeCommunication(3, 10000, numOfNodes);
             robotState.setReady(true);
             xbee.addPacketListener(listenForIncomingResponses);
-        } catch (Exception ex) {
+        } catch (Exception ex)
+        {
             // XXX we need to handle our exceptions
         }
 
-    	while (true) {
+    	while (true)
+        {
 			boolean waitForMovement = false;
 
-    		if(robotState.isCommandAvailable()) {
+    		if(robotState.isCommandAvailable())
+            {
     			Command cmd = robotState.pollNextCommand();
 
-                try {
-                    if (cmd instanceof RCCommand) {
+                try
+                {
+                    if (cmd instanceof RCCommand)
                         sendCommand(cmd);
-                    } else {
+                    else
                         sendCommandAndWaitForAck(cmd, 5000, 3);
-                    }
-                } catch (Exception ex) {
+
+                }
+                catch (Exception ex)
+                {
                     log.info(ex);
                 }
 
                 if (cmd instanceof MoveToSquareCommand)
                     waitForMovement = true;
 
-                if (cmd instanceof ExecuteCommand && waitForMovement) {
+                if (cmd instanceof ExecuteCommand && waitForMovement)
+                {
     				robotState.setReady(false);
     				long startTime = System.currentTimeMillis();
     				long timeout = 15000;
-    				Response expectedResponse = new Response(cmd.generatePayload(),
-                                                             cmd.getRobotID());
+    				Response expectedResponse = new Response(cmd.generatePayload(), cmd.getRobotID());
 
     				waitForMovement = false;
 
-    				while ((System.currentTimeMillis() - startTime) < timeout) {
-                        // i don't expect this if statement to ever be true
-                        // should probably be a equals() instead of ==
-    					if (robotState.peekNextResponse() == expectedResponse) {
+    				while ((System.currentTimeMillis() - startTime) < timeout)
+                    {
+    					if (robotState.peekNextResponse() == expectedResponse)
+                        {
     						robotState.pollNextResponse();
     						robotState.setReady(true);
     						break;
     					}
 
-                        try {
+                        try
+                        {
                             Thread.sleep(10);
-                        } catch (InterruptedException ex) {
-
+                        }
+                        catch (InterruptedException ex)
+                        {
                         }
     				}
     			}
 			}
 
-            try {
+            try
+            {
                 Thread.sleep(10);
-            } catch (InterruptedException ex) {
-
+            }
+            catch (InterruptedException ex)
+            {
             }
 
-	        if (robotState.getCloseCommunication()) {
+	        if (robotState.getCloseCommunication())
+            {
 	        	endCommunication();
 	        	robotState.setCloseCommunication(false);
 	        	return;
@@ -189,9 +215,7 @@ public class ChessbotCommunicator extends Thread
     	}
     }
 
-    public int initializeCommunication(int numOfRetries,
-                                       int nodeDiscoveryTimeout,
-                                       int numOfNodes)
+    public int initializeCommunication(int numOfRetries, int nodeDiscoveryTimeout, int numOfNodes)
         throws XBeeException, InterruptedException
     {
     	discoverNodeAddresses(nodeDiscoveryTimeout, numOfNodes);
@@ -201,8 +225,7 @@ public class ChessbotCommunicator extends Thread
         log.debug("Bot Id lookup Table: " + botIDLookupList);
 
         if(undiscoveredBots.size() != 0)
-        	log.warn(undiscoveredBots.size() + " Undiscovered Bot(s): "
-                     +  undiscoveredBots);
+        	log.warn(undiscoveredBots.size() + " Undiscovered Bot(s): " + undiscoveredBots);
 
         return undiscoveredBots.size();
     }
@@ -220,8 +243,7 @@ public class ChessbotCommunicator extends Thread
 
 		long startTime = System.currentTimeMillis();
 
-		while ((nodeAddresses.size() < numOfNodes) &&
-              (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
+		while ((nodeAddresses.size() < numOfNodes) && (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
 			Thread.sleep(100);
 
 		xbee.removePacketListener(listenForIncomingNodes);
@@ -235,16 +257,12 @@ public class ChessbotCommunicator extends Thread
     	checkForUndiscoveredBots();
 
 		for(int i = 0; i < undiscoveredBots.size(); i++)
-			sendCommandAndWaitForAck(undiscoveredBots.get(i),
-                                     new ReadBotIDCommand(0),
-                                     5000, numOfRetries);
+			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ReadBotIDCommand(0), 5000, numOfRetries);
 
 		xbee.addPacketListener(listenForIncomingBotIDs);
 
 		for(int i = 0; i < undiscoveredBots.size(); i++)
-			sendCommandAndWaitForAck(undiscoveredBots.get(i),
-                                     new ExecuteCommand(0),
-                                     5000, numOfRetries);
+			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ExecuteCommand(0), 5000, numOfRetries);
 
 		Thread.sleep(500);
 		xbee.removePacketListener(listenForIncomingBotIDs);
@@ -262,41 +280,33 @@ public class ChessbotCommunicator extends Thread
     			undiscoveredBots.add(nodeAddresses.get(i));
     }
 
-    public void sendCommand(XBeeAddress64 address, Command cmd)
-        throws XBeeException, InterruptedException
-    {
-    	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
-    	tx.setFrameId(0);
-    	xbee.sendAsynchronous(tx);
-    }
-
     public void sendCommand(Command cmd)
         throws XBeeException, InterruptedException
     {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()),
-                                             cmd.generatePayload());
+    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
     	tx.setFrameId(0);
     	xbee.sendAsynchronous(tx);
     }
 
-    public void sendCommandAndWaitForAck(XBeeAddress64 address, Command cmd,
-                                         int timeout, int numOfRetries)
+    public void sendCommandAndWaitForAck(XBeeAddress64 address, Command cmd, int timeout, int numOfRetries)
         throws XBeeException, InterruptedException
     {
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
 
-    	for(int i = 0; i < numOfRetries; i++) {
+    	for(int i = 0; i < numOfRetries; i++) 
+        {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) 
+            {
     			if(i != 0)
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
 
     			return;
-    		} else {
+    		} 
+            else 
 	    		log.warn("Failure: " + address + "\nretrying...");
-	    	}
     	}
 
 		log.warn("Failure with " + numOfRetries + " Retry(ies)");
@@ -305,21 +315,22 @@ public class ChessbotCommunicator extends Thread
     public void sendCommandAndWaitForAck(Command cmd, int timeout, int numOfRetries)
         throws XBeeException, InterruptedException
     {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()),
-                                             cmd.generatePayload());
+    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
 
-    	for(int i = 0; i < numOfRetries; i++) {
+    	for(int i = 0; i < numOfRetries; i++)
+        {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) 
+            {
     			if(i != 0)
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
 
     			return;
-    		} else {
+    		} 
+            else
 	    		log.warn("Failure: " + botIDLookupList.get(cmd.getRobotID()) + "\nretrying...");
-	    	}
     	}
 
 		log.warn("Failure with " + numOfRetries + " Retry(ies)");
