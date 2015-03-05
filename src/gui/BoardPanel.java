@@ -30,24 +30,24 @@ import robot.ExecuteCommand;
 public class BoardPanel extends JPanel
 {
     final int TOTAL_SQUARES = 64;
-    
+
     UIState uiState;
     RobotState robotState;
 
     SquareButton squares[];
-    
+
     int rows;
     int columns;
-    
+
     protected BoardPanel(UIState uiState, RobotState robotState, int rows, int columns)
     {
         this.uiState = uiState;
         this.robotState = robotState;
         this.rows = rows;
         this.columns = columns;
-        
+
         setLayout(new GridLayout(rows, columns));
-        
+
         squares = new SquareButton[TOTAL_SQUARES];
 
         initializeSquares();
@@ -73,7 +73,7 @@ public class BoardPanel extends JPanel
     protected void initializeDemo()
     {
         int locations[] = {0}; // XXX This is what we change depending on which robots are here
-        
+
         for (int i = 0; i < locations.length; i++) {
             squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
             uiState.setPieceLocation(locations[i], locations[i]);
@@ -89,7 +89,7 @@ public class BoardPanel extends JPanel
 
             if (uiState.isDemoMode()) {
                 int selectedIndex = uiState.getSelectedIndex();
-                
+
                 if (buttonPressed.isOccupied()) {
                     if (buttonPressed.getIndex() == selectedIndex) {
                         int robotID = uiState.getPieceIDFromLocation(selectedIndex);
@@ -110,7 +110,7 @@ public class BoardPanel extends JPanel
                     int desired[] = uiState.getAllPieceLocations();
 
                     robotState.addNewMotion(new Motion(current, desired));
-                    
+
                 }
             }
         }

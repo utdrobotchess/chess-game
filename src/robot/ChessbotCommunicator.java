@@ -41,6 +41,8 @@ public class ChessbotCommunicator extends Thread
 
     private RobotState robotState;
 
+    private boolean keepAlive = true;
+
     private int baudrate;
     private String comPort;
 
@@ -144,7 +146,7 @@ public class ChessbotCommunicator extends Thread
             // XXX we need to handle our exceptions
         }
 
-    	while (true)
+    	while (keepAlive)
         {
 			boolean waitForMovement = false;
 
@@ -205,17 +207,10 @@ public class ChessbotCommunicator extends Thread
             {
             }
 
-	        if (robotState.getCloseCommunication())
-            {
-	        	endCommunication();
-	        	robotState.setCloseCommunication(false);
-	        	return;
-	        }
     	}
-
         endCommunication();
     }
-    
+
     public void terminate()
     {
         keepAlive = false;
@@ -300,18 +295,18 @@ public class ChessbotCommunicator extends Thread
     	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
     	tx.setFrameId(xbee.getNextFrameId());
 
-    	for(int i = 0; i < numOfRetries; i++) 
+    	for(int i = 0; i < numOfRetries; i++)
         {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) 
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
             {
     			if(i != 0)
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
 
     			return;
-    		} 
-            else 
+    		}
+            else
 	    		log.warn("Failure: " + address + "\nretrying...");
     	}
 
@@ -328,13 +323,13 @@ public class ChessbotCommunicator extends Thread
         {
             ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
 
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) 
+    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
             {
     			if(i != 0)
     				log.debug("Success with " + numOfRetries + " Retry(ies)");
 
     			return;
-    		} 
+    		}
             else
 	    		log.warn("Failure: " + botIDLookupList.get(cmd.getRobotID()) + "\nretrying...");
     	}
@@ -380,42 +375,7 @@ public class ChessbotCommunicator extends Thread
     public void endCommunication()
     {
         xbee.close();
+        this.robotState.setCloseCommunication(true);
     }
-    
-	private PacketListener listenForIncomingResponses = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
-				robotState.addNewResponse(new Response(rx.getData(),
-                                                       botIDLookupList.indexOf(rx.getRemoteAddress64())));
-			}
-		}
-	};
 
-	private PacketListener listenForIncomingBotIDs = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
-				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
-			} 
-		}
-	};
-
-	private PacketListener listenForIncomingNodes = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response) 
-		{
-			if (response.getApiId() == ApiId.AT_RESPONSE) {
-				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-				log.debug("Node discover response is: " + nd);
-				nodeAddresses.add(nd.getNodeAddress64());
-			}
-		}
-	};
 }

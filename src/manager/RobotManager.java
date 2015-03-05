@@ -32,7 +32,6 @@ public class RobotManager extends Thread
                 MotionPlanner planner = new MotionPlanner(robotState, 8, 8);
                 planner.run();
 
-                // TODO figure out how to detect the XBEE
                 ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
                                                                      "/dev/ttyUSB0",
                                                                      57600);
