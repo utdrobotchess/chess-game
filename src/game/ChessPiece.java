@@ -77,12 +77,12 @@ public abstract class ChessPiece
         return location;
     }
 
-    protected Team getTeam()
+    public Team getTeam()
     {
         return team;
     }
 
-    protected boolean isActive()
+    public boolean isActive()
     {
         return active;
     }

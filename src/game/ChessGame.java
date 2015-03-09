@@ -31,6 +31,7 @@ public class ChessGame
                                           48, 49, 50, 51, 52, 53, 54, 55};
 
     ChessBoard board;
+    Team activeTeam;
   
     public ChessGame()
     {
@@ -106,7 +107,8 @@ public class ChessGame
         return copiedGame;
     }
 
-    protected ArrayList<Square> generateMoveLocations(ChessPiece piece, boolean removeChecks)
+    protected ArrayList<Square> generateMoveLocations(ChessPiece piece,
+                                                      boolean removeChecks)
     {
         ArrayList<Square> moveLocations = piece.generateMoveLocations();
         // add castling here
@@ -200,9 +202,14 @@ public class ChessGame
         return sideSquares[1];
     }
 
-    protected ChessPiece[] getAllPieces()
+    public ChessPiece[] getAllPieces()
     {
         return allPieces;
+    }
+    
+    public Team getActiveTeam()
+    {
+        return activeTeam;
     }
 
     protected ChessBoard getBoard()
