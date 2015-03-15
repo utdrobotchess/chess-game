@@ -31,11 +31,13 @@ public class ChessGame
                                           48, 49, 50, 51, 52, 53, 54, 55};
 
     ChessBoard board;
+    Team activeTeam;
   
     public ChessGame()
     {
         board = new ChessBoard();
         initializePieces();
+        activeTeam = Team.WHITE;
     }
 
     public ChessGame(ChessBoard board, ChessPiece[] pieces)
@@ -106,7 +108,8 @@ public class ChessGame
         return copiedGame;
     }
 
-    protected ArrayList<Square> generateMoveLocations(ChessPiece piece, boolean removeChecks)
+    protected ArrayList<Square> generateMoveLocations(ChessPiece piece,
+                                                      boolean removeChecks)
     {
         ArrayList<Square> moveLocations = piece.generateMoveLocations();
         // add castling here
@@ -159,50 +162,94 @@ public class ChessGame
     
     private int determineCastleOnSide(ChessPiece king, boolean kingSide)
     {
-        int numSideSquares = kingSide ? 2 : 3;
-        int sideSquares[] = new int[numSideSquares];
+        int sideSquareIndexes[] = getSideSquareIndexes(king, kingSide);
+
+        if (isSideSquareOccupied(sideSquareIndexes))
+            return -1;
+        
+        if (castlingRookHasMoved(king, kingSide))
+            return -1;
+       
+        if (isInCheckWhileCastling(king, sideSquareIndexes))
+            return -1;
+       
+        return sideSquareIndexes[1];
+    }
+    
+    private int[] getSideSquareIndexes(ChessPiece king, boolean kingSide)
+    {
+        final int NUM_KING_SIDE_SQUARES = 2;
+        final int NUM_QUEEN_SIDE_SQUARES = 3;
+        int numSideSquares = kingSide ? NUM_KING_SIDE_SQUARES : NUM_QUEEN_SIDE_SQUARES;
+        int sideSquareIndexes[] = new int[numSideSquares];
 
         if (kingSide) {
-            sideSquares[0] = 5;
-            sideSquares[1] = 6;
+            sideSquareIndexes[0] = 5;
+            sideSquareIndexes[1] = 6;
         } else {
-            sideSquares[0] = 1;
-            sideSquares[1] = 2;
-            sideSquares[2] = 3;
+            sideSquareIndexes[0] = 1;
+            sideSquareIndexes[1] = 2;
+            sideSquareIndexes[2] = 3;
         }
         
         if (king.getTeam() == Team.WHITE)
-            for (int i = 0; i < numSideSquares; i++)
-                sideSquares[i] += 56;
+            for (int i = 0; i < sideSquareIndexes.length; i++)
+                sideSquareIndexes[i] += 56;
+
+         return sideSquareIndexes;
+    }
+    
+    private boolean isSideSquareOccupied(int sideSquareIndexes[])
+    {
+        for (int i = 0; i < sideSquareIndexes.length; i++)
+            if (board.getSquareAt(sideSquareIndexes[i]).isOccupied())
+                return true;
         
-        for (int i = 0; i < numSideSquares; i++)
-            if (board.getSquareAt(sideSquares[i]).isOccupied())
-                return -1;
+        return false;
+    }
+    
+    private boolean castlingRookHasMoved(ChessPiece king, boolean kingSide)
+    {
+        int castlingRookIndex = getCastlingRookIndex(king, kingSide);
+        ChessPiece castlingRook = allPieces[castlingRookIndex];
+
+        if (castlingRook.hasNotMoved())
+            return false;
         
+        return true;
+    }
+    
+    private int getCastlingRookIndex(ChessPiece king, boolean kingSide)
+    {
         int castlingRookIndex = kingSide ? 7 : 0;
         
         if (king.getTeam() == Team.WHITE)
             castlingRookIndex += 16;
 
-        ChessPiece castlingRook = allPieces[castlingRookIndex];
-
-        if (!castlingRook.hasNotMoved())
-            return -1;
-        
-        for (int i = 0; i < sideSquares.length; i++) {
+        return castlingRookIndex;
+    }
+    
+    private boolean isInCheckWhileCastling(ChessPiece king, int sideSquareIndexes[])
+    {
+        for (int i = 0; i < sideSquareIndexes.length; i++) {
             ChessGame copiedGame = copyGameAndMovePiece(king,
-                                                        board.getSquareAt(sideSquares[i]));
+                                                        board.getSquareAt(sideSquareIndexes[i]));
             
             if (copiedGame.isInCheck(king.getTeam()))
-                return -1;
+                return true;
         }
         
-        return sideSquares[1];
+        return false;
     }
 
-    protected ChessPiece[] getAllPieces()
+    public ChessPiece[] getAllPieces()
     {
         return allPieces;
+    }
+    
+    public Team getActiveTeam()
+    {
+        return activeTeam;
     }
 
     protected ChessBoard getBoard()
