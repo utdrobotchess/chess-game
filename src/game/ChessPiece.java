@@ -42,7 +42,8 @@ public abstract class ChessPiece
         this.hasNotMoved = hasNotMoved;
     }
 
-    protected void addMovesInDirection(ArrayList<Square> moveList, int direction, int limit)
+    protected void addMovesInDirection(ArrayList<Square> moveList, 
+                                       int direction, int limit)
     {
         Square neighbor = location.getNeighbor(direction);
         int squaresTraveled = 0;
@@ -52,7 +53,7 @@ public abstract class ChessPiece
                 ChessPiece occupant = neighbor.getOccupant();
                 Team theirTeam = occupant.getTeam();
 
-                if (theirTeam != team)
+                if (theirTeam != this.team)
                     moveList.add(neighbor);
 
                 break;
