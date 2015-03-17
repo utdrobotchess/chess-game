@@ -5,7 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import gnu.io.CommPortIdentifier;
 import java.util.Enumeration;
 
@@ -34,17 +33,12 @@ public class ChessbotCommunicator extends Thread
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
 
     private XBee xbee = new XBee();
-
-    private ArrayList<XBeeAddress64> nodeAddresses = new ArrayList<>();
-    private ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<>();
-    private ArrayList<XBeeAddress64> botIDLookupList = new ArrayList<>();
-
     private RobotState robotState;
+    private BotFinder botFinder;
 
     private boolean keepAlive = true;
-
     private int baudrate;
-    private String comPort;
+    private String comport;
 
 	private PacketListener listenForIncomingResponses = new PacketListener()
 	{
@@ -53,45 +47,136 @@ public class ChessbotCommunicator extends Thread
 			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
 				robotState.addNewResponse(new Response(rx.getData(),
-                                                       botIDLookupList.indexOf(rx.getRemoteAddress64())));
+                                                       botFinder.GetBotAddresses().indexOf(rx.getRemoteAddress64())));
 			}
 		}
 	};
 
-	private PacketListener listenForIncomingBotIDs = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response)
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
-            {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				log.debug("RX response is: " + rx);
-				botIDLookupList.set(rx.getData()[1], rx.getRemoteAddress64());
-			}
-		}
-	};
-
-	private PacketListener listenForIncomingNodes = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response)
-		{
-			if (response.getApiId() == ApiId.AT_RESPONSE)
-            {
-				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
-				log.debug("Node discover response is: " + nd);
-				nodeAddresses.add(nd.getNodeAddress64());
-			}
-		}
-	};
-
-    public ChessbotCommunicator(RobotState robotState, String comport, int baudRate)
+    public ChessbotCommunicator(RobotState robotState, int baud)
     {
         PropertyConfigurator.configure("log/log4j.properties");
 
-        Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+        log.debug("Searching Comports for XBee");
+        SearchForXbeeOnComports();
 
+        try
+        {
+            xbee.open(this.comport, baud);
+            log.debug("Found XBee on comport");
+        }
+        catch (XBeeException e)
+        {
+            log.debug("Couldn't find Xbee on any available COMPORT");
+        }
+
+        botFinder = new BotFinder(xbee, robotState);
+        this.baudrate = baud;
+        this.robotState = robotState;
+    }
+
+    @Override
+    public void run()
+    {
+        log.debug("Running ChessbotCommunicator Thread");
+
+    	if(robotState == null)
+    		return;
+
+        botFinder.start();
+        robotState.setReady(true);
+
+        xbee.addPacketListener(listenForIncomingResponses);
+
+    	while (keepAlive)
+        {
+    		if(robotState.isCommandAvailable())
+            {
+    			Command cmd = robotState.pollNextCommand();
+                sendCommand(cmd);
+            }
+
+            try { Thread.sleep(10); }
+            catch (InterruptedException e) { e.printStackTrace(); }
+
+    	}
+        terminate();
+    }
+
+    public void terminate()
+    {
+        botFinder.terminate();
+        xbee.close();
+        keepAlive = false;
+    }
+
+    public void WaitForFinishedMovement(Command cmd)
+    {
+        long startTime = System.currentTimeMillis();
+        long timeout = 15000;
+        Response expectedResponse = new Response(cmd.generatePayload(), cmd.getRobotID());
+
+        while ((System.currentTimeMillis() - startTime) < timeout)
+        {
+            if (robotState.peekNextResponse() == expectedResponse)
+            {
+                robotState.pollNextResponse();
+                break;
+            }
+
+            try { Thread.sleep(10); }
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+
+    public void sendCommand(Command cmd)
+    {
+        int[] payload = cmd.generatePayload();
+        XBeeAddress64 addr = new XBeeAddress64();
+
+        if(cmd.GetXbeeAddress() != null)
+            addr = cmd.GetXbeeAddress();
+        else
+            addr = botFinder.GetBotAddresses().get(cmd.getRobotID());
+
+        if(addr == null)
+        {
+            log.debug("Cannot send packet. It has a null address");
+            return;
+        }
+
+        ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
+
+        if(cmd.RequiresACK())
+        {
+            tx.setFrameId(xbee.getNextFrameId());
+
+            for(int i = 0; i < cmd.getRetries(); i++)
+            {
+                try
+                {
+                    ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
+
+                    if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
+                        break;
+                }
+                catch(XBeeException e) { log.debug("Couldn't send packet to Coordinator XBee. Make sure it is plugged in"); }
+            }
+
+        }
+        else
+        {
+            tx.setFrameId(0);
+            try { xbee.sendAsynchronous(tx); }
+            catch(XBeeException e) { log.debug("Couldn't send packet to Coordinator XBee. Make sure it is plugged in"); }
+        }
+
+        log.debug("Sent Command");
+    }
+
+    public void SearchForXbeeOnComports()
+    {
+        Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
         String osName = System.getProperty("os.name");
         String portName = null;
 
@@ -108,274 +193,9 @@ public class ChessbotCommunicator extends Thread
                 CommPortIdentifier pid = (CommPortIdentifier) portIdentifiers.nextElement();
 
                 if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains(portName))
-                {
-                    comport = pid.getName();
-                    System.out.println(comport);
-                }
+                    this.comport = pid.getName();
             }
         }
 
-        try
-        {
-            xbee.open(comport, baudRate);
-        }
-        catch (XBeeException e)
-        {
-            log.info("\n[CommunicatorAPI-Constructor]: Cannot open comport: " + comport);
-            e.printStackTrace();
-        }
-
-        this.robotState = robotState;
-
-        for(int i = 0; i < 32; i++)
-        	botIDLookupList.add(null);
     }
-
-    public void run(int numOfNodes)
-    {
-    	if(robotState == null)
-    		return;
-
-        try
-        {
-            initializeCommunication(3, 10000, numOfNodes);
-            robotState.setReady(true);
-            xbee.addPacketListener(listenForIncomingResponses);
-        } catch (Exception ex)
-        {
-            // XXX we need to handle our exceptions
-        }
-
-    	while (keepAlive)
-        {
-			boolean waitForMovement = false;
-
-    		if(robotState.isCommandAvailable())
-            {
-    			Command cmd = robotState.pollNextCommand();
-
-                try
-                {
-                    if (cmd instanceof RCCommand)
-                        sendCommand(cmd);
-                    else
-                        sendCommandAndWaitForAck(cmd, 5000, 3);
-
-                }
-                catch (Exception ex)
-                {
-                    log.info(ex);
-                }
-
-                if (cmd instanceof MoveToSquareCommand)
-                    waitForMovement = true;
-
-                if (cmd instanceof ExecuteCommand && waitForMovement)
-                {
-    				robotState.setReady(false);
-    				long startTime = System.currentTimeMillis();
-    				long timeout = 15000;
-    				Response expectedResponse = new Response(cmd.generatePayload(), cmd.getRobotID());
-
-    				waitForMovement = false;
-
-    				while ((System.currentTimeMillis() - startTime) < timeout)
-                    {
-    					if (robotState.peekNextResponse() == expectedResponse)
-                        {
-    						robotState.pollNextResponse();
-    						robotState.setReady(true);
-    						break;
-    					}
-
-                        try
-                        {
-                            Thread.sleep(10);
-                        }
-                        catch (InterruptedException ex)
-                        {
-                        }
-    				}
-    			}
-			}
-
-            try
-            {
-                Thread.sleep(10);
-            }
-            catch (InterruptedException ex)
-            {
-            }
-
-    	}
-        endCommunication();
-    }
-
-    public void terminate()
-    {
-        keepAlive = false;
-    }
-
-    public int initializeCommunication(int numOfRetries, int nodeDiscoveryTimeout, int numOfNodes)
-        throws XBeeException, InterruptedException
-    {
-    	discoverNodeAddresses(nodeDiscoveryTimeout, numOfNodes);
-    	discoverBotAddresses(numOfRetries);
-
-        log.debug("Node Addresses: " + nodeAddresses);
-        log.debug("Bot Id lookup Table: " + botIDLookupList);
-
-        if(undiscoveredBots.size() != 0)
-        	log.warn(undiscoveredBots.size() + " Undiscovered Bot(s): " + undiscoveredBots);
-
-        return undiscoveredBots.size();
-    }
-
-    public void discoverNodeAddresses(int nodeDiscoveryTimeout, int numOfNodes)
-        throws XBeeException, InterruptedException
-    {
-    	nodeAddresses.clear();
-    	numOfNodes = numOfNodes;
-
-		log.debug("Sending node discover command");
-		xbee.sendAsynchronous(new AtCommand("ND"));
-
-		xbee.addPacketListener(listenForIncomingNodes);
-
-		long startTime = System.currentTimeMillis();
-
-		while ((nodeAddresses.size() < numOfNodes) && (System.currentTimeMillis() - startTime) < nodeDiscoveryTimeout)
-			Thread.sleep(100);
-
-		xbee.removePacketListener(listenForIncomingNodes);
-
-		log.info("Discovered " + nodeAddresses.size() + " Node(s)");
-    }
-
-    public void discoverBotAddresses(int numOfRetries)
-        throws XBeeException, InterruptedException
-    {
-    	checkForUndiscoveredBots();
-
-		for(int i = 0; i < undiscoveredBots.size(); i++)
-			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ReadBotIDCommand(0), 5000, numOfRetries);
-
-		xbee.addPacketListener(listenForIncomingBotIDs);
-
-		for(int i = 0; i < undiscoveredBots.size(); i++)
-			sendCommandAndWaitForAck(undiscoveredBots.get(i), new ExecuteCommand(0), 5000, numOfRetries);
-
-		Thread.sleep(500);
-		xbee.removePacketListener(listenForIncomingBotIDs);
-
-		checkForUndiscoveredBots();
-		log.info("Discovered " + (nodeAddresses.size() - undiscoveredBots.size()) + " Bot(s)");
-    }
-
-    public void checkForUndiscoveredBots()
-    {
-    	undiscoveredBots.clear();
-
-    	for(int i = 0; i < nodeAddresses.size(); i++)
-    		if(!botIDLookupList.contains(nodeAddresses.get(i)))
-    			undiscoveredBots.add(nodeAddresses.get(i));
-    }
-
-    public void sendCommand(Command cmd)
-        throws XBeeException, InterruptedException
-    {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
-    	tx.setFrameId(0);
-    	xbee.sendAsynchronous(tx);
-    }
-
-    public void sendCommandAndWaitForAck(XBeeAddress64 address, Command cmd, int timeout, int numOfRetries)
-        throws XBeeException, InterruptedException
-    {
-    	ZNetTxRequest tx = new ZNetTxRequest(address, cmd.generatePayload());
-    	tx.setFrameId(xbee.getNextFrameId());
-
-    	for(int i = 0; i < numOfRetries; i++)
-        {
-            ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
-
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
-            {
-    			if(i != 0)
-    				log.debug("Success with " + numOfRetries + " Retry(ies)");
-
-    			return;
-    		}
-            else
-	    		log.warn("Failure: " + address + "\nretrying...");
-    	}
-
-		log.warn("Failure with " + numOfRetries + " Retry(ies)");
-    }
-
-    public void sendCommandAndWaitForAck(Command cmd, int timeout, int numOfRetries)
-        throws XBeeException, InterruptedException
-    {
-    	ZNetTxRequest tx = new ZNetTxRequest(botIDLookupList.get(cmd.getRobotID()), cmd.generatePayload());
-    	tx.setFrameId(xbee.getNextFrameId());
-
-    	for(int i = 0; i < numOfRetries; i++)
-        {
-            ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, timeout);
-
-    		if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
-            {
-    			if(i != 0)
-    				log.debug("Success with " + numOfRetries + " Retry(ies)");
-
-    			return;
-    		}
-            else
-	    		log.warn("Failure: " + botIDLookupList.get(cmd.getRobotID()) + "\nretrying...");
-    	}
-
-		log.warn("Failure with " + numOfRetries + " Retry(ies)");
-    }
-
-    public void setRobotState(RobotState _robotState)
-    {
-    	robotState = _robotState;
-    }
-
-    public ArrayList<XBeeAddress64> returnbotIDLookupList()
-    {
-    	return botIDLookupList;
-    }
-
-    public void setBaud(int _baud)
-    {
-        baudrate = _baud;
-    }
-
-    public int returnBaudrate()
-    {
-        return baudrate;
-    }
-
-    public ArrayList<XBeeAddress64> returnNodeAddresses()
-    {
-    	return nodeAddresses;
-    }
-
-    public void setComPort(String _comport)
-    {
-        comPort = _comport;
-    }
-
-    public String returnComPort()
-    {
-        return comPort;
-    }
-
-    public void endCommunication()
-    {
-        xbee.close();
-        this.robotState.setCloseCommunication(true);
-    }
-
 }

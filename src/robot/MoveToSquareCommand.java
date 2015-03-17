@@ -15,11 +15,11 @@ public class MoveToSquareCommand extends Command
     {
         commandID = 0x9;
         payloadLength = 0x2;
-        
+
         this.robotID = -1;
         this.destination = destination;
     }
-    
+
     public MoveToSquareCommand(int robotID, int destination)
     {
         commandID = 0x9;
@@ -33,12 +33,12 @@ public class MoveToSquareCommand extends Command
     {
         if (destination > MAX_DESTINATION || destination < MIN_DESTINATION)
             return null;
-        
+
         int payload[] = new int[payloadLength];
 
         payload[0] = commandID;
         payload[1] = destination;
-        
+
         return payload;
     }
 

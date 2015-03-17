@@ -16,7 +16,6 @@ public class RobotState
 {
     private boolean ready;
     private boolean rcMode;
-    private boolean closeCommunication = false;
     private int boardColumns;
     private int boardRows;
 
@@ -101,11 +100,6 @@ public class RobotState
     	return responseQueue.peek();
     }
 
-    public synchronized boolean getCloseCommunication()
-    {
-    	return closeCommunication;
-    }
-
     public synchronized void setBoardColumns(int columns)
     {
         this.boardColumns = columns;
@@ -114,12 +108,6 @@ public class RobotState
     public synchronized void setBoardRows(int rows)
     {
         this.boardRows = rows;
-    }
-
-
-    public synchronized void setCloseCommunication(boolean closeCommunication)
-    {
-    	this.closeCommunication = closeCommunication;
     }
 
     public synchronized void setReady(boolean ready)

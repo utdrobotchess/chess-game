@@ -30,12 +30,11 @@ public class RobotManager extends Thread
         while (true) {
             if (applicationState.isRobotsActive()) {
                 MotionPlanner planner = new MotionPlanner(robotState, 8, 8);
-                planner.run();
+                planner.start();
 
                 ChessbotCommunicator communicator = new ChessbotCommunicator(robotState,
-                                                                     "/dev/ttyUSB0",
-                                                                     57600);
-                communicator.run(9);
+                                                                            57600);
+                communicator.start();
 
                 while (applicationState.isRobotsActive()) {
                     try { Thread.sleep(10); } catch (InterruptedException ex) {}

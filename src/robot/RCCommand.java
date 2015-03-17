@@ -11,8 +11,9 @@ public class RCCommand extends Command
 
     public RCCommand(int robotID, int velocities[])
     {
-        commandID = 0;
+        commandID = 0xB;
         payloadLength = 0x5;
+        requiresACK = false;
 
         this.robotID = robotID;
         this.velocities = velocities;
@@ -23,10 +24,8 @@ public class RCCommand extends Command
     {
         int payload[] = new int[payloadLength];
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 1; i < 5; i++)
             payload[i] = velocities[i];
-
-        payload[4] = 0;
 
         return payload;
     }

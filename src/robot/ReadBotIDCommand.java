@@ -5,13 +5,23 @@
 
 package robot;
 
+import com.rapplogic.xbee.api.XBeeAddress64;
+
 public class ReadBotIDCommand extends Command
 {
+
     public ReadBotIDCommand(int robotID)
     {
         commandID = 0xa;
         payloadLength = 0x1;
         this.robotID = robotID;
+    }
+
+    public ReadBotIDCommand(XBeeAddress64 xbeeAddress)
+    {
+        commandID = 0xa;
+        payloadLength = 0x1;
+        this.xbeeAddress = xbeeAddress;
     }
 
     @Override
