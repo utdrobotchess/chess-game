@@ -7,8 +7,6 @@ TODO
 
 3) Add feature that kills ChessbotCommunicator thread
 
-4) Append packages with utd stuff
+4) Add option to assign a robot another ID
 
-5) Add option to assign a robot another ID
-
-6) Add option to assign a remote controller to available robots
+5) Add option to assign a remote controller to available robots
