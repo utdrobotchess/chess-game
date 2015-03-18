@@ -8,3 +8,5 @@ TODO
 3) Add feature that kills ChessbotCommunicator thread
 
 4) Fix No path issue for Motion Planner
+
+5) Append packages with utd stuff
