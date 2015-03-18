@@ -7,10 +7,8 @@ TODO
 
 3) Add feature that kills ChessbotCommunicator thread
 
-4) Fix No path issue for Motion Planner
+4) Append packages with utd stuff
 
-5) Append packages with utd stuff
+5) Add option to assign a robot another ID
 
-6) Add option to assign a robot another ID
-
-7) Add option to assign a remote controller to available robots
+6) Add option to assign a remote controller to available robots

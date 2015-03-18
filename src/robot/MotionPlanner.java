@@ -22,10 +22,10 @@ public class MotionPlanner extends Thread
     RobotState robotState;
     int boardRows;
     int boardColumns;
-    boolean occupancyGrid[]; // indicates which squares are occupied
+    boolean occupancyGrid[];
     ArrayList<Move> movesNeeded;
     private boolean keepAlive = true;
-
+    
     public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
     {
         this.robotState = robotState;
@@ -49,16 +49,12 @@ public class MotionPlanner extends Thread
                 occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
                 movesNeeded = generateMoves(nextMotion.getCurrent(),
                                             nextMotion.getDesired());
-
+                
                 ArrayList<Integer> path = plan();
 
                 if (path.size() > 0) {
                     Command command = generateCommandsFromPath(path);
                     robotState.addNewCommand(command);
-
-
-                    // XXX path.get(0) is a clunky way of identifying the robot
-                    // needs fix moving forward
                 } else {
                     System.out.println("no path");
                 }
@@ -81,7 +77,8 @@ public class MotionPlanner extends Thread
             occupancyGrid[i] = false;
 
         for (int i = 0; i < currentLocations.length; i++)
-            occupancyGrid[currentLocations[i]] = true;
+            if (currentLocations[i] != -1)
+                occupancyGrid[currentLocations[i]] = true;
 
         return occupancyGrid;
     }
@@ -163,7 +160,7 @@ public class MotionPlanner extends Thread
 
         for (int i = 0; i < movesNeeded.size(); i++) {
             Move thisMove = movesNeeded.get(i);
-
+            
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
 
@@ -341,5 +338,11 @@ class Move
         this.pieceID = pieceID;
         this.origin = origin;
         this.destination = destination;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Move piece " + pieceID + " from " + origin + " to " + destination;
     }
 }

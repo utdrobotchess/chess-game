@@ -52,11 +52,11 @@ public class UIState
         pieceLocations = new int[NUM_PIECES];
         pieceIDs = new int[64];
 
-        for (int location : pieceLocations)
-            location = -1;
+        for (int i = 0; i < pieceLocations.length; i++)
+            pieceLocations[i] = -1;
         
-        for (int location : pieceIDs)
-            location = -1;
+        for (int i = 0; i < pieceIDs.length; i++)
+            pieceIDs[i] = -1;
         
         configureImages();
     }
@@ -105,7 +105,7 @@ public class UIState
     public synchronized int[] getAllPieceLocations()
     {
         int newArray[] = new int[pieceLocations.length];
-
+        
         System.arraycopy(pieceLocations, 0, newArray, 0, pieceLocations.length);
 
         return newArray;
@@ -148,9 +148,13 @@ public class UIState
     
     public synchronized void setPieceLocation(int pieceID, int location)
     {
-        pieceIDs[pieceLocations[pieceID]] = -1;
+        if (pieceLocations[pieceID] != -1)
+            pieceIDs[pieceLocations[pieceID]] = -1;
+
         pieceLocations[pieceID] = location;
-        pieceIDs[location] = pieceID;
+        
+        if (location != -1)
+            pieceIDs[location] = pieceID;
     }
 
     public synchronized void setSelectedIndex(int selectedIndex)
