@@ -7,7 +7,7 @@
   <property name="jar.dir" value="dist" />
   <property name="lib.dir" value="lib" />
   <property name="resources.dir" value="resources" />
-  <property name="main-class" value="manager.ApplicationManager" />
+  <property name="main-class" value="edu.utdallas.robotchess.manager.ApplicationManager" />
 
   <!-- build the classpath -->
   <path id="classpath">
