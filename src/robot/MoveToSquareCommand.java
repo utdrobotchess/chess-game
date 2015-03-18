@@ -9,35 +9,29 @@ public class MoveToSquareCommand extends Command
 {
     final int MAX_DESTINATION = 63;
     final int MIN_DESTINATION = 0;
-    private int destination;
+    private int[] destinations;
 
-    public MoveToSquareCommand(int destination)
+    public MoveToSquareCommand(int robotID, int[] destinations)
     {
-        commandID = 0x9;
-        payloadLength = 0x2;
-
-        this.robotID = -1;
-        this.destination = destination;
-    }
-
-    public MoveToSquareCommand(int robotID, int destination)
-    {
-        commandID = 0x9;
-        payloadLength = 0x2;
+        commandID = 0x3;
+        payloadLength = 0x1 + destinations.length;
         this.robotID = robotID;
-        this.destination = destination;
+        this.destinations = destinations;
     }
 
     @Override
     protected int[] generatePayload()
     {
-        if (destination > MAX_DESTINATION || destination < MIN_DESTINATION)
-            return null;
+        for(int i = 0; i < destinations.length; i++)
+            if (destinations[i] > MAX_DESTINATION || destinations[i] < MIN_DESTINATION)
+                return null;
 
         int payload[] = new int[payloadLength];
 
         payload[0] = commandID;
-        payload[1] = destination;
+
+        for(int i = 0; i < destinations.length; i++)
+            payload[i + 1] = destinations[i];
 
         return payload;
     }
@@ -45,6 +39,6 @@ public class MoveToSquareCommand extends Command
     @Override
     public String toString()
     {
-        return "Move to " + destination;
+        return "Move to " + destinations;
     }
 }

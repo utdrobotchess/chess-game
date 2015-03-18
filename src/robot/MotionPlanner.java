@@ -53,15 +53,12 @@ public class MotionPlanner extends Thread
                 ArrayList<Integer> path = plan();
 
                 if (path.size() > 0) {
-                    ArrayList<Command> commands = generateCommandsFromPath(path);
-
-                    for (int i = 0; i < commands.size(); i++)
-                        robotState.addNewCommand(commands.get(i));
+                    Command command = generateCommandsFromPath(path);
+                    robotState.addNewCommand(command);
 
 
                     // XXX path.get(0) is a clunky way of identifying the robot
                     // needs fix moving forward
-                    robotState.addNewCommand(new ExecuteCommand(path.get(0)));
                 } else {
                     System.out.println("no path");
                 }
@@ -251,16 +248,16 @@ public class MotionPlanner extends Thread
         return path;
     }
 
-    private ArrayList<Command> generateCommandsFromPath(ArrayList<Integer> path)
+    private Command generateCommandsFromPath(ArrayList<Integer> path)
     {
-        ArrayList<Command> commands = new ArrayList<>();
+        Command command = new MoveToSquareCommand(0, new int[0]); 
+        ArrayList<Integer> payload = new ArrayList<Integer>();
 
         // path must include at least robot id, plus 2 path squares
         if (path.size() < 3)
-            return commands;
+            return command;
 
         int robotID = path.get(0); // XXX temporary hack - normally path.get(0);
-        int currentMoveOrigin = path.get(1);
         int currentMoveDirection = 0;
 
         for (int i = 2; i < path.size(); i++) {
@@ -269,17 +266,24 @@ public class MotionPlanner extends Thread
 
             if (currentMoveDirection != 0)
                 if (newMoveDirection != currentMoveDirection)
-                    commands.add(new MoveToSquareCommand(robotID, path.get(i-1)));
+                    payload.add(path.get(i-1));
 
             if (i == path.size() - 1)
-                commands.add(new MoveToSquareCommand(robotID, path.get(i)));
+                payload.add(path.get(i));
 
             currentMoveDirection = newMoveDirection;
         }
 
-        System.out.println(commands);
+        int[] temp = new int[payload.size()];
 
-        return commands;
+        for(int i = 0; i < payload.size(); i++)
+            temp[i] = payload.get(i);
+
+        command = new MoveToSquareCommand(robotID, temp);
+
+        System.out.println(command);
+
+        return command;
     }
 }
 

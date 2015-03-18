@@ -25,7 +25,6 @@ import manager.UIState;
 import manager.RobotState;
 import robot.Motion;
 import robot.SmartCenterCommand;
-import robot.ExecuteCommand;
 
 public class BoardPanel extends JPanel
 {
@@ -94,7 +93,6 @@ public class BoardPanel extends JPanel
                     if (buttonPressed.getIndex() == selectedIndex) {
                         int robotID = uiState.getPieceIDFromLocation(selectedIndex);
                         robotState.addNewCommand(new SmartCenterCommand(robotID));
-                        robotState.addNewCommand(new ExecuteCommand(robotID));
                         uiState.setSelectedIndex(-1);
                     } else {
                         uiState.setSelectedIndex(buttonPressed.getIndex());

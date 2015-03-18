@@ -1,10 +1,15 @@
+/**
+ *
+ * @author Ryan J. Marcotte
+ */
+
 package robot;
 
-public class ClearBufferCommand extends Command
+public class ReadLocationCommand extends Command
 {
-    public ClearBufferCommand(int robotID)
+    public ReadLocationCommand(int robotID)
     {
-        commandID = 0xfe;
+        commandID = 0x6;
         payloadLength = 0x1;
         this.robotID = robotID;
     }

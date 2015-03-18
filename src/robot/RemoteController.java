@@ -1,7 +1,5 @@
 package robot;
 
-import java.io.File;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
@@ -42,13 +40,10 @@ public class RemoteController extends Thread
     
     public void run()
     {
-        robotState.addNewCommand(new RCModeCommand(4));
-        robotState.addNewCommand(new ExecuteCommand(4));
-
         ZeroJoyStick();
 
         while (true) {
-            robotState.addNewCommand(new RCCommand(4, ComputeWheelVelocities()));
+            robotState.addNewCommand(new RCCommand(0, ComputeWheelVelocities()));
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -63,7 +58,6 @@ public class RemoteController extends Thread
         int direction, rotation, forwardVel, rotationVel;
 
         controller.poll();
-        long startTime = System.currentTimeMillis();
 
         if(controller.getAxisValue(1) < 0)
         {

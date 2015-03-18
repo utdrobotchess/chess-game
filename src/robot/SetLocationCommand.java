@@ -13,7 +13,7 @@ public class SetLocationCommand extends Command
     
     public SetLocationCommand(int robotID, int location)
     {
-        commandID = 0xc;
+        commandID = 0x5;
         payloadLength = 0x2;
         this.location = location;
         this.robotID = robotID;

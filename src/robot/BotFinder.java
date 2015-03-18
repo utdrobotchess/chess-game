@@ -13,16 +13,10 @@ import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeeException;
-import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.api.XBeeResponse;
-import com.rapplogic.xbee.api.XBeeTimeoutException;
 import com.rapplogic.xbee.api.wpan.NodeDiscover;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
-import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
-import com.rapplogic.xbee.util.ByteUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -32,8 +26,8 @@ public class BotFinder extends Thread
     private RobotState robotState;
 
     private boolean keepAlive = true;
-    private long timeout = 5000;
-    private final int pruningIndex = 3;
+    private long timeout = 30000;
+    private final int pruningIndex = 2;
 
     private final static Logger log = Logger.getLogger(BotFinder.class);
 
@@ -75,9 +69,16 @@ public class BotFinder extends Thread
 		{
 			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				botAddresses.set(rx.getData()[1], rx.getRemoteAddress64());
-                log.debug(rx);
+                ZNetRxResponse rx = (ZNetRxResponse) response;
+                int[] payload = rx.getData();
+                XBeeAddress64 addr = rx.getRemoteAddress64();
+
+                if(payload[0] == 2)
+                {
+                    botAddresses.set(payload[1], addr);
+                    log.debug(rx);
+                }
+
 			}
 		}
 	};
@@ -113,7 +114,7 @@ public class BotFinder extends Thread
         {
             if(System.currentTimeMillis() - startTime > this.timeout)
             {
-                //pruneNodeAddressList();
+                pruneNodeAddressList();
                 pruneBotAddressList();
                 currentNodeAddresses.clear();
 
@@ -125,7 +126,7 @@ public class BotFinder extends Thread
 
             discoverBots();
 
-            try { Thread.sleep(1000); }
+            try { Thread.sleep(10000); }
             catch (InterruptedException ex) { }
 
         }
@@ -152,6 +153,8 @@ public class BotFinder extends Thread
     		if(!botAddresses.contains(nodeAddresses.get(i)))
                 undiscoveredBots.add(nodeAddresses.get(i));
 
+
+
         for(int i = 0; i < undiscoveredBots.size(); i++)
         {
             XBeeAddress64 addr = undiscoveredBots.get(i);
@@ -163,10 +166,10 @@ public class BotFinder extends Thread
 
     private void pruneNodeAddressList()
     {
-        ArrayList<XBeeAddress64> currentUnresponsiveNodes = nodeAddresses;
-        currentUnresponsiveNodes.removeAll(currentNodeAddresses);
+        ArrayList<XBeeAddress64> currentUnresponsiveNodes = new ArrayList<XBeeAddress64>();
 
-        log.debug("Current unresponsiveNodes: " + currentUnresponsiveNodes);
+        currentUnresponsiveNodes.addAll(nodeAddresses);
+        currentUnresponsiveNodes.removeAll(currentNodeAddresses);
 
         for(int i = 0; i < currentUnresponsiveNodes.size(); i++)
         {
@@ -177,7 +180,10 @@ public class BotFinder extends Thread
                     unresponsiveNodes.get(j).remove(currentUnresponsiveNodes.get(i));
 
                     if(j == pruningIndex - 1)
+                    {
                         nodeAddresses.remove(currentUnresponsiveNodes.get(i));
+                        log.debug("Removing Node: " + currentUnresponsiveNodes.get(i));
+                    }
 
                     else
                         unresponsiveNodes.get(j + 1).add(currentUnresponsiveNodes.get(i));
@@ -188,6 +194,7 @@ public class BotFinder extends Thread
                 else if(j == 0)
                     unresponsiveNodes.get(j).add(currentUnresponsiveNodes.get(i));
 
+                log.debug(unresponsiveNodes.get(i));
             }
         }
     }
