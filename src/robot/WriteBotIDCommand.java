@@ -13,7 +13,7 @@ public class WriteBotIDCommand extends Command
     
     public WriteBotIDCommand(int currentRobotID, int newRobotID)
     {
-        commandID = 0x4;
+        commandID = 0x1;
         payloadLength = 0x2;
         this.robotID = currentRobotID;
         this.newRobotID = newRobotID;

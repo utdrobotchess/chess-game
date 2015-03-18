@@ -18,14 +18,14 @@ public class MotionPlanner extends Thread
     final int REGULAR_SQUARE_COUNT = 64;
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
-    
+
     RobotState robotState;
     int boardRows;
     int boardColumns;
     boolean occupancyGrid[]; // indicates which squares are occupied
     ArrayList<Move> movesNeeded;
-    private boolean keepAlive;
-    
+    private boolean keepAlive = true;
+
     public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
     {
         this.robotState = robotState;
@@ -42,31 +42,28 @@ public class MotionPlanner extends Thread
                 boardRows = robotState.getBoardRows();
                 boardColumns = robotState.getBoardColumns();
             }
-                
+
             if (robotState.isMotionAvailable()) {
                 Motion nextMotion = robotState.pollNextMotion();
 
                 occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
                 movesNeeded = generateMoves(nextMotion.getCurrent(),
                                             nextMotion.getDesired());
-                
+
                 ArrayList<Integer> path = plan();
 
                 if (path.size() > 0) {
-                    ArrayList<Command> commands = generateCommandsFromPath(path);
-
-                    for (int i = 0; i < commands.size(); i++)
-                        robotState.addNewCommand(commands.get(i));
+                    Command command = generateCommandsFromPath(path);
+                    robotState.addNewCommand(command);
 
 
                     // XXX path.get(0) is a clunky way of identifying the robot
                     // needs fix moving forward
-                    robotState.addNewCommand(new ExecuteCommand(path.get(0)));
                 } else {
                     System.out.println("no path");
                 }
             }
-            
+
             try { Thread.sleep(10); } catch (InterruptedException ex) { }
         }
     }
@@ -79,7 +76,7 @@ public class MotionPlanner extends Thread
     private boolean[] fillOccupancyGrid(int currentLocations[])
     {
         boolean occupancyGrid[] = new boolean[REGULAR_SQUARE_COUNT];
-        
+
         for (int i = 0; i < occupancyGrid.length; i++)
             occupancyGrid[i] = false;
 
@@ -92,7 +89,7 @@ public class MotionPlanner extends Thread
     private ArrayList<Move> generateMoves(int currentLocations[], int desiredLocations[])
     {
         ArrayList<Move> moves = new ArrayList<>();
-        
+
         for (int i = 0; i < currentLocations.length; i++)
             if (currentLocations[i] != desiredLocations[i])
                 moves.add(new Move(i, currentLocations[i], desiredLocations[i]));
@@ -104,7 +101,7 @@ public class MotionPlanner extends Thread
     {
         final int LATERAL_WEIGHT = 2;
         final int DIAGONAL_WEIGHT = 50;
-        
+
         ArrayList<Edge> edges = new ArrayList<>();
 
         // check north neighbor
@@ -147,12 +144,12 @@ public class MotionPlanner extends Thread
         // remove edges whose destinations are occupied
         for (int i = 0; i < edges.size(); i++) {
             Edge testEdge = edges.get(i);
-            
+
             if (occupancyGrid[testEdge.destination])
                 edges.remove(i--);
         }
-        
-        return edges; 
+
+        return edges;
     }
 
     public ArrayList<Integer> plan()
@@ -166,20 +163,20 @@ public class MotionPlanner extends Thread
 
         for (int i = 0; i < movesNeeded.size(); i++) {
             Move thisMove = movesNeeded.get(i);
-            
+
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
 
             if (squareSequence.size() < 1)
                 return new ArrayList<Integer>();
-            
+
             plan.add(thisMove.pieceID);
             plan.add(thisMove.origin);
 
             for (int j = 0; j < squareSequence.size(); j++)
                 plan.add(squareSequence.get(j));
         }
-        
+
         return plan;
     }
 
@@ -193,7 +190,7 @@ public class MotionPlanner extends Thread
         updateDistances(vertices, queue);
 
         ArrayList<Integer> path = generatePath(vertices, destination);
-        
+
         return path;
     }
 
@@ -251,16 +248,16 @@ public class MotionPlanner extends Thread
         return path;
     }
 
-    private ArrayList<Command> generateCommandsFromPath(ArrayList<Integer> path)
+    private Command generateCommandsFromPath(ArrayList<Integer> path)
     {
-        ArrayList<Command> commands = new ArrayList<>();
+        Command command = new MoveToSquareCommand(0, new int[0]); 
+        ArrayList<Integer> payload = new ArrayList<Integer>();
 
         // path must include at least robot id, plus 2 path squares
         if (path.size() < 3)
-            return commands;
+            return command;
 
         int robotID = path.get(0); // XXX temporary hack - normally path.get(0);
-        int currentMoveOrigin = path.get(1);
         int currentMoveDirection = 0;
 
         for (int i = 2; i < path.size(); i++) {
@@ -269,17 +266,24 @@ public class MotionPlanner extends Thread
 
             if (currentMoveDirection != 0)
                 if (newMoveDirection != currentMoveDirection)
-                    commands.add(new MoveToSquareCommand(robotID, path.get(i-1)));
-            
+                    payload.add(path.get(i-1));
+
             if (i == path.size() - 1)
-                commands.add(new MoveToSquareCommand(robotID, path.get(i)));
-           
+                payload.add(path.get(i));
+
             currentMoveDirection = newMoveDirection;
         }
 
-        System.out.println(commands);
-        
-        return commands;
+        int[] temp = new int[payload.size()];
+
+        for(int i = 0; i < payload.size(); i++)
+            temp[i] = payload.get(i);
+
+        command = new MoveToSquareCommand(robotID, temp);
+
+        System.out.println(command);
+
+        return command;
     }
 }
 
@@ -331,7 +335,7 @@ class Move
     int pieceID;
     int origin;
     int destination;
-    
+
     Move(int pieceID, int origin, int destination)
     {
         this.pieceID = pieceID;

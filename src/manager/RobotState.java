@@ -16,14 +16,13 @@ public class RobotState
 {
     private boolean ready;
     private boolean rcMode;
-    private boolean closeCommunication = false;
     private int boardColumns;
     private int boardRows;
 
     private Queue<Command> commandQueue;
     private Queue<Motion> motionQueue;
     private Queue<Response> responseQueue;
-    
+
     public RobotState()
     {
         commandQueue = new LinkedList<>();
@@ -40,7 +39,7 @@ public class RobotState
     {
         motionQueue.offer(newMotion);
     }
-    
+
     public synchronized void addNewResponse(Response newResponse)
     {
     	responseQueue.offer(newResponse);
@@ -55,7 +54,7 @@ public class RobotState
     {
         return boardRows;
     }
-    
+
     public synchronized boolean isCommandAvailable()
     {
         return !commandQueue.isEmpty();
@@ -65,12 +64,12 @@ public class RobotState
     {
         return !motionQueue.isEmpty();
     }
-    
+
     public synchronized boolean isResponseAvailable()
     {
     	return !responseQueue.isEmpty();
     }
-    
+
     public synchronized boolean isRCMode()
     {
         return rcMode;
@@ -90,20 +89,15 @@ public class RobotState
     {
         return motionQueue.poll();
     }
-    
+
     public synchronized Response pollNextResponse()
     {
     	return responseQueue.poll();
     }
-    
+
     public synchronized Response peekNextResponse()
     {
     	return responseQueue.peek();
-    }
-    
-    public synchronized boolean getCloseCommunication()
-    {
-    	return closeCommunication;
     }
 
     public synchronized void setBoardColumns(int columns)
@@ -115,18 +109,12 @@ public class RobotState
     {
         this.boardRows = rows;
     }
-    
- 
-    public synchronized void setCloseCommunication(boolean closeCommunication)
-    {
-    	this.closeCommunication = closeCommunication;
-    }
 
     public synchronized void setReady(boolean ready)
     {
         this.ready = ready;
     }
-    
+
     public synchronized void setRCMode(boolean rcMode)
     {
         this.rcMode = rcMode;

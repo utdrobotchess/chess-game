@@ -22,7 +22,6 @@ import manager.RobotState;
 import manager.ApplicationState;
 
 import robot.RemoteController;
-import robot.ExitRCModeCommand;
 
 public class MainFrame extends JFrame
 {
@@ -148,7 +147,8 @@ public class MainFrame extends JFrame
             }
             
             if (e.getSource() == rcModeMenuItem) {
-                
+                RemoteController rc = new RemoteController(robotState);
+                rc.start();
             }
 
             if (e.getSource() == exitMenuItem) {
