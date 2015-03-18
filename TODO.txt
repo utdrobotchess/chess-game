@@ -18,3 +18,5 @@ TODO
    a row
 
 8) Add feature to display whether XBee found on comport
+
+9) Edit Build.XML so that it removes log/XBee.log
