@@ -10,3 +10,9 @@ TODO
 4) Add option to assign a robot another ID
 
 5) Add option to assign a remote controller to available robots
+
+6) Add feature that does not let Remote Controller send to the same robot that
+   is taking commands in demo mode
+
+7) Add feature in remote controller that does not sending the same command in
+   a row
