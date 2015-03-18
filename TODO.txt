@@ -10,3 +10,7 @@ TODO
 4) Fix No path issue for Motion Planner
 
 5) Append packages with utd stuff
+
+6) Add option to assign a robot another ID
+
+7) Add option to assign a remote controller to available robots
