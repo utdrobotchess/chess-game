@@ -16,3 +16,5 @@ TODO
 
 7) Add feature in remote controller that does not sending the same command in
    a row
+
+8) Add feature to display whether XBee found on comport
