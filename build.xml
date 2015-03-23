@@ -6,6 +6,7 @@
   <property name="build.dir" value="build" />
   <property name="jar.dir" value="dist" />
   <property name="lib.dir" value="lib" />
+  <property name="log.dir" value="log" />
   <property name="resources.dir" value="resources" />
   <property name="main-class" value="edu.utdallas.robotchess.manager.ApplicationManager" />
 
@@ -87,5 +88,6 @@
     <!-- delete the ${build} directory tree -->
     <delete dir="${build.dir}" />
     <delete dir="${jar.dir}" />
+    <delete file="${log.dir}/XBee.log" />
   </target>
 </project>
