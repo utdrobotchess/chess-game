@@ -61,6 +61,8 @@ public class BoardPanel extends JPanel
             squares[i] = new SquareButton(i, squareColor);
             squares[i].addActionListener(new ButtonListener());
 
+            squares[i].setOpaque(true);
+
             if (i % 8 < columns && i / 8 < rows)
                 add(squares[i]);
 
@@ -71,7 +73,7 @@ public class BoardPanel extends JPanel
 
     protected void initializeDemo()
     {
-        int locations[] = {0}; // XXX This is what we change depending on which robots are here
+        int locations[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // XXX This is what we change depending on which robots are here
 
         for (int i = 0; i < locations.length; i++) {
             squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
