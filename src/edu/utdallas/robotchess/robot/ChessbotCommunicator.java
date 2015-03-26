@@ -87,13 +87,9 @@ public class ChessbotCommunicator extends Thread
         log.debug("Terminating ChessbotCommunicator Thread");
 
         xbee.removePacketListener(listenForIncomingResponses);
-
         botFinder.terminate();
 
-        try { Thread.sleep(1000); } //TODO Clunky: Waits for botFinder to terminate 
-        catch (InterruptedException e) { e.printStackTrace(); }
-
-        xbee.close();
+        xbee.close();//TODO fix this method so that it doesn't crash our program.
     }
 
     public void terminate()
