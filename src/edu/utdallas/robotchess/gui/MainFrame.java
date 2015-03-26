@@ -6,18 +6,12 @@
 package edu.utdallas.robotchess.gui;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JMenu;
 import javax.swing.ButtonGroup;
-import javax.swing.JList;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-
-import java.util.ArrayList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +24,7 @@ import edu.utdallas.robotchess.robot.RemoteController;
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
+    private static final long serialVersionUID = 3;
 
     UIState uiState;
     RobotState robotState;
@@ -38,18 +33,22 @@ public class MainFrame extends JFrame
     JMenuBar menuBar;
 
     JMenu fileMenu;
+    JMenu gameModeMenu;
     JMenu optionsMenu;
 
     JMenuItem newGameMenuItem;
     JMenuItem exitMenuItem;
 
     JCheckBoxMenuItem enableRobotsMenuItem;
-    JRadioButtonMenuItem gameModeMenuItem;
+    JCheckBoxMenuItem robotsDiscoveredMenuItem;
+
+    JRadioButtonMenuItem chessModeMenuItem;
     JRadioButtonMenuItem demoModeMenuItem;
     JRadioButtonMenuItem rcModeMenuItem;
-    JRadioButtonMenuItem robotsDiscoveredMenuItem;
 
     MenuItemListener menuListener;
+
+    DiscoveredBotsFrame discoveredRobotsFrame;
 
     BoardPanel boardPanel;
 
@@ -63,6 +62,9 @@ public class MainFrame extends JFrame
 
         boardPanel = new BoardPanel(uiState, robotState, 8, 8);
         add(boardPanel);
+
+        discoveredRobotsFrame = new DiscoveredBotsFrame(robotState);
+        discoveredRobotsFrame.setVisible(false);
 
         setupMenuBar();
         setTitle("Robot Chess");
@@ -85,56 +87,75 @@ public class MainFrame extends JFrame
         robotState.setBoardRows(rows);
     }
 
-    private void setupMenuBar()
+    private void setupFileMenu()
     {
-        menuBar = new JMenuBar();
-
         fileMenu = new JMenu("File");
-        optionsMenu = new JMenu("Options");
 
         newGameMenuItem = new JMenuItem("New Game");
         exitMenuItem = new JMenuItem("Exit");
 
-        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
-        gameModeMenuItem = new JRadioButtonMenuItem("Game Mode");
-        demoModeMenuItem = new JRadioButtonMenuItem("Demo Mode");
-        rcModeMenuItem = new JRadioButtonMenuItem("RC Mode");
-        robotsDiscoveredMenuItem = new JRadioButtonMenuItem("Discovered Robots");
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(gameModeMenuItem);
-        bg.add(demoModeMenuItem);
-        bg.add(rcModeMenuItem);
-        bg.add(robotsDiscoveredMenuItem);
-
-        gameModeMenuItem.setEnabled(false);
-        demoModeMenuItem.setEnabled(false);
-        rcModeMenuItem.setEnabled(false);
-        robotsDiscoveredMenuItem.setEnabled(false);
-
         fileMenu.add(newGameMenuItem);
         fileMenu.add(exitMenuItem);
 
-        optionsMenu.add(enableRobotsMenuItem);
-        optionsMenu.add(gameModeMenuItem);
-        optionsMenu.add(demoModeMenuItem);
-        optionsMenu.add(rcModeMenuItem);
-        optionsMenu.add(robotsDiscoveredMenuItem);
-
-        menuBar.add(fileMenu);
-        menuBar.add(optionsMenu);
-
-        setJMenuBar(menuBar);
-
-        menuListener = new MenuItemListener();
-
         newGameMenuItem.addActionListener(menuListener);
         exitMenuItem.addActionListener(menuListener);
+    }
+
+    private void setupGameModeMenu()
+    {
+        gameModeMenu = new JMenu("Game Mode");
+
+        chessModeMenuItem = new JRadioButtonMenuItem("Chess Mode");
+        demoModeMenuItem = new JRadioButtonMenuItem("Demo Mode");
+        rcModeMenuItem = new JRadioButtonMenuItem("RC Mode");
+
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(chessModeMenuItem);
+        bg.add(demoModeMenuItem);
+        bg.add(rcModeMenuItem);
+
+        chessModeMenuItem.setEnabled(false);
+        demoModeMenuItem.setEnabled(false);
+        rcModeMenuItem.setEnabled(false);
+
+        gameModeMenu.add(chessModeMenuItem);
+        gameModeMenu.add(demoModeMenuItem);
+        gameModeMenu.add(rcModeMenuItem);
 
         enableRobotsMenuItem.addActionListener(menuListener);
         demoModeMenuItem.addActionListener(menuListener);
         rcModeMenuItem.addActionListener(menuListener);
+    }
+
+    private void setupOptionMenu()
+    {
+        optionsMenu = new JMenu("Options");
+
+        robotsDiscoveredMenuItem = new JCheckBoxMenuItem("Discovered Robots");
+        robotsDiscoveredMenuItem.setEnabled(false);
+
+        optionsMenu.add(robotsDiscoveredMenuItem);
+
         robotsDiscoveredMenuItem.addActionListener(menuListener);
+    }
+
+    private void setupMenuBar()
+    {
+        menuBar = new JMenuBar();
+        menuListener = new MenuItemListener();
+
+        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
+
+        setupFileMenu();
+        setupGameModeMenu();
+        setupOptionMenu();
+
+        menuBar.add(fileMenu);
+        menuBar.add(gameModeMenu);
+        menuBar.add(optionsMenu);
+        menuBar.add(enableRobotsMenuItem);
+
+        setJMenuBar(menuBar);
     }
 
     class MenuItemListener implements ActionListener
@@ -147,7 +168,7 @@ public class MainFrame extends JFrame
 
                 applicationState.setRobotsActive(enable);
 
-                gameModeMenuItem.setEnabled(enable);
+                chessModeMenuItem.setEnabled(enable);
                 demoModeMenuItem.setEnabled(enable);
                 rcModeMenuItem.setEnabled(enable);
                 robotsDiscoveredMenuItem.setEnabled(enable);
@@ -165,19 +186,8 @@ public class MainFrame extends JFrame
             }
 
             if(e.getSource() == robotsDiscoveredMenuItem){
-                DefaultListModel<String> listModel = new DefaultListModel<String>();
-                ArrayList<String> botList = robotState.getBotList();
-
-                for (String bot : botList) {
-                    listModel.addElement(bot);
-                }
-
-                JFrame frame = new JFrame();
-                frame.setSize(300, 100);
-
-                JList<String> botListJList = new JList<String>(listModel);
-                frame.add(botListJList);
-                frame.setVisible(true);
+                boolean enable = robotsDiscoveredMenuItem.getState();
+                discoveredRobotsFrame.setVisible(enable);
             }
 
             if (e.getSource() == exitMenuItem) {
