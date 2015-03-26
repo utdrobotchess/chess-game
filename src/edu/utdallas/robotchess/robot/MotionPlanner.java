@@ -25,7 +25,7 @@ public class MotionPlanner extends Thread
     boolean occupancyGrid[];
     ArrayList<Move> movesNeeded;
     private boolean keepAlive = true;
-    
+
     public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
     {
         this.robotState = robotState;
@@ -49,7 +49,7 @@ public class MotionPlanner extends Thread
                 occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
                 movesNeeded = generateMoves(nextMotion.getCurrent(),
                                             nextMotion.getDesired());
-                
+
                 ArrayList<Integer> path = plan();
 
                 if (path.size() > 0) {
@@ -72,6 +72,7 @@ public class MotionPlanner extends Thread
     private boolean[] fillOccupancyGrid(int currentLocations[])
     {
         boolean occupancyGrid[] = new boolean[REGULAR_SQUARE_COUNT];
+        //TODO Remove the need for REGULAR_SQUARE_COUNT
 
         for (int i = 0; i < occupancyGrid.length; i++)
             occupancyGrid[i] = false;
@@ -85,7 +86,7 @@ public class MotionPlanner extends Thread
 
     private ArrayList<Move> generateMoves(int currentLocations[], int desiredLocations[])
     {
-        ArrayList<Move> moves = new ArrayList<>();
+        ArrayList<Move> moves = new ArrayList<>();//Mustn't this be type Move?
 
         for (int i = 0; i < currentLocations.length; i++)
             if (currentLocations[i] != desiredLocations[i])
@@ -160,7 +161,7 @@ public class MotionPlanner extends Thread
 
         for (int i = 0; i < movesNeeded.size(); i++) {
             Move thisMove = movesNeeded.get(i);
-            
+
             ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
                                                          thisMove.destination);
 
@@ -247,7 +248,7 @@ public class MotionPlanner extends Thread
 
     private Command generateCommandsFromPath(ArrayList<Integer> path)
     {
-        Command command = new MoveToSquareCommand(0, new int[0]); 
+        Command command = new MoveToSquareCommand(0, new int[0]);
         ArrayList<Integer> payload = new ArrayList<Integer>();
 
         // path must include at least robot id, plus 2 path squares
