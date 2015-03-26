@@ -26,7 +26,7 @@ public class BotFinder extends Thread
     private RobotState robotState;
 
     private boolean keepAlive = true;
-    private long timeout = 30000;
+    private long timeout = 10 * 1000;
     private final int pruningIndex = 2;
 
     private final static Logger log = Logger.getLogger(BotFinder.class);
@@ -47,7 +47,10 @@ public class BotFinder extends Thread
                 XBeeAddress64 addr = nd.getNodeAddress64();
 
                 if(!nodeAddresses.contains(addr))
+                {
                     nodeAddresses.add(addr);
+                    log.debug(nd);
+                }
 
                 if(!currentNodeAddresses.contains(addr))
                     currentNodeAddresses.add(addr);
@@ -58,7 +61,6 @@ public class BotFinder extends Thread
                         unresponsiveNodes.get(i).remove(addr);
                 }
 
-                log.debug(nd);
 			}
 		}
 	};
@@ -70,8 +72,9 @@ public class BotFinder extends Thread
 			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
                 ZNetRxResponse rx = (ZNetRxResponse) response;
-                int[] payload = rx.getData();
                 XBeeAddress64 addr = rx.getRemoteAddress64();
+
+                int[] payload = rx.getData();
 
                 if(payload[0] == 2)
                 {
@@ -102,21 +105,28 @@ public class BotFinder extends Thread
     {
         long startTime = System.currentTimeMillis();
 
+        log.debug("Running Node Discovery Thread");
+
         xbee.addPacketListener(listenForIncomingNodes);
         xbee.addPacketListener(listenForIncomingBotIDs);
 
         try{ xbee.sendAsynchronous(new AtCommand("ND")); }
         catch(XBeeException e) { log.debug("Couldn't send ND command"); }
 
-        log.debug("Running Node Discovery Thread");
-
         while(keepAlive)
         {
             if(System.currentTimeMillis() - startTime > this.timeout)
             {
+                discoverBots();
+
+                try { Thread.sleep(1000); } //TODO Clunky: Waits for bot responses before pruning
+                catch (InterruptedException ex) { }
+
                 pruneNodeAddressList();
                 pruneBotAddressList();
                 currentNodeAddresses.clear();
+
+                updateBotList();
 
                 try{ xbee.sendAsynchronous(new AtCommand("ND")); }
                 catch(XBeeException e) { log.debug("Couldn't send ND command"); }
@@ -124,12 +134,12 @@ public class BotFinder extends Thread
                 startTime = System.currentTimeMillis();
             }
 
-            discoverBots();
-
-            try { Thread.sleep(10000); }
+            try { Thread.sleep(100); }
             catch (InterruptedException ex) { }
 
         }
+
+        log.debug("Terminating BotFinder Thread");
 
         xbee.removePacketListener(listenForIncomingNodes);
         xbee.removePacketListener(listenForIncomingBotIDs);
@@ -149,8 +159,8 @@ public class BotFinder extends Thread
     {
         ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<XBeeAddress64>();
 
-    	for(int i = 0; i < nodeAddresses.size(); i++)
-    		if(!botAddresses.contains(nodeAddresses.get(i)))
+        for(int i = 0; i < nodeAddresses.size(); i++)
+            if(!botAddresses.contains(nodeAddresses.get(i)))
                 undiscoveredBots.add(nodeAddresses.get(i));
 
 
@@ -204,6 +214,22 @@ public class BotFinder extends Thread
         for(int i = 0; i < botAddresses.size(); i++)
             if(!nodeAddresses.contains(botAddresses.get(i)))
                 botAddresses.set(i, null);
+    }
+
+    public void updateBotList()
+    {
+        ArrayList<String> botList = new ArrayList<String>();
+
+        for (XBeeAddress64 addr : botAddresses)
+        {
+            if(addr != null)
+            {
+                Integer bot = botAddresses.indexOf(addr);
+                botList.add(Integer.toString(bot));
+            }
+        }
+
+        robotState.updateBotList(botList);
     }
 
     private void setTimeout(long timeout)
