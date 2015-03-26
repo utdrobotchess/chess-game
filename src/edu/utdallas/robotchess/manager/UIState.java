@@ -7,7 +7,6 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Arrays;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

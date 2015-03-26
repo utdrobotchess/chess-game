@@ -14,7 +14,6 @@ import javax.swing.SwingConstants;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,15 +22,16 @@ import edu.utdallas.robotchess.manager.RobotState;
 
 public class DemoFrame extends JFrame
 {
+    private static final long serialVersionUID = 2;
     final int FRAME_WIDTH = 300;
     final int FRAME_HEIGHT = 200;
-    
+
     UIState uiState;
     RobotState robotState;
 
     BoardSizeComboBox rowComboBox;
     BoardSizeComboBox columnComboBox;
-    
+
     protected DemoFrame(UIState uiState, RobotState robotState)
     {
         this.uiState = uiState;
@@ -71,8 +71,9 @@ public class DemoFrame extends JFrame
 
     class BoardSizeComboBox extends JComboBox
     {
+        private static final long serialVersionUID = 4;
         final String boardSizes[] = {"1", "2", "3", "4", "5", "6", "7", "8"};
-        
+
         protected BoardSizeComboBox()
         {
             for (int i = 0; i < boardSizes.length; i++)

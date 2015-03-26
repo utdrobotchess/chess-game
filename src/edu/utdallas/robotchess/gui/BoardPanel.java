@@ -5,21 +5,13 @@
 
 package edu.utdallas.robotchess.gui;
 
-import java.util.ArrayList;
-
 import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
 
 import edu.utdallas.robotchess.manager.UIState;
 import edu.utdallas.robotchess.manager.RobotState;
@@ -28,6 +20,7 @@ import edu.utdallas.robotchess.robot.SmartCenterCommand;
 
 public class BoardPanel extends JPanel
 {
+    private static final long serialVersionUID = 2;
     final int TOTAL_SQUARES = 64;
 
     UIState uiState;
