@@ -35,7 +35,7 @@
       <classpath refid="classpath" />
     </javac>
   </target>
-  
+
   <!-- compile the source code with debug turned on -->
   <target name="compile.debug" depends="init" description="compile the source with debug" >
     <!-- Compile the java code from ${src.dir} and ${test.dir} into ${class.dir} -->
@@ -82,12 +82,13 @@
       <sysproperty key="java.library.path" value="lib" />
     </java>
   </target>
-  
+
   <!-- clean up the environment -->
   <target name="clean" description="clean up">
     <!-- delete the ${build} directory tree -->
     <delete dir="${build.dir}" />
     <delete dir="${jar.dir}" />
     <delete file="${log.dir}/XBee.log" />
+    <delete file="${lib.dir}/resources.jar" />
   </target>
 </project>
