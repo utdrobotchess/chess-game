@@ -49,56 +49,55 @@ public class ChessbotCommunicator extends Thread
     {
         PropertyConfigurator.configure("log/log4j.properties");
 
-        log.debug("Searching Comports for XBee");
-        SearchForXbeeOnComports();
-
-        try
-        {
-            xbee.open(this.comport, baud);
-            log.debug("Found XBee on comport");
-        }
-        catch (XBeeException e)
-        {
-            log.debug("Couldn't find Xbee on any available COMPORT");
-        }
-
-        botFinder = new BotFinder(xbee, robotState);
         this.baudrate = baud;
         this.robotState = robotState;
+        SearchForXbeeOnComports();
+
     }
 
     @Override
     public void run()
     {
+        if(xbee == null)
+        { 
+            log.debug("Cannot run ChessbotCommunicator Thread since no XBee on Comport");
+            return;
+        }
+
         log.debug("Running ChessbotCommunicator Thread");
 
-    	if(robotState == null)
-    		return;
-
+        botFinder = new BotFinder(xbee, robotState);
         botFinder.start();
         robotState.setReady(true);
 
         xbee.addPacketListener(listenForIncomingResponses);
 
-    	while (keepAlive)
+        while (keepAlive)
         {
-    		if(robotState.isCommandAvailable())
+            if(robotState.isCommandAvailable())
             {
-    			Command cmd = robotState.pollNextCommand();
+                Command cmd = robotState.pollNextCommand();
                 sendCommand(cmd);
             }
 
             try { Thread.sleep(10); }
             catch (InterruptedException e) { e.printStackTrace(); }
+        }
 
-    	}
-        terminate();
+        log.debug("Terminating ChessbotCommunicator Thread");
+
+        xbee.removePacketListener(listenForIncomingResponses);
+
+        botFinder.terminate();
+
+        try { Thread.sleep(1000); } //TODO Clunky: Waits for botFinder to terminate 
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        xbee.close();
     }
 
     public void terminate()
     {
-        botFinder.terminate();
-        xbee.close();
         keepAlive = false;
     }
 
@@ -172,6 +171,10 @@ public class ChessbotCommunicator extends Thread
         String osName = System.getProperty("os.name");
         String portName = null;
 
+        boolean foundXbee = false;
+
+        log.debug("Searching Comports for XBee");
+
         if (osName.equalsIgnoreCase("Mac OS X"))
             portName = "tty.usbserial";
 
@@ -185,9 +188,29 @@ public class ChessbotCommunicator extends Thread
                 CommPortIdentifier pid = (CommPortIdentifier) portIdentifiers.nextElement();
 
                 if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains(portName))
+                {
                     this.comport = pid.getName();
+                    try
+                    {
+                        xbee.open(this.comport, this.baudrate);
+                        log.debug("Found XBee on comport" + this.comport);
+                        foundXbee = true;
+                        break;
+                    }
+                    catch(XBeeException e) 
+                    {
+                        log.debug("Did not find XBee on comport " + this.comport);
+                    }
+
+                }
             }
         }
 
+        if(foundXbee == false)
+        {
+            log.debug("Couldn't find Xbee on any available COMPORT");
+            xbee = null;
+            this.comport = null;
+        }
     }
 }
