@@ -42,8 +42,8 @@ public class MoveToSquareCommand extends Command
         String output = "Move to ";
 
         for (int i = 0; i < destinations.length; i++)
-            output += destinations[i];
-        
+            output += destinations[i] + " ";
+
         return output;
     }
 }
