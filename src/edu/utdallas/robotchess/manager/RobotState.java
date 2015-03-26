@@ -7,6 +7,7 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.ArrayList;
 
 import edu.utdallas.robotchess.robot.Command;
 import edu.utdallas.robotchess.robot.Motion;
@@ -19,6 +20,8 @@ public class RobotState
     private int boardColumns;
     private int boardRows;
 
+    private ArrayList<String> botList;
+
     private Queue<Command> commandQueue;
     private Queue<Motion> motionQueue;
     private Queue<Response> responseQueue;
@@ -28,6 +31,8 @@ public class RobotState
         commandQueue = new LinkedList<>();
         motionQueue = new LinkedList<>();
         responseQueue = new LinkedList<>();
+
+        botList = new ArrayList<String>();
     }
 
     public synchronized void addNewCommand(Command newCommand)
@@ -118,5 +123,15 @@ public class RobotState
     public synchronized void setRCMode(boolean rcMode)
     {
         this.rcMode = rcMode;
+    }
+
+    public synchronized void updateBotList(ArrayList<String> botList)
+    {
+        this.botList = botList;
+    }
+
+    public synchronized ArrayList<String> getBotList()
+    {
+        return botList;
     }
 }
