@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 import edu.utdallas.robotchess.manager.RobotState;
 
-public class DiscoveredBotsFrame extends JFrame
+public class DiscoveredBotsFrame extends JFrame implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1;
 
@@ -37,4 +43,16 @@ public class DiscoveredBotsFrame extends JFrame
         add(botJList);
     }
 
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt)
+    {
+        if (!SwingUtilities.isEventDispatchThread())
+        {
+            SwingUtilities.invokeLater(new Runnable() { public void run() { propertyChange(evt); } });
+            return;
+        }
+
+        if (evt.getSource() == robotState)
+            updateBotList();
+    }
 }

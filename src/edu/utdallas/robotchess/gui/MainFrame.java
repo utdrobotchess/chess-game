@@ -160,6 +160,8 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
+        RemoteController rc = new RemoteController(robotState);
+
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -172,17 +174,34 @@ public class MainFrame extends JFrame
                 demoModeMenuItem.setEnabled(enable);
                 rcModeMenuItem.setEnabled(enable);
                 robotsDiscoveredMenuItem.setEnabled(enable);
+
+                if(!enable)
+                    discoveredRobotsFrame.setVisible(false);
             }
 
-            if (e.getSource() == demoModeMenuItem) {
-                resizeBoard(4, 8); // TODO allow the user to pick the size of the board
-                boardPanel.initializeDemo();
-                uiState.setDemoMode(true);
-            }
+            if(e.getSource() == demoModeMenuItem || e.getSource() == rcModeMenuItem || e.getSource() == chessModeMenuItem){
+                boolean enableDemo = demoModeMenuItem.isSelected();
+                boolean enableRC = rcModeMenuItem.isSelected();
+                boolean enableChess = chessModeMenuItem.isSelected();
 
-            if (e.getSource() == rcModeMenuItem) {
-                RemoteController rc = new RemoteController(robotState);
-                rc.start();
+                if(enableDemo)
+                {
+                    resizeBoard(4, 8); // TODO allow the user to pick the size of the board
+                    boardPanel.initializeDemo();
+                    uiState.setDemoMode(true);
+                }
+                else
+                    uiState.setDemoMode(false);
+
+                if(enableRC)
+                    rc.start();
+                else
+                    rc.terminate();
+
+                if(enableChess)
+                {}
+                else
+                {}
             }
 
             if(e.getSource() == robotsDiscoveredMenuItem){

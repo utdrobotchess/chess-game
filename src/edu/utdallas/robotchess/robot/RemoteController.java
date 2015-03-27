@@ -6,24 +6,18 @@ import org.lwjgl.input.Controllers;
 
 import edu.utdallas.robotchess.manager.RobotState;
 
-public class RemoteController extends Thread 
+public class RemoteController extends Thread
 {
     public static Controller controller;
     RobotState robotState;
+    boolean keepAlive;
 
     public RemoteController(RobotState robotState)
     {
         this.robotState = robotState;
 
-        try 
-        {
-            Controllers.create();
-        } 
-        catch (LWJGLException e) 
-        {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        try { Controllers.create(); }
+        catch (LWJGLException e) { e.printStackTrace(); }
 
         Controllers.poll();
 
@@ -33,23 +27,32 @@ public class RemoteController extends Thread
             System.out.println("Found controller");
         }
         else
-        {
             System.out.println("Could not find any controllers");
-        }
     }
-    
+
     public void run()
     {
+        if(controller == null)
+        {
+            System.out.println("Cannot start RemoteController Thread since no Remote Controller found");
+            return;
+        }
+
         ZeroJoyStick();
 
-        while (true) {
+        while (keepAlive)
+        {
             robotState.addNewCommand(new RCCommand(0, ComputeWheelVelocities()));
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-            
-            }
+            try { Thread.sleep(100); }
+            catch (InterruptedException ex){}
         }
+
+        System.out.println("Terminating RemoteController Thread");
+    }
+
+    public void terminate()
+    {
+        keepAlive = false;
     }
 
     public int[] ComputeWheelVelocities()
@@ -91,7 +94,7 @@ public class RemoteController extends Thread
         }
 
         wheelVelPayload = new int[] {direction, forwardVel, rotation, rotationVel};
-        
+
         System.out.printf("%x, %x, %x, %x\n", wheelVelPayload[0], wheelVelPayload[1], wheelVelPayload[2], wheelVelPayload[3]);
         return wheelVelPayload;
     }
