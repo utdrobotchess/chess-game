@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import gnu.io.CommPortIdentifier;
+
 import java.util.Enumeration;
 
 import edu.utdallas.robotchess.manager.RobotState;
@@ -11,14 +12,13 @@ import edu.utdallas.robotchess.manager.RobotState;
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
-import com.rapplogic.xbee.api.XBeeAddress16;
+//import com.rapplogic.xbee.api.XBeeAddress16; May use 16bit address later for faster routing
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeeException;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
-
 
 public class ChessbotCommunicator extends Thread
 {
@@ -59,7 +59,7 @@ public class ChessbotCommunicator extends Thread
     public void run()
     {
         if(xbee == null)
-        { 
+        {
             log.debug("Cannot run ChessbotCommunicator Thread since no XBee on Comport");
             return;
         }
@@ -86,7 +86,6 @@ public class ChessbotCommunicator extends Thread
 
         log.debug("Terminating ChessbotCommunicator Thread");
 
-        xbee.removePacketListener(listenForIncomingResponses);
         botFinder.terminate();
 
         xbee.close();//TODO fix this method so that it doesn't crash our program.
@@ -163,7 +162,9 @@ public class ChessbotCommunicator extends Thread
 
     public void SearchForXbeeOnComports()
     {
+        @SuppressWarnings("unchecked")
         Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+
         String osName = System.getProperty("os.name");
         String portName = null;
 
@@ -193,7 +194,7 @@ public class ChessbotCommunicator extends Thread
                         foundXbee = true;
                         break;
                     }
-                    catch(XBeeException e) 
+                    catch(XBeeException e)
                     {
                         log.debug("Did not find XBee on comport " + this.comport);
                     }
@@ -202,7 +203,7 @@ public class ChessbotCommunicator extends Thread
             }
         }
 
-        if(foundXbee == false)
+        if(!foundXbee)
         {
             log.debug("Couldn't find Xbee on any available COMPORT");
             xbee = null;

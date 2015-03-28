@@ -10,7 +10,7 @@ import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
-import com.rapplogic.xbee.api.XBeeAddress16;
+//import com.rapplogic.xbee.api.XBeeAddress16; May use 16bit address later for faster routing
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeeException;
 import com.rapplogic.xbee.api.XBeeResponse;
@@ -140,9 +140,6 @@ public class BotFinder extends Thread
         }
 
         log.debug("Terminating BotFinder Thread");
-
-        xbee.removePacketListener(listenForIncomingNodes);
-        xbee.removePacketListener(listenForIncomingBotIDs);
     }
 
     public ArrayList<XBeeAddress64> GetBotAddresses()
@@ -232,6 +229,7 @@ public class BotFinder extends Thread
         robotState.updateBotList(botList);
     }
 
+    @SuppressWarnings("unused")
     private void setTimeout(long timeout)
     {
         if(timeout > 0)
