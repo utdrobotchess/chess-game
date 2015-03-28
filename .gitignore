@@ -4,3 +4,6 @@
 *.o
 /build/
 /bin/
+.classpath
+.project
+*.log
