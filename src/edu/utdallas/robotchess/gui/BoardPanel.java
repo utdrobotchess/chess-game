@@ -1,39 +1,36 @@
 package edu.utdallas.robotchess.gui;
 
-import javax.swing.JPanel;
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import java.awt.Color;
-import java.awt.GridLayout;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import edu.utdallas.robotchess.robot.Motion;
-import edu.utdallas.robotchess.robot.SmartCenterCommand;
+import edu.utdallas.robotchess.manager.Manager;
+import edu.utdallas.robotchess.game.*;
 
 public class BoardPanel extends JPanel
 {
-    private static final long serialVersionUID = 2;
     final int TOTAL_SQUARES = 64;
+    
+    private Manager manager;
+    private SquareButton squares[];
+    private Map<String, Icon> imageMap;
 
-    SquareButton squares[];
-
-    int rows;
-    int columns;
-
-    protected BoardPanel(int rows, int columns)
+    protected BoardPanel(Manager manager)
     {
-        this.rows = rows;
-        this.columns = columns;
+        this.manager = manager;
+
+        int rows = manager.getBoardRowCount();
+        int columns = manager.getBoardColumnCount();
 
         setLayout(new GridLayout(rows, columns));
 
         squares = new SquareButton[TOTAL_SQUARES];
 
-        initializeSquares();
+        initializeSquares(rows, columns);
     }
 
-    protected void initializeSquares()
+    private void initializeSquares(int rows, int columns)
     {
         boolean whiteSquare = true;
 
@@ -52,14 +49,22 @@ public class BoardPanel extends JPanel
         }
     }
 
-    protected void initializeDemo()
+    private void updateDisplay()
     {
-        int locations[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // XXX This is what we change depending on which robots are here
-
-        for (int i = 0; i < locations.length; i++) {
-            // squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
-            // uiState.setPieceLocation(locations[i], locations[i]);
+        ArrayList<ChessPiece> pieces = manager.getActivePieces();
+        
+        for (int i = 0; i < pieces.size(); i++) {
+            ChessPiece piece = pieces.get(i);
+            int location = piece.getIntLocation();
+            String pieceName = piece.getName();
+            Icon icon = imageMap.get(pieceName);
+            squares[location].setIcon(icon);
         }
+    }
+    
+    protected void setManager(Manager manager)
+    {
+        this.manager = manager; 
     }
 
     class ButtonListener implements ActionListener
@@ -68,32 +73,9 @@ public class BoardPanel extends JPanel
         public void actionPerformed(ActionEvent e)
         {
             SquareButton buttonPressed = (SquareButton) e.getSource();
-
-            // if (uiState.isDemoMode()) {
-            //     int selectedIndex = uiState.getSelectedIndex();
-
-            //     // if (buttonPressed.isOccupied()) {
-            //     //     if (buttonPressed.getIndex() == selectedIndex) {
-            //     //         int robotID = uiState.getPieceIDFromLocation(selectedIndex);
-            //     //         robotState.addNewCommand(new SmartCenterCommand(robotID));
-            //     //         uiState.setSelectedIndex(-1);
-            //     //     } else {
-            //     //         uiState.setSelectedIndex(buttonPressed.getIndex());
-            //     //     }
-            //     // } else if (selectedIndex != -1) {
-            //     //     squares[selectedIndex].setIcon(null);
-            //     //     uiState.setSelectedIndex(-1);
-            //     //     buttonPressed.setIcon(uiState.getPieceImage("green-pawn"));
-
-            //     //     int current[] = uiState.getAllPieceLocations();
-            //     //     uiState.setPieceLocation(uiState.getPieceIDFromLocation(selectedIndex),
-            //     //                              buttonPressed.getIndex());
-            //     //     int desired[] = uiState.getAllPieceLocations();
-
-            //     //     robotState.addNewMotion(new Motion(current, desired));
-
-            //     // }
-            // }
+            int buttonIndex = buttonPressed.getIndex();
+            manager.handleSquareClick(buttonIndex);
+            updateDisplay();
         }
     }
 }

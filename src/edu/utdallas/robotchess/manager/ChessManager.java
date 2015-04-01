@@ -23,6 +23,21 @@ public class ChessManager extends Manager
             handleMoveLocationSelection(squareIndex);
     }
     
+    public int getBoardRowCount()
+    {
+        return 8;
+    }
+
+    public int getBoardColumnCount()
+    {
+        return 8;
+    }
+    
+    public ArrayList<ChessPiece> getActivePieces()
+    {
+        return new ArrayList<>();
+    }
+    
     private void handleInitialPieceSelection(int selectionIndex)
     {
         if (isValidInitialPieceSelection(selectionIndex))
@@ -113,9 +128,9 @@ public class ChessManager extends Manager
 
     private void toggleActiveTeam()
     {
-        if (game.getActiveTeam() == Team.WHITE)
-            game.setActiveTeam(Team.BLACK);
+        if (game.getActiveTeam() == Team.ORANGE)
+            game.setActiveTeam(Team.GREEN);
         else
-            game.setActiveTeam(Team.WHITE);
+            game.setActiveTeam(Team.ORANGE);
     }
 }

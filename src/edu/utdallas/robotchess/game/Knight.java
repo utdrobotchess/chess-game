@@ -26,6 +26,11 @@ public class Knight extends ChessPiece
                                             isActive(), hasNotMoved());
         return copiedPiece;
     }
+    
+    public String getName()
+    {
+        return getTeam() + "knight";
+    }
 
     protected ArrayList<Square> generateMoveLocations()
     {

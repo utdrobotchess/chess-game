@@ -26,6 +26,11 @@ public class King extends ChessPiece
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }
+    
+    public String getName()
+    {
+        return getTeam() + "-king";
+    }
 
     protected ArrayList<Square> generateMoveLocations()
     {

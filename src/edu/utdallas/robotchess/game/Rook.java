@@ -26,6 +26,11 @@ public class Rook extends ChessPiece
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }
+    
+    public String getName()
+    {
+        return getTeam() + "-rook";
+    }
 
     protected ArrayList<Square> generateMoveLocations()
     {

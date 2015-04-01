@@ -7,7 +7,7 @@ public enum Team
 	* for them implies moving in a negative direction; the opposite is true for
 	* the black pieces
     */
-	WHITE(-1), BLACK(1);
+	ORANGE(-1), GREEN(1);
 
 	private final int directionalValue;
     
@@ -20,4 +20,13 @@ public enum Team
     {
 		return directionalValue;
 	}
+    
+    @Override
+    public String toString()
+    {
+        if (directionalValue == -1)
+            return "orange";
+        else 
+            return "green";
+    }
 }

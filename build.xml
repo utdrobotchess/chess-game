@@ -8,7 +8,7 @@
   <property name="lib.dir" value="lib" />
   <property name="log.dir" value="log" />
   <property name="resources.dir" value="resources" />
-  <property name="main-class" value="edu.utdallas.robotchess.manager.ApplicationManager" />
+  <property name="main-class" value="edu.utdallas.robotchess.gui.MainFrame" />
 
   <!-- build the classpath -->
   <path id="classpath">

@@ -3,28 +3,28 @@ package edu.utdallas.robotchess.gui;
 import javax.swing.*;
 import java.awt.event.*;
 
+import edu.utdallas.robotchess.manager.*;
 import edu.utdallas.robotchess.robot.RemoteController;
 
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
     private static final long serialVersionUID = 3;
+    
+    Manager manager;
 
     JMenuBar menuBar;
 
     JMenu fileMenu;
-    JMenu gameModeMenu;
     JMenu optionsMenu;
 
     JMenuItem newGameMenuItem;
+    JMenuItem newChessDemoMenuItem;
+    JMenuItem newRCDemoMenuItem;
     JMenuItem exitMenuItem;
 
     JCheckBoxMenuItem enableRobotsMenuItem;
     JCheckBoxMenuItem robotsDiscoveredMenuItem;
-
-    JRadioButtonMenuItem chessModeMenuItem;
-    JRadioButtonMenuItem demoModeMenuItem;
-    JRadioButtonMenuItem rcModeMenuItem;
 
     MenuItemListener menuListener;
 
@@ -34,7 +34,7 @@ public class MainFrame extends JFrame
 
     public MainFrame()
     {
-        boardPanel = new BoardPanel(8, 8);
+        boardPanel = new BoardPanel(new NullManager());
         add(boardPanel);
 
         discoveredRobotsFrame = new DiscoveredBotsFrame();
@@ -48,65 +48,41 @@ public class MainFrame extends JFrame
         setVisible(true);
     }
 
-    protected void resizeBoard(int rows, int columns)
-    {
-        remove(boardPanel);
-        boardPanel = new BoardPanel(rows, columns);
-        add(boardPanel);
-
-        setSize(rows * SQUARE_SIZE, columns * SQUARE_SIZE);
-        setLocationRelativeTo(null);
-    }
-
     private void setupFileMenu()
     {
         fileMenu = new JMenu("File");
 
         newGameMenuItem = new JMenuItem("New Game");
+        newChessDemoMenuItem = new JMenuItem("New Chess Demo");
+        newRCDemoMenuItem = new JMenuItem("New RC Demo");
         exitMenuItem = new JMenuItem("Exit");
+        
+        newChessDemoMenuItem.setEnabled(false);
+        newRCDemoMenuItem.setEnabled(false);
 
         fileMenu.add(newGameMenuItem);
+        fileMenu.add(newChessDemoMenuItem);
+        fileMenu.add(newRCDemoMenuItem);
         fileMenu.add(exitMenuItem);
 
         newGameMenuItem.addActionListener(menuListener);
+        newChessDemoMenuItem.addActionListener(menuListener);
+        newRCDemoMenuItem.addActionListener(menuListener);
         exitMenuItem.addActionListener(menuListener);
-    }
-
-    private void setupGameModeMenu()
-    {
-        gameModeMenu = new JMenu("Game Mode");
-
-        chessModeMenuItem = new JRadioButtonMenuItem("Chess Mode");
-        demoModeMenuItem = new JRadioButtonMenuItem("Demo Mode");
-        rcModeMenuItem = new JRadioButtonMenuItem("RC Mode");
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(chessModeMenuItem);
-        bg.add(demoModeMenuItem);
-        bg.add(rcModeMenuItem);
-
-        chessModeMenuItem.setEnabled(false);
-        demoModeMenuItem.setEnabled(false);
-        rcModeMenuItem.setEnabled(false);
-
-        gameModeMenu.add(chessModeMenuItem);
-        gameModeMenu.add(demoModeMenuItem);
-        gameModeMenu.add(rcModeMenuItem);
-
-        enableRobotsMenuItem.addActionListener(menuListener);
-        demoModeMenuItem.addActionListener(menuListener);
-        rcModeMenuItem.addActionListener(menuListener);
     }
 
     private void setupOptionMenu()
     {
         optionsMenu = new JMenu("Options");
 
-        robotsDiscoveredMenuItem = new JCheckBoxMenuItem("Discovered Robots");
+        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
+        enableRobotsMenuItem.setEnabled(true);
+        optionsMenu.add(enableRobotsMenuItem);
+        enableRobotsMenuItem.addActionListener(menuListener);
+
+        robotsDiscoveredMenuItem = new JCheckBoxMenuItem("View Discovered Robots");
         robotsDiscoveredMenuItem.setEnabled(false);
-
         optionsMenu.add(robotsDiscoveredMenuItem);
-
         robotsDiscoveredMenuItem.addActionListener(menuListener);
     }
 
@@ -115,67 +91,87 @@ public class MainFrame extends JFrame
         menuBar = new JMenuBar();
         menuListener = new MenuItemListener();
 
-        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
-
         setupFileMenu();
-        setupGameModeMenu();
         setupOptionMenu();
 
         menuBar.add(fileMenu);
-        menuBar.add(gameModeMenu);
         menuBar.add(optionsMenu);
-        menuBar.add(enableRobotsMenuItem);
 
         setJMenuBar(menuBar);
     }
 
     class MenuItemListener implements ActionListener
     {
-        RemoteController rc = new RemoteController();
+        //RemoteController rc = new RemoteController();
 
         @Override
         public void actionPerformed(ActionEvent e)
         {
+            if (e.getSource() == newGameMenuItem) {
+                boolean robotsEnabled = enableRobotsMenuItem.getState();
+                
+                if (robotsEnabled)
+                    manager = new RobotChessManager();
+                else
+                    manager = new ChessManager();
+                
+                boardPanel.setManager(manager);
+            }
+            
+            if (e.getSource() == newChessDemoMenuItem) {
+                // display a JOptionPane asking the user for the board dimensions
+                manager = new RobotDemoManager();
+            }
+            
+            if (e.getSource() == newRCDemoMenuItem) {
+                // create a remote controller
+                // pass it the communicator
+                // display a JOptionPane allowing the user to end
+            }
+
             if (e.getSource() == enableRobotsMenuItem) {
                 boolean enable = enableRobotsMenuItem.getState();
-
-                chessModeMenuItem.setEnabled(enable);
-                demoModeMenuItem.setEnabled(enable);
-                rcModeMenuItem.setEnabled(enable);
                 robotsDiscoveredMenuItem.setEnabled(enable);
+                newChessDemoMenuItem.setEnabled(enable);
+                newRCDemoMenuItem.setEnabled(enable);
 
                 if(!enable)
                     discoveredRobotsFrame.setVisible(false);
+                
+                System.out.println("enable the robots here");
             }
 
-            if(e.getSource() == demoModeMenuItem || 
-               e.getSource() == rcModeMenuItem || 
-               e.getSource() == chessModeMenuItem){
-                boolean enableDemo = demoModeMenuItem.isSelected();
-                boolean enableRC = rcModeMenuItem.isSelected();
-                boolean enableChess = chessModeMenuItem.isSelected();
+            // if(e.getSource() == demoModeMenuItem || 
+            //    e.getSource() == rcModeMenuItem || 
+            //    e.getSource() == chessModeMenuItem){
+            //     boolean enableDemo = demoModeMenuItem.isSelected();
+            //     boolean enableRC = rcModeMenuItem.isSelected();
+            //     boolean enableChess = chessModeMenuItem.isSelected();
 
-                if(enableDemo) {
-                    resizeBoard(4, 8); // TODO allow the user to pick the size of the board
-                    boardPanel.initializeDemo();
-                }
+            //     if(enableDemo) {
+            //         resizeBoard(4, 8); // TODO allow the user to pick the size of the board
+            //         boardPanel.initializeDemo();
+            //     }
 
-                if(enableRC)
-                    rc.start();
-                else
-                    rc.terminate();
-            }
+            //     // if(enableRC)
+            //     //     rc.start();
+            //     // else
+            //     //     rc.terminate();
+            // }
 
             if(e.getSource() == robotsDiscoveredMenuItem){
-                boolean enable = robotsDiscoveredMenuItem.getState();
-                discoveredRobotsFrame.setVisible(enable);
+                 boolean enable = robotsDiscoveredMenuItem.getState();
+                 discoveredRobotsFrame.setVisible(enable);
             }
 
             if (e.getSource() == exitMenuItem) {
-                // TODO add an "are you sure option"
-                // TODO implement the safe cleanup functionality for the network
                 System.exit(0);
             }
         }
+    }
+    
+    public static void main(String[] args)
+    {
+        MainFrame frame = new MainFrame();
     }
 }

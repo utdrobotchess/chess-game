@@ -26,6 +26,11 @@ public class Pawn extends ChessPiece
                                          isActive(), hasNotMoved());
         return copiedPawn;
     }
+    
+    public String getName()
+    {
+        return getTeam() + "-pawn";
+    }
 
     protected ArrayList<Square> generateMoveLocations()
     {
@@ -36,7 +41,7 @@ public class Pawn extends ChessPiece
         Square currentLocation = getLocation();
         
 
-        if (getTeam() == Team.WHITE)
+        if (getTeam() == Team.ORANGE)
             neighborDirection = 0;
         else
             neighborDirection = 4;

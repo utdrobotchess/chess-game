@@ -32,7 +32,7 @@ public class ChessGame
     {
         board = new ChessBoard();
         initializePieces();
-        activeTeam = Team.WHITE;
+        activeTeam = Team.ORANGE;
     }
 
     public ChessGame(ChessBoard board, ChessPiece[] pieces)
@@ -182,7 +182,7 @@ public class ChessGame
             sideSquareIndexes[2] = 3;
         }
         
-        if (king.getTeam() == Team.WHITE)
+        if (king.getTeam() == Team.ORANGE)
             for (int i = 0; i < sideSquareIndexes.length; i++)
                 sideSquareIndexes[i] += 56;
 
@@ -213,7 +213,7 @@ public class ChessGame
     {
         int castlingRookIndex = kingSide ? 7 : 0;
         
-        if (king.getTeam() == Team.WHITE)
+        if (king.getTeam() == Team.ORANGE)
             castlingRookIndex += 16;
 
         return castlingRookIndex;
@@ -254,7 +254,7 @@ public class ChessGame
 
     private ChessPiece getKing(Team team)
     {
-        if (team == Team.WHITE)
+        if (team == Team.ORANGE)
             return allPieces[28];
         else
             return allPieces[4];

@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import org.junit.Test;
@@ -43,10 +38,10 @@ public class ChessGameTest
         }
 
         for (int i = 0; i < 16; i++)
-            Assert.assertEquals(Team.BLACK, pieces[i].getTeam());
+            Assert.assertEquals(Team.GREEN, pieces[i].getTeam());
 
         for (int i = 16; i < 32; i++)
-            Assert.assertEquals(Team.WHITE, pieces[i].getTeam());
+            Assert.assertEquals(Team.ORANGE, pieces[i].getTeam());
 
         for (int i = 0; i < EXPECTED_ROOK_IDS.length; i++) {
             ChessPiece testPiece = pieces[EXPECTED_ROOK_IDS[i]];
@@ -139,11 +134,11 @@ public class ChessGameTest
         pieces[11].moveTo(board.getSquareAt(19));
         pieces[29].moveTo(board.getSquareAt(25));
 
-        Assert.assertTrue(game.isInCheck(Team.BLACK));
+        Assert.assertTrue(game.isInCheck(Team.GREEN));
 
         pieces[3].moveTo(board.getSquareAt(11));
 
-        Assert.assertFalse(game.isInCheck(Team.BLACK));
+        Assert.assertFalse(game.isInCheck(Team.GREEN));
     }
 
     @Test
@@ -200,12 +195,12 @@ public class ChessGameTest
         pieces[27].moveTo(board.getSquareAt(45));
         pieces[14].moveTo(board.getSquareAt(38));
 
-        Assert.assertFalse(game.isInCheckmate(Team.BLACK));
+        Assert.assertFalse(game.isInCheckmate(Team.GREEN));
         
         pieces[27].moveTo(board.getSquareAt(13));
 
-        Assert.assertTrue(game.isInCheckmate(Team.BLACK));
-        Assert.assertFalse(game.isInCheckmate(Team.WHITE));
+        Assert.assertTrue(game.isInCheckmate(Team.GREEN));
+        Assert.assertFalse(game.isInCheckmate(Team.ORANGE));
     }
 
     @Test

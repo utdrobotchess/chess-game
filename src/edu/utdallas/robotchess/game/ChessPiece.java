@@ -60,6 +60,7 @@ public abstract class ChessPiece
 
     protected abstract ArrayList<Square> generateMoveLocations();
     protected abstract ChessPiece copyPiece();
+    public abstract String getName();
 
     protected int getID()
     {
@@ -71,7 +72,7 @@ public abstract class ChessPiece
         return location;
     }
     
-    protected int getIntLocation()
+    public int getIntLocation()
     {
         return location.toInt();
     }
@@ -129,8 +130,8 @@ public abstract class ChessPiece
         final int NUM_SQUARES = 64;
 
         if (initialLocation.toInt() < NUM_SQUARES / 2)
-            team = Team.BLACK;
+            team = Team.GREEN;
         else
-            team = Team.WHITE;
+            team = Team.ORANGE;
     }
 }
