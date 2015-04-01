@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.robot;
 
 import com.rapplogic.xbee.api.XBeeAddress64;

@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
@@ -20,15 +15,14 @@ public class Pawn extends ChessPiece
         super(location, id);
     }
 
-    public Pawn(Square location, int id, Team team,
-                boolean active, boolean hasNotMoved)
+    public Pawn(int id, Team team, boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active, hasNotMoved);
+        super(id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPawn = new Pawn(getLocation(), getID(), getTeam(), 
+        ChessPiece copiedPawn = new Pawn(getID(), getTeam(), 
                                          isActive(), hasNotMoved());
         return copiedPawn;
     }

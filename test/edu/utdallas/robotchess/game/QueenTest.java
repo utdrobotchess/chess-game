@@ -36,16 +36,16 @@ public class QueenTest
         Assert.assertEquals(Q1_EXPECTED.length, q1Actual.size());
 
         for (int i = 0; i < Q1_EXPECTED.length; i++)
-            Assert.assertEquals(Q1_EXPECTED[i], q1Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q1_EXPECTED[i], q1Actual.get(i).toInt());
  
         Assert.assertEquals(Q2_EXPECTED.length, q2Actual.size());
 
         for (int i = 0; i < Q2_EXPECTED.length; i++)
-            Assert.assertEquals(Q2_EXPECTED[i], q2Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q2_EXPECTED[i], q2Actual.get(i).toInt());
 
         Assert.assertEquals(Q3_EXPECTED.length, q3Actual.size());
 
         for (int i = 0; i < Q3_EXPECTED.length; i++)
-            Assert.assertEquals(Q3_EXPECTED[i], q3Actual.get(i).getIntLocation());
+            Assert.assertEquals(Q3_EXPECTED[i], q3Actual.get(i).toInt());
       }
 }

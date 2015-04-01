@@ -35,21 +35,21 @@ public class RookTest
         Assert.assertEquals(R1_EXPECTED.length, r1Actual.size());
 
         for (int i = 0; i < R1_EXPECTED.length; i++)
-            Assert.assertEquals(R1_EXPECTED[i], r1Actual.get(i).getIntLocation());
+            Assert.assertEquals(R1_EXPECTED[i], r1Actual.get(i).toInt());
 
         Assert.assertEquals(R2_EXPECTED.length, r2Actual.size());
 
         for (int i = 0; i < R2_EXPECTED.length; i++)
-            Assert.assertEquals(R2_EXPECTED[i], r2Actual.get(i).getIntLocation());
+            Assert.assertEquals(R2_EXPECTED[i], r2Actual.get(i).toInt());
         
         Assert.assertEquals(R3_EXPECTED.length, r3Actual.size());
 
         for (int i = 0; i < R3_EXPECTED.length; i++)
-            Assert.assertEquals(R3_EXPECTED[i], r3Actual.get(i).getIntLocation());
+            Assert.assertEquals(R3_EXPECTED[i], r3Actual.get(i).toInt());
         
         Assert.assertEquals(R4_EXPECTED.length, r4Actual.size());
 
         for (int i = 0; i < R4_EXPECTED.length; i++)
-            Assert.assertEquals(R4_EXPECTED[i], r4Actual.get(i).getIntLocation());
+            Assert.assertEquals(R4_EXPECTED[i], r4Actual.get(i).toInt());
     }
 }

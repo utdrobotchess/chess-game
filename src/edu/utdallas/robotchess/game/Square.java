@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 public class Square implements Comparable<Square>
@@ -28,7 +23,7 @@ public class Square implements Comparable<Square>
     @Override
     public int compareTo(Square otherSquare)
     {
-        int otherIntLocation = otherSquare.getIntLocation();
+        int otherIntLocation = otherSquare.toInt();
 
         if (intLocation < otherIntLocation)
             return -1;
@@ -38,17 +33,22 @@ public class Square implements Comparable<Square>
             return 1;
     }
 
-    protected Square getNeighbor(int direction)
+    public Square getNeighbor(int direction)
     {
         return neighbors[direction];
     }
 
-    protected ChessPiece getOccupant()
+    public ChessPiece getOccupant()
     {
         return occupant;
     }
+    
+    public Team getOccupyingTeam()
+    {
+        return occupant.getTeam();
+    }
 
-    public int getIntLocation()
+    public int toInt()
     {
         return intLocation;
     }

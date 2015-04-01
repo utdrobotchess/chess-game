@@ -39,8 +39,7 @@ public class ChessGameTest
         ChessPiece pieces[] = game.getAllPieces();
 
         for (int i = 0; i < EXPECTED_INITIAL_POSITIONS.length; i++) {
-            Assert.assertEquals(EXPECTED_INITIAL_POSITIONS[i],
-                                pieces[i].getLocation().getIntLocation());
+            Assert.assertEquals(EXPECTED_INITIAL_POSITIONS[i], pieces[i].getIntLocation());
         }
 
         for (int i = 0; i < 16; i++)
@@ -90,7 +89,7 @@ public class ChessGameTest
 
         pieces[12].moveTo(board.getSquareAt(28));
 
-        Assert.assertEquals(28, pieces[12].getLocation().getIntLocation());
+        Assert.assertEquals(28, pieces[12].getIntLocation());
         Assert.assertFalse(board.getSquareAt(12).isOccupied());
         Assert.assertEquals(null, board.getSquareAt(12).getOccupant());
         Assert.assertTrue(board.getSquareAt(28).isOccupied());
@@ -115,7 +114,7 @@ public class ChessGameTest
         pieces[19].moveTo(board.getSquareAt(35));
         pieces[12].moveTo(board.getSquareAt(35));
 
-        Assert.assertEquals(35, pieces[12].getLocation().getIntLocation());
+        Assert.assertEquals(35, pieces[12].getIntLocation());
         Assert.assertEquals(null, pieces[19].getLocation());
 
         Assert.assertFalse(board.getSquareAt(28).isOccupied());
@@ -177,12 +176,12 @@ public class ChessGameTest
         pieces[29].moveTo(board.getSquareAt(25));
 
         for (int i = 0; i < EXPECTED_MOVE_LOCATIONS.length; i++) {
-            ArrayList<Square> actualMoveLocations = game.generateMoveLocations(pieces[i], true);
+            ArrayList<Square> actualMoveLocations = game.generateMoveLocations(pieces[i]);
             Assert.assertEquals(EXPECTED_MOVE_LOCATIONS[i].length,
                                 actualMoveLocations.size());
             for (int j = 0; j < EXPECTED_MOVE_LOCATIONS[i].length; i++)
                 Assert.assertEquals(EXPECTED_MOVE_LOCATIONS[i][j],
-                                    actualMoveLocations.get(j).getIntLocation());
+                                    actualMoveLocations.get(j).toInt());
         }
     }
 
@@ -233,7 +232,7 @@ public class ChessGameTest
             
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j], 
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 
@@ -259,7 +258,7 @@ public class ChessGameTest
             
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j], 
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 
@@ -285,7 +284,7 @@ public class ChessGameTest
 
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j],
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 
@@ -311,7 +310,7 @@ public class ChessGameTest
 
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j],
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 
@@ -337,7 +336,7 @@ public class ChessGameTest
 
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j],
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 
@@ -363,7 +362,7 @@ public class ChessGameTest
 
             for (int j = 0; j < expectedCastlingMoves[i].length; j++)
                 Assert.assertEquals(expectedCastlingMoves[i][j],
-                                    actualCastlingMoves.get(j).getIntLocation());
+                                    actualCastlingMoves.get(j).toInt());
         }
     }
 

@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.engine;
 
 import java.util.List;

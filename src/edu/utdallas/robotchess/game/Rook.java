@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.Collections;
@@ -20,15 +15,14 @@ public class Rook extends ChessPiece
         super(location, id);
     }
 
-    public Rook(Square location, int id, Team team,
-                boolean active, boolean hasNotMoved)
+    public Rook(int id, Team team, boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active, hasNotMoved);
+        super(id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPiece = new Rook(getLocation(), getID(), getTeam(),
+        ChessPiece copiedPiece = new Rook(getID(), getTeam(),
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }

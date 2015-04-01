@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
@@ -20,15 +15,14 @@ public class King extends ChessPiece
         super(location, id); 
     }
 
-    public King(Square location, int id, Team team, 
-                boolean active, boolean hasNotMoved)
+    public King(int id, Team team, boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active, hasNotMoved);
+        super(id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPiece = new King(getLocation(), getID(), getTeam(),
+        ChessPiece copiedPiece = new King(getID(), getTeam(),
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }

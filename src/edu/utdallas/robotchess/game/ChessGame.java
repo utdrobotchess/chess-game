@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
@@ -98,7 +93,7 @@ public class ChessGame
             copiedPieces[i] = allPieces[i].copyPiece();
 
             if (copiedPieces[i].isActive()) {
-                int intLocation = allPieces[i].getLocation().getIntLocation();
+                int intLocation = allPieces[i].getIntLocation();
                 copiedPieces[i].setLocation(copiedBoard.getSquareAt(intLocation));
             }
         }
@@ -108,22 +103,17 @@ public class ChessGame
         return copiedGame;
     }
 
-    protected ArrayList<Square> generateMoveLocations(ChessPiece piece,
-                                                      boolean removeChecks)
+    public ArrayList<Square> generateMoveLocations(ChessPiece piece)
     {
         ArrayList<Square> moveLocations = piece.generateMoveLocations();
         // add castling here
         
-        if (removeChecks) {
-            for (int i = 0; i < moveLocations.size(); i++) {
-                ChessGame copiedGame = copyGameAndMovePiece(piece, 
-                                                            moveLocations.get(i));
+        for (int i = 0; i < moveLocations.size(); i++) {
+            ChessGame copiedGame = copyGameAndMovePiece(piece, moveLocations.get(i));
 
-                if (copiedGame.isInCheck(piece.getTeam())) {
+            if (copiedGame.isInCheck(piece.getTeam()))
                     moveLocations.remove(i--);
-                }
-            }
-        } 
+        }
 
         return moveLocations;
     }
@@ -134,7 +124,7 @@ public class ChessGame
         ChessPiece copiedPieces[] = copiedGame.getAllPieces();
         ChessBoard copiedBoard = copiedGame.getBoard();
         ChessPiece copiedTestPiece = copiedPieces[piece.getID()];
-        Square copiedDestinationSquare = copiedBoard.getSquareAt(destination.getIntLocation());
+        Square copiedDestinationSquare = copiedBoard.getSquareAt(destination.toInt());
         copiedTestPiece.moveTo(copiedDestinationSquare);
 
         return copiedGame;
@@ -256,6 +246,11 @@ public class ChessGame
     {
         return board;
     }
+    
+    public Square getBoardSquareAt(int index)
+    {
+        return board.getSquareAt(index);
+    }
 
     private ChessPiece getKing(Team team)
     {
@@ -284,7 +279,7 @@ public class ChessGame
     {
         for (int i = 0; i < NUM_PIECES; i++) {
             if (allPieces[i].getTeam() == team && allPieces[i].isActive()) {
-                ArrayList<Square> moveLocations = generateMoveLocations(allPieces[i], true);
+                ArrayList<Square> moveLocations = generateMoveLocations(allPieces[i]);
 
                 if (moveLocations.size() > 0)
                     return false;
@@ -292,5 +287,10 @@ public class ChessGame
         }
         
         return true;
+    }
+    
+    public void setActiveTeam(Team team)
+    {
+        activeTeam = team;
     }
 }

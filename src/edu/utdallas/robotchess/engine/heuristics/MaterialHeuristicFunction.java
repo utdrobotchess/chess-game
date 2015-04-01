@@ -1,19 +1,7 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.engine.heuristics;
 
-import edu.utdallas.robotchess.game.Pawn;
-import edu.utdallas.robotchess.game.Knight;
-import edu.utdallas.robotchess.game.Bishop;
-import edu.utdallas.robotchess.game.Rook;
-import edu.utdallas.robotchess.game.Queen;
-import edu.utdallas.robotchess.game.ChessPiece;
-
-import edu.utdallas.robotchess.engine.State;
-import edu.utdallas.robotchess.engine.ChessGameState;
+import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.engine.*;
 
 import java.util.List;
 

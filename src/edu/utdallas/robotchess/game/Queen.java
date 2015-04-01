@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
@@ -20,15 +15,15 @@ public class Queen extends ChessPiece
         super(location, id); 
     }
 
-    public Queen(Square location, int id, Team team,
+    public Queen(int id, Team team,
                  boolean active, boolean hasNotMoved)
     {
-        super(location, id, team, active, hasNotMoved);
+        super(id, team, active, hasNotMoved);
     }
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPiece = new Queen(getLocation(), getID(), getTeam(),
+        ChessPiece copiedPiece = new Queen(getID(), getTeam(),
                                            isActive(), hasNotMoved());
         return copiedPiece;
     }

@@ -35,21 +35,21 @@ public class KingTest
         Assert.assertEquals(K1_EXPECTED.length, k1Actual.size());
 
         for (int i = 0; i < K1_EXPECTED.length; i++)
-            Assert.assertEquals(K1_EXPECTED[i], k1Actual.get(i).getIntLocation());
+            Assert.assertEquals(K1_EXPECTED[i], k1Actual.get(i).toInt());
 
         Assert.assertEquals(K2_EXPECTED.length, k2Actual.size());
 
         for (int i = 0; i < K2_EXPECTED.length; i++)
-            Assert.assertEquals(K2_EXPECTED[i], k2Actual.get(i).getIntLocation());
+            Assert.assertEquals(K2_EXPECTED[i], k2Actual.get(i).toInt());
         
         Assert.assertEquals(K3_EXPECTED.length, k3Actual.size());
 
         for (int i = 0; i < K3_EXPECTED.length; i++)
-            Assert.assertEquals(K3_EXPECTED[i], k3Actual.get(i).getIntLocation());
+            Assert.assertEquals(K3_EXPECTED[i], k3Actual.get(i).toInt());
 
         Assert.assertEquals(K4_EXPECTED.length, k4Actual.size());
 
         for (int i = 0; i < K4_EXPECTED.length; i++)
-            Assert.assertEquals(K4_EXPECTED[i], k4Actual.get(i).getIntLocation());
+            Assert.assertEquals(K4_EXPECTED[i], k4Actual.get(i).toInt());
     }
 }

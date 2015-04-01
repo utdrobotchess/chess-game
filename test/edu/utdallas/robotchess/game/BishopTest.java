@@ -35,22 +35,22 @@ public class BishopTest
         Assert.assertEquals(B1_EXPECTED.length, b1Actual.size());
 
         for (int i = 0; i < B1_EXPECTED.length; i++)
-            Assert.assertEquals(B1_EXPECTED[i], b1Actual.get(i).getIntLocation());
+            Assert.assertEquals(B1_EXPECTED[i], b1Actual.get(i).toInt());
 
         Assert.assertEquals(B2_EXPECTED.length, b2Actual.size());
 
         for (int i = 0; i < B2_EXPECTED.length; i++)
-            Assert.assertEquals(B2_EXPECTED[i], b2Actual.get(i).getIntLocation());
+            Assert.assertEquals(B2_EXPECTED[i], b2Actual.get(i).toInt());
 
         Assert.assertEquals(B3_EXPECTED.length, b3Actual.size());
 
         for (int i = 0; i < B3_EXPECTED.length; i++)
-            Assert.assertEquals(B3_EXPECTED[i], b3Actual.get(i).getIntLocation());
+            Assert.assertEquals(B3_EXPECTED[i], b3Actual.get(i).toInt());
 
         Assert.assertEquals(B4_EXPECTED.length, b4Actual.size());
 
         for (int i = 0; i < B4_EXPECTED.length; i++)
-            Assert.assertEquals(B4_EXPECTED[i], b4Actual.get(i).getIntLocation());
+            Assert.assertEquals(B4_EXPECTED[i], b4Actual.get(i).toInt());
 
     }
 }

@@ -55,7 +55,7 @@ public class ChessBoardTest
                 int actualIntValue = -1;
                 
                 if (actualNeighbor != null)
-                    actualIntValue = actualNeighbor.getIntLocation();
+                    actualIntValue = actualNeighbor.toInt();
                 
                 Assert.assertEquals(EXPECTED_NEIGHBORS[i][j], actualIntValue);
             }

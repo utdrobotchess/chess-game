@@ -1,8 +1,3 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
@@ -32,10 +27,8 @@ public abstract class ChessPiece
         hasNotMoved = true;
     }
 
-    public ChessPiece(Square location, int id, Team team,
-                      boolean active, boolean hasNotMoved)
+    public ChessPiece(int id, Team team, boolean active, boolean hasNotMoved)
     {
-        setLocation(location);
         this.id = id;
         this.team = team;
         this.active = active;
@@ -73,9 +66,14 @@ public abstract class ChessPiece
         return id;
     }
 
-    protected Square getLocation()
+    public Square getLocation()
     {
         return location;
+    }
+    
+    protected int getIntLocation()
+    {
+        return location.toInt();
     }
 
     public Team getTeam()
@@ -93,7 +91,7 @@ public abstract class ChessPiece
         return hasNotMoved;
     }
 
-    protected void moveTo(Square location)
+    public void moveTo(Square location)
     {
         hasNotMoved = false;
 
@@ -130,7 +128,7 @@ public abstract class ChessPiece
     {
         final int NUM_SQUARES = 64;
 
-        if (initialLocation.getIntLocation() < NUM_SQUARES / 2)
+        if (initialLocation.toInt() < NUM_SQUARES / 2)
             team = Team.BLACK;
         else
             team = Team.WHITE;
