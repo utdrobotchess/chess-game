@@ -8,7 +8,7 @@ public class ChessManager extends Manager
 {
     private ChessGame game;
     private ChessPiece currentlySelectedPiece;
-    
+
     public ChessManager()
     {
         game = new ChessGame();
@@ -45,24 +45,24 @@ public class ChessManager extends Manager
         else
             currentlySelectedPiece = null;
     }
-    
+
     private boolean isValidInitialPieceSelection(int selectionIndex)
     {
         Square selectedSquare = game.getBoardSquareAt(selectionIndex);
-        
-        return selectedSquare.isOccupied() && 
+
+        return selectedSquare.isOccupied() &&
             selectedSquare.getOccupyingTeam() == game.getActiveTeam();
     }
-    
+
     private void makeUpdatesFromValidPieceSelection(int selectionIndex)
     {
         Square selectedSquare = game.getBoardSquareAt(selectionIndex);
         currentlySelectedPiece = selectedSquare.getOccupant();
     }
-    
+
     private void handleMoveLocationSelection(int selectionIndex)
     {
-        if (isValidMoveLocationSelection(selectionIndex)) 
+        if (isValidMoveLocationSelection(selectionIndex))
             makeUpdatesFromValidMoveSelection(selectionIndex);
     }
 
@@ -70,48 +70,48 @@ public class ChessManager extends Manager
     {
         if (currentlySelectedPiece == null)
             return false;
-        
+
         ArrayList<Square> possibleMoveLocations =
             game.generateMoveLocations(currentlySelectedPiece);
-        
+
         for (int i = 0; i < possibleMoveLocations.size(); i++)
             if (possibleMoveLocations.get(i).toInt() == selectionIndex)
                 return true;
-        
+
         return false;
     }
 
     private void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
         currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
-        
+
         if (isCastlingMove(selectionIndex))
             moveCastlingPiece(selectionIndex);
 
         currentlySelectedPiece = null;
         toggleActiveTeam();
     }
-    
+
     private boolean isCastlingMove(int selectionIndex)
     {
         if (!(currentlySelectedPiece instanceof King))
             return false;
-        
+
         Square selectedPieceSquare = currentlySelectedPiece.getLocation();
         for (int i = 0; i < 8; i++) {
             Square neighbor = selectedPieceSquare.getNeighbor(i);
             if (neighbor != null && neighbor.toInt() == selectionIndex)
                 return false;
         }
-        
+
         return true;
     }
-    
+
     private void moveCastlingPiece(int selectionIndex)
     {
         int rookOriginIndex = -1;
         int rookDestinationIndex = -1;
-        
+
         if (selectionIndex == 6 || selectionIndex == 62) {
             rookOriginIndex = selectionIndex + 1;
             rookDestinationIndex = selectionIndex - 1;
@@ -119,7 +119,7 @@ public class ChessManager extends Manager
             rookOriginIndex = selectionIndex - 2;
             rookDestinationIndex = selectionIndex + 3;
         }
-        
+
         Square rookOriginSquare = game.getBoardSquareAt(rookOriginIndex);
         Square rookDestinationSquare = game.getBoardSquareAt(rookDestinationIndex);
         ChessPiece rook = rookOriginSquare.getOccupant();

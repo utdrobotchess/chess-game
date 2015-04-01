@@ -7,14 +7,17 @@ import org.lwjgl.input.Controllers;
 public class RemoteController extends Thread
 {
     public static Controller controller;
+    private ChessbotCommunicator comm;
     boolean keepAlive;
 
-    public RemoteController()
+    public RemoteController(ChessbotCommunicator comm)
     {
-        try { 
-            Controllers.create(); 
-        } catch (LWJGLException e) { 
-            e.printStackTrace(); 
+        this.comm = comm;
+
+        try {
+            Controllers.create();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
         }
 
         Controllers.poll();
@@ -37,7 +40,9 @@ public class RemoteController extends Thread
         ZeroJoyStick();
 
         while (keepAlive) {
-            //robotState.addNewCommand(new RCCommand(0, ComputeWheelVelocities()));
+            Command cmd = new RCCommand(0, ComputeWheelVelocities());
+            comm.sendCommand(cmd);
+
             try { Thread.sleep(100); }
             catch (InterruptedException ex){}
         }

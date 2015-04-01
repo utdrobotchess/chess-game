@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
+import edu.utdallas.robotchess.robot.ChessbotCommunicator;
 import edu.utdallas.robotchess.robot.RemoteController;
 
 public class MainFrame extends JFrame
@@ -12,6 +13,8 @@ public class MainFrame extends JFrame
     private static final long serialVersionUID = 3;
     
     Manager manager;
+
+    private ChessbotCommunicator comm;
 
     JMenuBar menuBar;
 
@@ -32,10 +35,12 @@ public class MainFrame extends JFrame
 
     BoardPanel boardPanel;
 
-    public MainFrame()
+    public MainFrame(ChessbotCommunicator comm)
     {
         boardPanel = new BoardPanel(new NullManager());
         add(boardPanel);
+
+        this.comm = comm;
 
         discoveredRobotsFrame = new DiscoveredBotsFrame();
         discoveredRobotsFrame.setVisible(false);
@@ -147,7 +152,6 @@ public class MainFrame extends JFrame
             //     boolean enableDemo = demoModeMenuItem.isSelected();
             //     boolean enableRC = rcModeMenuItem.isSelected();
             //     boolean enableChess = chessModeMenuItem.isSelected();
-
             //     if(enableDemo) {
             //         resizeBoard(4, 8); // TODO allow the user to pick the size of the board
             //         boardPanel.initializeDemo();
