@@ -1,31 +1,16 @@
 package edu.utdallas.robotchess.robot;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
+import org.apache.log4j.*;
 import gnu.io.CommPortIdentifier;
-
 import java.util.Enumeration;
-
-import edu.utdallas.robotchess.manager.RobotState;
-
-import com.rapplogic.xbee.api.ApiId;
-import com.rapplogic.xbee.api.PacketListener;
-import com.rapplogic.xbee.api.XBee;
-//import com.rapplogic.xbee.api.XBeeAddress16; May use 16bit address later for faster routing
-import com.rapplogic.xbee.api.XBeeAddress64;
-import com.rapplogic.xbee.api.XBeeException;
-import com.rapplogic.xbee.api.XBeeResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
-import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
+import com.rapplogic.xbee.api.*;
+import com.rapplogic.xbee.api.zigbee.*;
 
 public class ChessbotCommunicator extends Thread
 {
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
 
     private XBee xbee = new XBee();
-    private RobotState robotState;
     private BotFinder botFinder;
 
     private boolean keepAlive = true;
@@ -39,20 +24,17 @@ public class ChessbotCommunicator extends Thread
 			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
 				ZNetRxResponse rx = (ZNetRxResponse) response;
-				robotState.addNewResponse(new Response(rx.getData(),
-                                                       botFinder.GetBotAddresses().indexOf(rx.getRemoteAddress64())));
+				//robotState.addNewResponse(new Response(rx.getData(), botFinder.GetBotAddresses().indexOf(rx.getRemoteAddress64())));
 			}
 		}
 	};
 
-    public ChessbotCommunicator(RobotState robotState, int baud)
+    public ChessbotCommunicator(int baud)
     {
         PropertyConfigurator.configure("log/log4j.properties");
 
         this.baudrate = baud;
-        this.robotState = robotState;
         SearchForXbeeOnComports();
-
     }
 
     @Override
@@ -66,19 +48,18 @@ public class ChessbotCommunicator extends Thread
 
         log.debug("Running ChessbotCommunicator Thread");
 
-        botFinder = new BotFinder(xbee, robotState);
+        botFinder = new BotFinder(xbee);
         botFinder.start();
-        robotState.setReady(true);
 
         xbee.addPacketListener(listenForIncomingResponses);
 
         while (keepAlive)
         {
-            if(robotState.isCommandAvailable())
-            {
-                Command cmd = robotState.pollNextCommand();
-                sendCommand(cmd);
-            }
+            // if(robotState.isCommandAvailable())
+            // {
+            //     Command cmd = robotState.pollNextCommand();
+            //     sendCommand(cmd);
+            // }
 
             try { Thread.sleep(10); }
             catch (InterruptedException e) { e.printStackTrace(); }
@@ -104,11 +85,11 @@ public class ChessbotCommunicator extends Thread
 
         while ((System.currentTimeMillis() - startTime) < timeout)
         {
-            if (robotState.peekNextResponse() == expectedResponse)
-            {
-                robotState.pollNextResponse();
-                break;
-            }
+            // if (robotState.peekNextResponse() == expectedResponse)
+            // {
+            //     robotState.pollNextResponse();
+            //     break;
+            // }
 
             try { Thread.sleep(10); }
             catch (InterruptedException e) { e.printStackTrace(); }

@@ -12,20 +12,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import edu.utdallas.robotchess.manager.RobotState;
-
 public class DiscoveredBotsFrame extends JFrame implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1;
 
-    RobotState robotState;
     JList<String> botJList;
     DefaultListModel<String> listModel = new DefaultListModel<String>();
 
-    public DiscoveredBotsFrame(RobotState robotState)
+    public DiscoveredBotsFrame()
     {
-        this.robotState = robotState;
-
         setTitle("Discovered Bots List");
 
         updateBotList();
@@ -33,7 +28,7 @@ public class DiscoveredBotsFrame extends JFrame implements PropertyChangeListene
 
     private void updateBotList()
     {
-        ArrayList<String> botList = robotState.getBotList();
+        ArrayList<String> botList = new ArrayList<>(); //robotState.getBotList();
         setSize(300, 100 * botList.size());
 
         for (String bot : botList)
@@ -52,7 +47,7 @@ public class DiscoveredBotsFrame extends JFrame implements PropertyChangeListene
             return;
         }
 
-        if (evt.getSource() == robotState)
-            updateBotList();
+        // if (evt.getSource() == robotState)
+        //     updateBotList();
     }
 }

@@ -1,16 +1,6 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.robot;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Stack;
-
-import edu.utdallas.robotchess.manager.RobotState;
+import java.util.*;
 
 public class MotionPlanner extends Thread
 {
@@ -19,16 +9,14 @@ public class MotionPlanner extends Thread
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
 
-    RobotState robotState;
     int boardRows;
     int boardColumns;
     boolean occupancyGrid[];
     ArrayList<Move> movesNeeded;
     private boolean keepAlive = true;
 
-    public MotionPlanner(RobotState robotState, int boardRows, int boardColumns)
+    public MotionPlanner(int boardRows, int boardColumns)
     {
-        this.robotState = robotState;
         this.boardRows = boardRows;
         this.boardColumns = boardColumns;
     }
@@ -37,28 +25,28 @@ public class MotionPlanner extends Thread
     public void run()
     {
         while (keepAlive) {
-            if (boardRows != robotState.getBoardRows() ||
-                boardColumns != robotState.getBoardColumns()) {
-                boardRows = robotState.getBoardRows();
-                boardColumns = robotState.getBoardColumns();
-            }
+            // if (boardRows != robotState.getBoardRows() ||
+            //     boardColumns != robotState.getBoardColumns()) {
+            //     boardRows = robotState.getBoardRows();
+            //     boardColumns = robotState.getBoardColumns();
+            // }
 
-            if (robotState.isMotionAvailable()) {
-                Motion nextMotion = robotState.pollNextMotion();
+            // if (robotState.isMotionAvailable()) {
+            //     Motion nextMotion = robotState.pollNextMotion();
 
-                occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
-                movesNeeded = generateMoves(nextMotion.getCurrent(),
-                                            nextMotion.getDesired());
+            //     occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
+            //     movesNeeded = generateMoves(nextMotion.getCurrent(),
+            //                                 nextMotion.getDesired());
 
-                ArrayList<Integer> path = plan();
+            //     ArrayList<Integer> path = plan();
 
-                if (path.size() > 0) {
-                    Command command = generateCommandsFromPath(path);
-                    robotState.addNewCommand(command);
-                } else {
-                    System.out.println("no path");
-                }
-            }
+            //     if (path.size() > 0) {
+            //         Command command = generateCommandsFromPath(path);
+            //         robotState.addNewCommand(command);
+            //     } else {
+            //         System.out.println("no path");
+            //     }
+            // }
 
             try { Thread.sleep(10); } catch (InterruptedException ex) { }
         }

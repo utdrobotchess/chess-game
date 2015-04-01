@@ -1,34 +1,14 @@
-/**
- *
- * @author Ryan J. Marcotte
- */
-
 package edu.utdallas.robotchess.gui;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JMenu;
-import javax.swing.ButtonGroup;
+import javax.swing.*;
+import java.awt.event.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import edu.utdallas.robotchess.manager.UIState;
-import edu.utdallas.robotchess.manager.RobotState;
-import edu.utdallas.robotchess.manager.ApplicationState;
 import edu.utdallas.robotchess.robot.RemoteController;
 
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
     private static final long serialVersionUID = 3;
-
-    UIState uiState;
-    RobotState robotState;
-    ApplicationState applicationState;
 
     JMenuBar menuBar;
 
@@ -52,18 +32,12 @@ public class MainFrame extends JFrame
 
     BoardPanel boardPanel;
 
-    public MainFrame(ApplicationState applicationState,
-                     UIState uiState, RobotState robotState)
+    public MainFrame()
     {
-        this.applicationState = applicationState;
-        this.uiState = uiState;
-        this.robotState = robotState;
-        uiState.setMainFrame(this);
-
-        boardPanel = new BoardPanel(uiState, robotState, 8, 8);
+        boardPanel = new BoardPanel(8, 8);
         add(boardPanel);
 
-        discoveredRobotsFrame = new DiscoveredBotsFrame(robotState);
+        discoveredRobotsFrame = new DiscoveredBotsFrame();
         discoveredRobotsFrame.setVisible(false);
 
         setupMenuBar();
@@ -77,14 +51,11 @@ public class MainFrame extends JFrame
     protected void resizeBoard(int rows, int columns)
     {
         remove(boardPanel);
-        boardPanel = new BoardPanel(uiState, robotState, rows, columns);
+        boardPanel = new BoardPanel(rows, columns);
         add(boardPanel);
 
         setSize(rows * SQUARE_SIZE, columns * SQUARE_SIZE);
         setLocationRelativeTo(null);
-
-        robotState.setBoardColumns(columns);
-        robotState.setBoardRows(rows);
     }
 
     private void setupFileMenu()
@@ -160,15 +131,13 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
-        RemoteController rc = new RemoteController(robotState);
+        RemoteController rc = new RemoteController();
 
         @Override
         public void actionPerformed(ActionEvent e)
         {
             if (e.getSource() == enableRobotsMenuItem) {
                 boolean enable = enableRobotsMenuItem.getState();
-
-                applicationState.setRobotsActive(enable);
 
                 chessModeMenuItem.setEnabled(enable);
                 demoModeMenuItem.setEnabled(enable);
@@ -179,29 +148,22 @@ public class MainFrame extends JFrame
                     discoveredRobotsFrame.setVisible(false);
             }
 
-            if(e.getSource() == demoModeMenuItem || e.getSource() == rcModeMenuItem || e.getSource() == chessModeMenuItem){
+            if(e.getSource() == demoModeMenuItem || 
+               e.getSource() == rcModeMenuItem || 
+               e.getSource() == chessModeMenuItem){
                 boolean enableDemo = demoModeMenuItem.isSelected();
                 boolean enableRC = rcModeMenuItem.isSelected();
                 boolean enableChess = chessModeMenuItem.isSelected();
 
-                if(enableDemo)
-                {
+                if(enableDemo) {
                     resizeBoard(4, 8); // TODO allow the user to pick the size of the board
                     boardPanel.initializeDemo();
-                    uiState.setDemoMode(true);
                 }
-                else
-                    uiState.setDemoMode(false);
 
                 if(enableRC)
                     rc.start();
                 else
                     rc.terminate();
-
-                if(enableChess)
-                {}
-                else
-                {}
             }
 
             if(e.getSource() == robotsDiscoveredMenuItem){

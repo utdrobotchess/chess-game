@@ -4,45 +4,40 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
 
-import edu.utdallas.robotchess.manager.RobotState;
-
 public class RemoteController extends Thread
 {
     public static Controller controller;
-    RobotState robotState;
     boolean keepAlive;
 
-    public RemoteController(RobotState robotState)
+    public RemoteController()
     {
-        this.robotState = robotState;
-
-        try { Controllers.create(); }
-        catch (LWJGLException e) { e.printStackTrace(); }
+        try { 
+            Controllers.create(); 
+        } catch (LWJGLException e) { 
+            e.printStackTrace(); 
+        }
 
         Controllers.poll();
 
-        if(Controllers.getControllerCount() != 0)
-        {
+        if(Controllers.getControllerCount() != 0) {
             controller = Controllers.getController(0);
             System.out.println("Found controller");
-        }
-        else
+        } else {
             System.out.println("Could not find any controllers");
+        }
     }
 
     public void run()
     {
-        if(controller == null)
-        {
+        if(controller == null) {
             System.out.println("Cannot start RemoteController Thread since no Remote Controller found");
             return;
         }
 
         ZeroJoyStick();
 
-        while (keepAlive)
-        {
-            robotState.addNewCommand(new RCCommand(0, ComputeWheelVelocities()));
+        while (keepAlive) {
+            //robotState.addNewCommand(new RCCommand(0, ComputeWheelVelocities()));
             try { Thread.sleep(100); }
             catch (InterruptedException ex){}
         }

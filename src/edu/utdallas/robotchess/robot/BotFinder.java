@@ -1,10 +1,6 @@
 package edu.utdallas.robotchess.robot;
 
-import edu.utdallas.robotchess.manager.RobotState;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
+import org.apache.log4j.*;
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -23,7 +19,6 @@ import java.util.Hashtable;
 public class BotFinder extends Thread
 {
     private XBee xbee;
-    private RobotState robotState;
 
     private boolean keepAlive = true;
     private long timeout = 10 * 1000;
@@ -86,10 +81,9 @@ public class BotFinder extends Thread
 		}
 	};
 
-    public BotFinder(XBee xbee, RobotState robotState)
+    public BotFinder(XBee xbee)
     {
         this.xbee = xbee;
-        this.robotState = robotState;
 
         PropertyConfigurator.configure("log/log4j.properties");
 
@@ -167,7 +161,7 @@ public class BotFinder extends Thread
             XBeeAddress64 addr = undiscoveredBots.get(i);
             ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
 
-            robotState.addNewCommand(cmd);
+            //robotState.addNewCommand(cmd);
         }
     }
 
@@ -226,7 +220,7 @@ public class BotFinder extends Thread
             }
         }
 
-        robotState.updateBotList(botList);
+        //robotState.updateBotList(botList);
     }
 
     @SuppressWarnings("unused")

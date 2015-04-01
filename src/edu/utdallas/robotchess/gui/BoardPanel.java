@@ -13,8 +13,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import edu.utdallas.robotchess.manager.UIState;
-import edu.utdallas.robotchess.manager.RobotState;
 import edu.utdallas.robotchess.robot.Motion;
 import edu.utdallas.robotchess.robot.SmartCenterCommand;
 
@@ -23,18 +21,13 @@ public class BoardPanel extends JPanel
     private static final long serialVersionUID = 2;
     final int TOTAL_SQUARES = 64;
 
-    UIState uiState;
-    RobotState robotState;
-
     SquareButton squares[];
 
     int rows;
     int columns;
 
-    protected BoardPanel(UIState uiState, RobotState robotState, int rows, int columns)
+    protected BoardPanel(int rows, int columns)
     {
-        this.uiState = uiState;
-        this.robotState = robotState;
         this.rows = rows;
         this.columns = columns;
 
@@ -69,8 +62,8 @@ public class BoardPanel extends JPanel
         int locations[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // XXX This is what we change depending on which robots are here
 
         for (int i = 0; i < locations.length; i++) {
-            squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
-            uiState.setPieceLocation(locations[i], locations[i]);
+            // squares[locations[i]].setIcon(uiState.getPieceImage("green-pawn"));
+            // uiState.setPieceLocation(locations[i], locations[i]);
         }
     }
 
@@ -81,31 +74,31 @@ public class BoardPanel extends JPanel
         {
             SquareButton buttonPressed = (SquareButton) e.getSource();
 
-            if (uiState.isDemoMode()) {
-                int selectedIndex = uiState.getSelectedIndex();
+            // if (uiState.isDemoMode()) {
+            //     int selectedIndex = uiState.getSelectedIndex();
 
-                if (buttonPressed.isOccupied()) {
-                    if (buttonPressed.getIndex() == selectedIndex) {
-                        int robotID = uiState.getPieceIDFromLocation(selectedIndex);
-                        robotState.addNewCommand(new SmartCenterCommand(robotID));
-                        uiState.setSelectedIndex(-1);
-                    } else {
-                        uiState.setSelectedIndex(buttonPressed.getIndex());
-                    }
-                } else if (selectedIndex != -1) {
-                    squares[selectedIndex].setIcon(null);
-                    uiState.setSelectedIndex(-1);
-                    buttonPressed.setIcon(uiState.getPieceImage("green-pawn"));
+            //     // if (buttonPressed.isOccupied()) {
+            //     //     if (buttonPressed.getIndex() == selectedIndex) {
+            //     //         int robotID = uiState.getPieceIDFromLocation(selectedIndex);
+            //     //         robotState.addNewCommand(new SmartCenterCommand(robotID));
+            //     //         uiState.setSelectedIndex(-1);
+            //     //     } else {
+            //     //         uiState.setSelectedIndex(buttonPressed.getIndex());
+            //     //     }
+            //     // } else if (selectedIndex != -1) {
+            //     //     squares[selectedIndex].setIcon(null);
+            //     //     uiState.setSelectedIndex(-1);
+            //     //     buttonPressed.setIcon(uiState.getPieceImage("green-pawn"));
 
-                    int current[] = uiState.getAllPieceLocations();
-                    uiState.setPieceLocation(uiState.getPieceIDFromLocation(selectedIndex),
-                                             buttonPressed.getIndex());
-                    int desired[] = uiState.getAllPieceLocations();
+            //     //     int current[] = uiState.getAllPieceLocations();
+            //     //     uiState.setPieceLocation(uiState.getPieceIDFromLocation(selectedIndex),
+            //     //                              buttonPressed.getIndex());
+            //     //     int desired[] = uiState.getAllPieceLocations();
 
-                    robotState.addNewMotion(new Motion(current, desired));
+            //     //     robotState.addNewMotion(new Motion(current, desired));
 
-                }
-            }
+            //     // }
+            // }
         }
     }
 }

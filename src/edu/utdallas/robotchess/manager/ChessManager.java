@@ -1,6 +1,6 @@
 package edu.utdallas.robotchess.manager;
 
-public interface RobotManager
+public class ChessManager extends Manager
 {
 
 }
