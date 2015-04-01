@@ -3,12 +3,15 @@ package edu.utdallas.robotchess.gui;
 import javax.swing.*;
 import java.awt.event.*;
 
+import edu.utdallas.robotchess.robot.ChessbotCommunicator;
 import edu.utdallas.robotchess.robot.RemoteController;
 
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
     private static final long serialVersionUID = 3;
+
+    private ChessbotCommunicator comm;
 
     JMenuBar menuBar;
 
@@ -32,10 +35,12 @@ public class MainFrame extends JFrame
 
     BoardPanel boardPanel;
 
-    public MainFrame()
+    public MainFrame(ChessbotCommunicator comm)
     {
         boardPanel = new BoardPanel(8, 8);
         add(boardPanel);
+
+        this.comm = comm;
 
         discoveredRobotsFrame = new DiscoveredBotsFrame();
         discoveredRobotsFrame.setVisible(false);
@@ -131,7 +136,7 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
-        RemoteController rc = new RemoteController();
+        RemoteController rc = new RemoteController(comm);
 
         @Override
         public void actionPerformed(ActionEvent e)
@@ -148,8 +153,8 @@ public class MainFrame extends JFrame
                     discoveredRobotsFrame.setVisible(false);
             }
 
-            if(e.getSource() == demoModeMenuItem || 
-               e.getSource() == rcModeMenuItem || 
+            if(e.getSource() == demoModeMenuItem ||
+               e.getSource() == rcModeMenuItem ||
                e.getSource() == chessModeMenuItem){
                 boolean enableDemo = demoModeMenuItem.isSelected();
                 boolean enableRC = rcModeMenuItem.isSelected();

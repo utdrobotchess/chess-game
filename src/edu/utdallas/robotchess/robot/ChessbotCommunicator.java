@@ -6,14 +6,13 @@ import java.util.Enumeration;
 import com.rapplogic.xbee.api.*;
 import com.rapplogic.xbee.api.zigbee.*;
 
-public class ChessbotCommunicator extends Thread
+public class ChessbotCommunicator
 {
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
 
     private XBee xbee = new XBee();
     private BotFinder botFinder;
 
-    private boolean keepAlive = true;
     private int baudrate;
     private String comport;
 
@@ -23,8 +22,8 @@ public class ChessbotCommunicator extends Thread
 		{
 			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
-				ZNetRxResponse rx = (ZNetRxResponse) response;
-				//robotState.addNewResponse(new Response(rx.getData(), botFinder.GetBotAddresses().indexOf(rx.getRemoteAddress64())));
+                @SuppressWarnings("unused")
+				ZNetRxResponse rx = (ZNetRxResponse) response; //TODO: Do something with response
 			}
 		}
 	};
@@ -35,65 +34,22 @@ public class ChessbotCommunicator extends Thread
 
         this.baudrate = baud;
         SearchForXbeeOnComports();
-    }
 
-    @Override
-    public void run()
-    {
         if(xbee == null)
         {
             log.debug("Cannot run ChessbotCommunicator Thread since no XBee on Comport");
             return;
         }
 
-        log.debug("Running ChessbotCommunicator Thread");
-
-        botFinder = new BotFinder(xbee);
+        botFinder = new BotFinder(xbee, this); //This may be a strange way of doing this....
         botFinder.start();
 
         xbee.addPacketListener(listenForIncomingResponses);
-
-        while (keepAlive)
-        {
-            // if(robotState.isCommandAvailable())
-            // {
-            //     Command cmd = robotState.pollNextCommand();
-            //     sendCommand(cmd);
-            // }
-
-            try { Thread.sleep(10); }
-            catch (InterruptedException e) { e.printStackTrace(); }
-        }
-
-        log.debug("Terminating ChessbotCommunicator Thread");
-
-        botFinder.terminate();
-
-        xbee.close();//TODO fix this method so that it doesn't crash our program.
     }
 
-    public void terminate()
+    public void endCommnication()
     {
-        keepAlive = false;
-    }
-
-    public void WaitForFinishedMovement(Command cmd)
-    {
-        long startTime = System.currentTimeMillis();
-        long timeout = 15000;
-        Response expectedResponse = new Response(cmd.generatePayload(), cmd.getRobotID());
-
-        while ((System.currentTimeMillis() - startTime) < timeout)
-        {
-            // if (robotState.peekNextResponse() == expectedResponse)
-            // {
-            //     robotState.pollNextResponse();
-            //     break;
-            // }
-
-            try { Thread.sleep(10); }
-            catch (InterruptedException e) { e.printStackTrace(); }
-        }
+        xbee.close();
     }
 
     public void sendCommand(Command cmd)

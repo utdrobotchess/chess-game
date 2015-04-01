@@ -19,6 +19,7 @@ import java.util.Hashtable;
 public class BotFinder extends Thread
 {
     private XBee xbee;
+    private ChessbotCommunicator comm;
 
     private boolean keepAlive = true;
     private long timeout = 10 * 1000;
@@ -81,9 +82,10 @@ public class BotFinder extends Thread
 		}
 	};
 
-    public BotFinder(XBee xbee)
+    public BotFinder(XBee xbee, ChessbotCommunicator comm)
     {
         this.xbee = xbee;
+        this.comm = comm;
 
         PropertyConfigurator.configure("log/log4j.properties");
 
@@ -161,7 +163,7 @@ public class BotFinder extends Thread
             XBeeAddress64 addr = undiscoveredBots.get(i);
             ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
 
-            //robotState.addNewCommand(cmd);
+            comm.sendCommand(cmd);
         }
     }
 
