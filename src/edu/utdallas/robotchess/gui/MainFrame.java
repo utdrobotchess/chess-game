@@ -35,12 +35,10 @@ public class MainFrame extends JFrame
 
     BoardPanel boardPanel;
 
-    public MainFrame(ChessbotCommunicator comm)
+    public MainFrame()
     {
         boardPanel = new BoardPanel(new NullManager());
         add(boardPanel);
-
-        this.comm = comm;
 
         discoveredRobotsFrame = new DiscoveredBotsFrame();
         discoveredRobotsFrame.setVisible(false);
@@ -121,6 +119,7 @@ public class MainFrame extends JFrame
                     manager = new ChessManager();
                 
                 boardPanel.setManager(manager);
+                boardPanel.updateDisplay();
             }
             
             if (e.getSource() == newChessDemoMenuItem) {

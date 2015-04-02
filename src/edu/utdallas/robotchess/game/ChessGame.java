@@ -237,6 +237,17 @@ public class ChessGame
         return allPieces;
     }
     
+    public ArrayList<ChessPiece> getActivePieces()
+    {
+        ArrayList<ChessPiece> activePieces = new ArrayList<>();
+
+        for (int i = 0; i < allPieces.length; i++)
+            if (allPieces[i].isActive())
+                activePieces.add(allPieces[i]);
+
+        return activePieces;
+    }
+    
     public Team getActiveTeam()
     {
         return activeTeam;

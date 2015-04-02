@@ -7,9 +7,14 @@ public class RobotDemoManager extends Manager
 {
     public void handleSquareClick(int index)
     {
-
+        if (currentlySelectedPiece == null)
+            handleInitialPieceSelection(squareIndex);
+        else
+            handleMoveLocationSelection(squareIndex);
     }
     
+    
+
     public int getBoardRowCount()
     {
         return 8;

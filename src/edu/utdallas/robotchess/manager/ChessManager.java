@@ -21,6 +21,8 @@ public class ChessManager extends Manager
             handleInitialPieceSelection(squareIndex);
         else
             handleMoveLocationSelection(squareIndex);
+        
+        ArrayList<ChessPiece> activePieces = game.getActivePieces();
     }
     
     public int getBoardRowCount()
@@ -35,7 +37,7 @@ public class ChessManager extends Manager
     
     public ArrayList<ChessPiece> getActivePieces()
     {
-        return new ArrayList<>();
+        return game.getActivePieces();
     }
     
     private void handleInitialPieceSelection(int selectionIndex)

@@ -4,17 +4,31 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 
 import edu.utdallas.robotchess.manager.Manager;
 import edu.utdallas.robotchess.game.*;
 
 public class BoardPanel extends JPanel
 {
+    final String[] imageNames = {"green-pawn",
+                                 "green-rook",
+                                 "green-knight",
+                                 "green-bishop",
+                                 "green-queen",
+                                 "green-king",
+                                 "orange-pawn",
+                                 "orange-rook",
+                                 "orange-knight",
+                                 "orange-bishop",
+                                 "orange-queen",
+                                 "orange-king"};
+
     final int TOTAL_SQUARES = 64;
     
     private Manager manager;
     private SquareButton squares[];
-    private Map<String, Icon> imageMap;
+    private Map<String, ImageIcon> imageMap;
 
     protected BoardPanel(Manager manager)
     {
@@ -28,6 +42,7 @@ public class BoardPanel extends JPanel
         squares = new SquareButton[TOTAL_SQUARES];
 
         initializeSquares(rows, columns);
+        configureImages();
     }
 
     private void initializeSquares(int rows, int columns)
@@ -48,9 +63,38 @@ public class BoardPanel extends JPanel
                 whiteSquare = !whiteSquare;
         }
     }
-
-    private void updateDisplay()
+    
+    private void configureImages()
     {
+        final String basePath = "resources/";
+        
+        imageMap = new HashMap<>();
+
+        for (int i = 0; i < imageNames.length; i++)
+            imageMap.put(imageNames[i], new ImageIcon(basePath + "" +
+                                                      imageNames[i] + ".png"));
+
+        resizeImages(MainFrame.SQUARE_SIZE, MainFrame.SQUARE_SIZE);
+    }
+
+    public void resizeImages(int scaledWidth, int scaledHeight)
+    {
+        for (int i = 0; i < imageNames.length; i++) {
+            BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight,
+                                                       BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = scaledBI.createGraphics();
+            g.setComposite(AlphaComposite.Src);
+            g.drawImage(imageMap.get(imageNames[i]).getImage(), 0, 0, scaledWidth, scaledHeight, null);
+            g.dispose();
+            imageMap.put(imageNames[i], new ImageIcon(scaledBI));
+        }
+    }    
+
+    protected void updateDisplay()
+    {
+        for (int i = 0; i < squares.length; i++)
+            squares[i].setIcon(null);
+
         ArrayList<ChessPiece> pieces = manager.getActivePieces();
         
         for (int i = 0; i < pieces.size(); i++) {

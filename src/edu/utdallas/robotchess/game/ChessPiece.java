@@ -134,4 +134,10 @@ public abstract class ChessPiece
         else
             team = Team.ORANGE;
     }
+    
+    @Override
+    public String toString()
+    {
+        return "Piece at " + location.toInt();
+    }
 }

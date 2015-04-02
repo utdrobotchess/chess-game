@@ -29,7 +29,7 @@ public class Knight extends ChessPiece
     
     public String getName()
     {
-        return getTeam() + "knight";
+        return getTeam() + "-knight";
     }
 
     protected ArrayList<Square> generateMoveLocations()

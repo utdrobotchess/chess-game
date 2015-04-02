@@ -2,7 +2,7 @@ package edu.utdallas.robotchess.robot;
 
 import java.util.*;
 
-public class MotionPlanner extends Thread
+public class MotionPlanner
 {
     final int INF = 1000;
     final int REGULAR_SQUARE_COUNT = 64;
@@ -11,56 +11,43 @@ public class MotionPlanner extends Thread
 
     int boardRows;
     int boardColumns;
-    boolean occupancyGrid[];
-    ArrayList<Move> movesNeeded;
-    private boolean keepAlive = true;
 
     public MotionPlanner(int boardRows, int boardColumns)
     {
         this.boardRows = boardRows;
         this.boardColumns = boardColumns;
     }
-
-    @Override
-    public void run()
+    
+    public ArrayList<Path> plan(int currentLocations[], int desiredLocations[])
     {
-        while (keepAlive) {
-            // if (boardRows != robotState.getBoardRows() ||
-            //     boardColumns != robotState.getBoardColumns()) {
-            //     boardRows = robotState.getBoardRows();
-            //     boardColumns = robotState.getBoardColumns();
-            // }
+        ArrayList<Path> plan = new ArrayList<>();
+        boolean occupancyGrid[] = fillOccupancyGrid(currentLocations);
+        ArrayList<Move> movesNeeded = generateMoves(currentLocations, desiredLocations);
+        
+        // for now, let's not handle any more than single move plans
+        if (movesNeeded.size() > 1)
+            return plan;
 
-            // if (robotState.isMotionAvailable()) {
-            //     Motion nextMotion = robotState.pollNextMotion();
+        for (int i = 0; i < movesNeeded.size(); i++) {
+            Move thisMove = movesNeeded.get(i);
+            Path path = new Path(thisMove.pieceID);
 
-            //     occupancyGrid = fillOccupancyGrid(nextMotion.getCurrent());
-            //     movesNeeded = generateMoves(nextMotion.getCurrent(),
-            //                                 nextMotion.getDesired());
+            ArrayList<Integer> squareSequence = dijkstra(occupancyGrid,
+                                                         thisMove.origin,
+                                                         thisMove.destination);
 
-            //     ArrayList<Integer> path = plan();
-
-            //     if (path.size() > 0) {
-            //         Command command = generateCommandsFromPath(path);
-            //         robotState.addNewCommand(command);
-            //     } else {
-            //         System.out.println("no path");
-            //     }
-            // }
-
-            try { Thread.sleep(10); } catch (InterruptedException ex) { }
+            for (int j = 0; j < squareSequence.size(); j++)
+                path.add(squareSequence.get(j));
+            
+            plan.add(path);
         }
-    }
 
-    public void terminate()
-    {
-        keepAlive = false;
+        return plan;
     }
 
     private boolean[] fillOccupancyGrid(int currentLocations[])
     {
         boolean occupancyGrid[] = new boolean[REGULAR_SQUARE_COUNT];
-        //TODO Remove the need for REGULAR_SQUARE_COUNT
 
         for (int i = 0; i < occupancyGrid.length; i++)
             occupancyGrid[i] = false;
@@ -74,7 +61,7 @@ public class MotionPlanner extends Thread
 
     private ArrayList<Move> generateMoves(int currentLocations[], int desiredLocations[])
     {
-        ArrayList<Move> moves = new ArrayList<>();//Mustn't this be type Move?
+        ArrayList<Move> moves = new ArrayList<>();
 
         for (int i = 0; i < currentLocations.length; i++)
             if (currentLocations[i] != desiredLocations[i])
@@ -83,7 +70,7 @@ public class MotionPlanner extends Thread
         return moves;
     }
 
-    private ArrayList<Edge> computeEdges(int vertex)
+    private ArrayList<Edge> computeEdges(boolean[] occupancyGrid, int vertex)
     {
         final int LATERAL_WEIGHT = 2;
         final int DIAGONAL_WEIGHT = 50;
@@ -138,42 +125,15 @@ public class MotionPlanner extends Thread
         return edges;
     }
 
-    public ArrayList<Integer> plan()
-    {
-        ArrayList<Integer> plan = new ArrayList<>();
-
-        // for now, let's not handle any more than single move plans
-        if (movesNeeded.size() > 1)
-            return new ArrayList<Integer>();
-
-
-        for (int i = 0; i < movesNeeded.size(); i++) {
-            Move thisMove = movesNeeded.get(i);
-
-            ArrayList<Integer> squareSequence = dijkstra(thisMove.origin,
-                                                         thisMove.destination);
-
-            if (squareSequence.size() < 1)
-                return new ArrayList<Integer>();
-
-            plan.add(thisMove.pieceID);
-            plan.add(thisMove.origin);
-
-            for (int j = 0; j < squareSequence.size(); j++)
-                plan.add(squareSequence.get(j));
-        }
-
-        return plan;
-    }
-
-    private ArrayList<Integer> dijkstra(int origin, int destination)
+    private ArrayList<Integer> dijkstra(boolean[] occupancyGrid, 
+                                        int origin, int destination)
     {
         Vertex vertices[] = new Vertex[REGULAR_SQUARE_COUNT];
         PriorityQueue<Vertex> queue = new PriorityQueue<>(boardRows * boardColumns,
                                                           new VertexComparator());
 
         enqueueVertices(vertices, queue, origin);
-        updateDistances(vertices, queue);
+        updateDistances(occupancyGrid, vertices, queue);
 
         ArrayList<Integer> path = generatePath(vertices, destination);
 
@@ -193,12 +153,13 @@ public class MotionPlanner extends Thread
         }
     }
 
-    private void updateDistances(Vertex vertices[], PriorityQueue<Vertex> queue)
+    private void updateDistances(boolean[] occupancyGrid, Vertex vertices[], 
+                                 PriorityQueue<Vertex> queue)
     {
         while (queue.size() > 0) {
             Vertex u = queue.poll();
 
-            ArrayList<Edge> edges = computeEdges(u.id);
+            ArrayList<Edge> edges = computeEdges(occupancyGrid, u.id);
 
             for (int i = 0; i < edges.size(); i++) {
                 Edge e = edges.get(i);
