@@ -9,7 +9,7 @@ public class Pawn extends ChessPiece
     {
         super(location);
     }
-    
+
     public Pawn(Square location, int id)
     {
         super(location, id);

@@ -9,20 +9,17 @@ public abstract class ChessPiece
     private int id;
     private boolean active;
     private boolean hasNotMoved;
-
+    
     public ChessPiece(Square location)
     {
-        setLocation(location);
-        setTeamFromInitialLocation(location);
-        active = true;
-        hasNotMoved = true;
+        this(location, -1);
     }
 
     public ChessPiece(Square location, int id)
     {
         setLocation(location);
         this.id = id;
-        setTeamFromInitialLocation(location);
+        setTeamFromID();
         active = true;
         hasNotMoved = true;
     }
@@ -74,7 +71,10 @@ public abstract class ChessPiece
     
     public int getIntLocation()
     {
-        return location.toInt();
+        if (location != null)
+            return location.toInt();
+        
+        return -1;
     }
 
     public Team getTeam()
@@ -125,11 +125,11 @@ public abstract class ChessPiece
             location.setOccupant(this);
     }
 
-    protected void setTeamFromInitialLocation(Square initialLocation)
+    protected void setTeamFromID()
     {
-        final int NUM_SQUARES = 64;
+        final int NUM_IDS = 32;
 
-        if (initialLocation.toInt() < NUM_SQUARES / 2)
+        if (id < NUM_IDS / 2)
             team = Team.GREEN;
         else
             team = Team.ORANGE;

@@ -9,7 +9,7 @@ public class Bishop extends ChessPiece
     {
         super(location);
     }
-    
+
     public Bishop(Square location, int id)
     {
         super(location, id);

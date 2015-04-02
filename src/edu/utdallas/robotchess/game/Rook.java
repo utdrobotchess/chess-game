@@ -9,7 +9,7 @@ public class Rook extends ChessPiece
     {
         super(location);
     }
-    
+
     public Rook(Square location, int id)
     {
         super(location, id);

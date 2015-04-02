@@ -6,49 +6,12 @@ import edu.utdallas.robotchess.game.*;
 
 public class ChessManager extends Manager
 {
-    private ChessGame game;
-    private ChessPiece currentlySelectedPiece;
-
     public ChessManager()
     {
-        game = new ChessGame();
-        currentlySelectedPiece = null;
+        super();
     }
 
-    public void handleSquareClick(int squareIndex)
-    {
-        if (currentlySelectedPiece == null)
-            handleInitialPieceSelection(squareIndex);
-        else
-            handleMoveLocationSelection(squareIndex);
-        
-        ArrayList<ChessPiece> activePieces = game.getActivePieces();
-    }
-    
-    public int getBoardRowCount()
-    {
-        return 8;
-    }
-
-    public int getBoardColumnCount()
-    {
-        return 8;
-    }
-    
-    public ArrayList<ChessPiece> getActivePieces()
-    {
-        return game.getActivePieces();
-    }
-    
-    private void handleInitialPieceSelection(int selectionIndex)
-    {
-        if (isValidInitialPieceSelection(selectionIndex))
-            makeUpdatesFromValidPieceSelection(selectionIndex);
-        else
-            currentlySelectedPiece = null;
-    }
-
-    private boolean isValidInitialPieceSelection(int selectionIndex)
+    protected boolean isValidInitialPieceSelection(int selectionIndex)
     {
         Square selectedSquare = game.getBoardSquareAt(selectionIndex);
 
@@ -56,19 +19,7 @@ public class ChessManager extends Manager
             selectedSquare.getOccupyingTeam() == game.getActiveTeam();
     }
 
-    private void makeUpdatesFromValidPieceSelection(int selectionIndex)
-    {
-        Square selectedSquare = game.getBoardSquareAt(selectionIndex);
-        currentlySelectedPiece = selectedSquare.getOccupant();
-    }
-
-    private void handleMoveLocationSelection(int selectionIndex)
-    {
-        if (isValidMoveLocationSelection(selectionIndex))
-            makeUpdatesFromValidMoveSelection(selectionIndex);
-    }
-
-    private boolean isValidMoveLocationSelection(int selectionIndex)
+    protected boolean isValidMoveLocationSelection(int selectionIndex)
     {
         if (currentlySelectedPiece == null)
             return false;
@@ -83,7 +34,7 @@ public class ChessManager extends Manager
         return false;
     }
 
-    private void makeUpdatesFromValidMoveSelection(int selectionIndex)
+    protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
         currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
 

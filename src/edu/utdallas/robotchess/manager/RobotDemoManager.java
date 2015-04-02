@@ -2,45 +2,45 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.*;
 import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.robot.*;
 
 public class RobotDemoManager extends Manager
 {
-    private ChessPiece currentlySelectedPiece;
-
     public RobotDemoManager()
     {
-        
+        super();
+        int[] pieceLocations = {-1, -1, -1, -1, -1, -1, -1, -1, 
+                                -1, -1, -1, -1, -1, -1, -1, -1,  
+                                -1, -1, -1, -1, -1, -1, -1, -1,    
+                                -1, -1, -1, -1, -1, -1, -1, -1};
+
+        game.initializePieces(pieceLocations);
     }
 
     public void handleSquareClick(int index)
     {
-        if (currentlySelectedPiece == null)
-            handleInitialPieceSelection(index);
-        else
-            handleMoveLocationSelection(index);
+        int[] currentLocations = game.getPieceLocations();
+        super.handleSquareClick(index);
+        int[] desiredLocations = game.getPieceLocations();
+        
+        MotionPlanner planner = new MotionPlanner(getBoardRowCount(), 
+                                                  getBoardColumnCount());
+        ArrayList<Path> plan = planner.plan(currentLocations, desiredLocations);
+        
+        // for every path in plan, communicate to the robots
     }
     
-    public int getBoardRowCount()
+    protected boolean isValidInitialPieceSelection(int selectionIndex)
     {
-        return 8;
+        return false;
     }
-    
-    public int getBoardColumnCount()
-    {
-        return 8;
-    }
-    
-    public ArrayList<ChessPiece> getActivePieces()
-    {
-        return new ArrayList<>();
-    }
-    
-    private void handleInitialPieceSelection(int index)
-    {
 
+    protected boolean isValidMoveLocationSelection(int selectionIndex)
+    {
+        return false;
     }
-    
-    private void handleMoveLocationSelection(int index)
+
+    protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
 
     }

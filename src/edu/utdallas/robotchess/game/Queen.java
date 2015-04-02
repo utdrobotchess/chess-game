@@ -9,7 +9,7 @@ public class Queen extends ChessPiece
     {
         super(location);
     }
-    
+
     public Queen(Square location, int id)
     {
         super(location, id); 

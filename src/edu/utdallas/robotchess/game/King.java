@@ -9,7 +9,7 @@ public class King extends ChessPiece
     {
         super(location);
     }
-    
+
     public King(Square location, int id)
     {
         super(location, id); 

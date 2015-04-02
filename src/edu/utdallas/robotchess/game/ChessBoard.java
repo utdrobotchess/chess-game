@@ -132,6 +132,9 @@ public class ChessBoard
 
     protected Square getSquareAt(int intLocation)
     {
+        if (intLocation < 0 || intLocation > 63)
+            return null;
+
         return squares[intLocation];
     }
 }

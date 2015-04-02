@@ -17,14 +17,6 @@ public class ChessGame
     final int PAWN_IDS[] = {8 ,  9, 10, 11, 12, 13, 14, 15,
                             16, 17, 18, 19, 20, 21, 22, 23};
 
-    final int ROOK_INITIAL_POSITIONS[] = {0, 7, 56, 63};
-    final int KNIGHT_INITIAL_POSITIONS[] = {1, 6, 57, 62};
-    final int BISHOP_INITIAL_POSITIONS[] = {2, 5, 58, 61};
-    final int QUEEN_INITIAL_POSITIONS[] = {3, 59};
-    final int KING_INITIAL_POSITIONS[] = {4, 60};
-    final int PAWN_INITIAL_POSITIONS[] = {8 ,  9, 10, 11, 12, 13, 14, 15,
-                                          48, 49, 50, 51, 52, 53, 54, 55};
-
     ChessBoard board;
     Team activeTeam;
   
@@ -43,41 +35,50 @@ public class ChessGame
 
     private void initializePieces()
     {
-        allPieces = new ChessPiece[NUM_PIECES];
+        int[] pieceLocations = {0 ,  1,  2,  3,  4,  5,  6,  7, 
+                                8 ,  9, 10, 11, 12, 13, 14, 15,
+                                48, 49, 50, 51, 52, 53, 54, 55,
+                                56, 57, 58, 59, 60, 61, 62, 63};
+        initializePieces(pieceLocations);
+    }
 
+    public void initializePieces(int[] pieceLocations)
+    {
+        allPieces = new ChessPiece[NUM_PIECES];
+        
         for (int i = 0; i < ROOK_IDS.length; i++) {
-            Square position = board.getSquareAt(ROOK_INITIAL_POSITIONS[i]);
             int id = ROOK_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new Rook(position, id);
         }
 
         for (int i = 0; i < KNIGHT_IDS.length; i++) {
-            Square position = board.getSquareAt(KNIGHT_INITIAL_POSITIONS[i]);
             int id = KNIGHT_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new Knight(position, id);
         }
 
         for (int i = 0; i < BISHOP_IDS.length; i++) {
-            Square position = board.getSquareAt(BISHOP_INITIAL_POSITIONS[i]);
             int id = BISHOP_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new Bishop(position, id);
         }
 
         for (int i = 0; i < QUEEN_IDS.length; i++) {
-            Square position = board.getSquareAt(QUEEN_INITIAL_POSITIONS[i]);
             int id = QUEEN_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new Queen(position, id);
         }
 
         for (int i = 0; i < KING_IDS.length; i++) {
-            Square position = board.getSquareAt(KING_INITIAL_POSITIONS[i]);
             int id = KING_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new King(position, id);
         }
-
+        
         for (int i = 0; i < PAWN_IDS.length; i++) {
-            Square position = board.getSquareAt(PAWN_INITIAL_POSITIONS[i]);
             int id = PAWN_IDS[i];
+            Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new Pawn(position, id);
         }
     }
@@ -246,6 +247,16 @@ public class ChessGame
                 activePieces.add(allPieces[i]);
 
         return activePieces;
+    }
+    
+    public int[] getPieceLocations()
+    {
+        int[] locations = new int[32];
+
+        for (int i = 0; i < locations.length; i++) 
+            locations[i] = allPieces[i].getIntLocation();
+            
+        return locations;
     }
     
     public Team getActiveTeam()

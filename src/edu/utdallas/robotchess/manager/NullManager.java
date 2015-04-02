@@ -6,23 +6,29 @@ import edu.utdallas.robotchess.game.*;
 
 public class NullManager extends Manager
 {
-    public void handleSquareClick(int index)
+    public NullManager()
     {
+        super();
+        int[] pieceLocations = {-1, -1, -1, -1, -1, -1, -1, -1, 
+                                -1, -1, -1, -1, -1, -1, -1, -1,  
+                                -1, -1, -1, -1, -1, -1, -1, -1,    
+                                -1, -1, -1, -1, -1, -1, -1, -1};
 
+        game.initializePieces(pieceLocations);
     }
 
-    public int getBoardRowCount()
+    protected boolean isValidInitialPieceSelection(int selectionIndex)
     {
-        return 8;
+        return false;
     }
 
-    public int getBoardColumnCount()
+    protected boolean isValidMoveLocationSelection(int selectionIndex)
     {
-        return 8;
+        return false;
     }
 
-    public ArrayList<ChessPiece> getActivePieces()
+    protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
-        return new ArrayList<>();
+
     }
 }
