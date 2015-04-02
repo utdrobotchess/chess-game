@@ -10,6 +10,8 @@ public class ChessbotCommunicator
 {
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
 
+    private static ChessbotCommunicator instance = null;
+
     private XBee xbee = new XBee();
     private BotFinder botFinder;
 
@@ -27,12 +29,20 @@ public class ChessbotCommunicator
 			}
 		}
 	};
+    
+    public static ChessbotCommunicator create()
+    {
+        if (instance == null)
+            instance = new ChessbotCommunicator();
 
-    public ChessbotCommunicator(int baud)
+        return instance;
+    }
+
+    private ChessbotCommunicator()
     {
         PropertyConfigurator.configure("log/log4j.properties");
 
-        this.baudrate = baud;
+        this.baudrate = 57600; // check xbee for this in the future
         SearchForXbeeOnComports();
 
         if(xbee == null)
@@ -111,8 +121,7 @@ public class ChessbotCommunicator
 
         if (osName.equalsIgnoreCase("Mac OS X"))
             portName = "tty.usbserial";
-
-        else if (osName.equalsIgnoreCase("Linux"))
+        else if (osName.equalsIgnoreCase("Linux")) 
             portName = "ttyUSB";
 
         if(portName != null)

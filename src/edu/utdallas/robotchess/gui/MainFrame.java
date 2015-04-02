@@ -141,8 +141,9 @@ public class MainFrame extends JFrame
 
                 if(!enable)
                     discoveredRobotsFrame.setVisible(false);
-                
-                System.out.println("enable the robots here");
+               
+                if (enable)
+                    comm = ChessbotCommunicator.create();
             }
 
             // if(e.getSource() == demoModeMenuItem || 
