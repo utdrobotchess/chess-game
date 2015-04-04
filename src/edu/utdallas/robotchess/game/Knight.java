@@ -5,11 +5,6 @@ import java.util.Collections;
 
 public class Knight extends ChessPiece
 {
-    public Knight(Square location)
-    {
-        super(location);
-    }
-
     public Knight(Square location, int id)
     {
         super(location, id);

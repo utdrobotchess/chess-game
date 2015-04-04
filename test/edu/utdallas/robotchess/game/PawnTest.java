@@ -12,7 +12,7 @@ public class PawnTest
     {
         ChessBoard board = new ChessBoard();
 
-        Pawn p1 = new Pawn(board.getSquareAt(9));
+        Pawn p1 = new Pawn(board.getSquareAt(9), 0);
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
 
@@ -26,10 +26,10 @@ public class PawnTest
     {
         ChessBoard board = new ChessBoard();
 
-        Pawn p1 = new Pawn(board.getSquareAt(54));
-        Pawn p2 = new Pawn(board.getSquareAt(14));
-        Pawn p3 = new Pawn(board.getSquareAt(38));
-        Pawn p4 = new Pawn(board.getSquareAt(22));
+        Pawn p1 = new Pawn(board.getSquareAt(54), 16);
+        Pawn p2 = new Pawn(board.getSquareAt(14), 0);
+        Pawn p3 = new Pawn(board.getSquareAt(38), 17);
+        Pawn p4 = new Pawn(board.getSquareAt(22), 1);
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
         ArrayList<Square> p2Actual = p2.generateMoveLocations();
@@ -45,9 +45,9 @@ public class PawnTest
     {
         ChessBoard board = new ChessBoard();
 
-        Pawn p1 = new Pawn(board.getSquareAt(39));
-        Pawn p2 = new Pawn(board.getSquareAt(30));
-        Pawn p3 = new Pawn(board.getSquareAt(37));
+        Pawn p1 = new Pawn(board.getSquareAt(39), 16);
+        Pawn p2 = new Pawn(board.getSquareAt(30), 0);
+        Pawn p3 = new Pawn(board.getSquareAt(37), 17);
 
         final int P1_EXPECTED[] = {23, 30, 31};
         final int P2_EXPECTED[] = {37, 38, 39, 46};
@@ -77,9 +77,9 @@ public class PawnTest
     {
         ChessBoard board = new ChessBoard();
 
-        Pawn p1 = new Pawn(board.getSquareAt(52));
-        Pawn p2 = new Pawn(board.getSquareAt(43));
-        Pawn p3 = new Pawn(board.getSquareAt(45));
+        Pawn p1 = new Pawn(board.getSquareAt(52), 16);
+        Pawn p2 = new Pawn(board.getSquareAt(43), 17);
+        Pawn p3 = new Pawn(board.getSquareAt(45), 18);
 
         ArrayList<Square> p1Actual = p1.generateMoveLocations();
 
@@ -93,7 +93,7 @@ public class PawnTest
     {
         ChessBoard board = new ChessBoard();
 
-        Pawn p1 = new Pawn(board.getSquareAt(52));
+        Pawn p1 = new Pawn(board.getSquareAt(52), 16);
         p1.setHasNotMoved(false);
         
         ArrayList<Square> p1Actual = p1.generateMoveLocations();

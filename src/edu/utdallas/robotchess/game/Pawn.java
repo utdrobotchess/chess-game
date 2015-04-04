@@ -5,11 +5,6 @@ import java.util.Collections;
 
 public class Pawn extends ChessPiece
 {
-    public Pawn(Square location)
-    {
-        super(location);
-    }
-
     public Pawn(Square location, int id)
     {
         super(location, id);

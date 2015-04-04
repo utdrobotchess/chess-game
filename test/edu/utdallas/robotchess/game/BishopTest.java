@@ -17,10 +17,10 @@ public class BishopTest
         final int B3_EXPECTED[] = {29, 31, 45, 47, 52, 59};
         final int B4_EXPECTED[] = {9, 11, 16, 20};
 
-        Bishop b1 = new Bishop(board.getSquareAt(57));
-        Bishop b2 = new Bishop(board.getSquareAt(29));
-        Bishop b3 = new Bishop(board.getSquareAt(38));
-        Bishop b4 = new Bishop(board.getSquareAt(2));
+        Bishop b1 = new Bishop(board.getSquareAt(57), 26);
+        Bishop b2 = new Bishop(board.getSquareAt(29), 5);
+        Bishop b3 = new Bishop(board.getSquareAt(38), 29);
+        Bishop b4 = new Bishop(board.getSquareAt(2), 2);
 
         ArrayList<Square> b1Actual = b1.generateMoveLocations();
         ArrayList<Square> b2Actual = b2.generateMoveLocations();

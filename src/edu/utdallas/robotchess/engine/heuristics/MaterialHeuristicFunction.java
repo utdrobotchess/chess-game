@@ -1,7 +1,6 @@
 package edu.utdallas.robotchess.engine.heuristics;
 
 import edu.utdallas.robotchess.game.*;
-import edu.utdallas.robotchess.engine.*;
 
 import java.util.List;
 
@@ -14,17 +13,15 @@ public class MaterialHeuristicFunction implements HeuristicFunction
     private final double QUEEN_VALUE = 9.0;
 
     @Override
-    public double h(State state)
+    public double h(ChessGame game)
     {
-        ChessGameState gameState = (ChessGameState) state;
-        
-        List<ChessPiece> activePieces = gameState.getActivePieces();
+        List<ChessPiece> activePieces = game.getActivePieces();
 
         double materialValue = 0.0;
 
         for (int i = 0; i < activePieces.size(); i++) {
             ChessPiece piece = activePieces.get(i);
-            double multiplier = piece.getTeam() == gameState.getActiveTeam() ? 1.0 : -1.0;
+            double multiplier = piece.getTeam() == game.getActiveTeam() ? 1.0 : -1.0;
             materialValue += multiplier * getPieceValue(piece);
         }
         

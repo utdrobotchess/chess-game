@@ -20,9 +20,9 @@ public class QueenTest
                                    24, 25, 27, 28, 29, 33, 34, 35,
                                    40, 42, 44, 50, 53, 58, 62};
 
-        Queen q1 = new Queen(board.getSquareAt(62));
-        Queen q2 = new Queen(board.getSquareAt(30));
-        Queen q3 = new Queen(board.getSquareAt(26));
+        Queen q1 = new Queen(board.getSquareAt(62), 16);
+        Queen q2 = new Queen(board.getSquareAt(30), 0);
+        Queen q3 = new Queen(board.getSquareAt(26), 1);
 
         ArrayList<Square> q1Actual = q1.generateMoveLocations();
         ArrayList<Square> q2Actual = q2.generateMoveLocations();

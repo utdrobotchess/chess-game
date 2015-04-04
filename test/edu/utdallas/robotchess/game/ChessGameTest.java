@@ -7,12 +7,6 @@ import java.util.ArrayList;
 
 public class ChessGameTest
 {
-    public static void main(String[] args)
-    {
-        ChessGameTest test = new ChessGameTest();
-        test.testNoCastlingIfObstructions();
-    }
-    
     @Test
     public void testInitialPositions()
     {
@@ -89,12 +83,6 @@ public class ChessGameTest
         Assert.assertEquals(null, board.getSquareAt(12).getOccupant());
         Assert.assertTrue(board.getSquareAt(28).isOccupied());
         Assert.assertEquals(12, board.getSquareAt(28).getOccupant().getID());
-    }
-
-    @Test
-    public void testTurn()
-    {
-
     }
 
     @Test

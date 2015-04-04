@@ -5,11 +5,6 @@ import java.util.ArrayList;
 
 public class Rook extends ChessPiece
 {
-    public Rook(Square location)
-    {
-        super(location);
-    }
-
     public Rook(Square location, int id)
     {
         super(location, id);

@@ -5,11 +5,6 @@ import java.util.ArrayList;
 
 public class Bishop extends ChessPiece
 {
-    public Bishop(Square location)
-    {
-        super(location);
-    }
-
     public Bishop(Square location, int id)
     {
         super(location, id);

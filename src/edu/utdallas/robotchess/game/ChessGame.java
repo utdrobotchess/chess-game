@@ -118,6 +118,12 @@ public class ChessGame
 
         return moveLocations;
     }
+    
+    public ChessGame copyGameAndMovePiece(int pieceID, int destination)
+    {
+        return copyGameAndMovePiece(allPieces[pieceID], 
+                                    getBoardSquareAt(destination));
+    }
 
     private ChessGame copyGameAndMovePiece(ChessPiece piece, Square destination)
     {
@@ -295,6 +301,11 @@ public class ChessGame
         }
         
         return false;
+    }
+    
+    public boolean isInCheckmate()
+    {
+        return isInCheckmate(activeTeam);
     }
 
     protected boolean isInCheckmate(Team team)

@@ -17,10 +17,10 @@ public class RookTest
         final int R3_EXPECTED[] = {2, 10, 18, 24, 25, 27, 28, 29, 34};
         final int R4_EXPECTED[] = {26, 32, 33, 35, 36, 37, 38, 39, 42, 50, 58};
 
-        Rook r1 = new Rook(board.getSquareAt(62));
-        Rook r2 = new Rook(board.getSquareAt(30));
-        Rook r3 = new Rook(board.getSquareAt(26));
-        Rook r4 = new Rook(board.getSquareAt(34));
+        Rook r1 = new Rook(board.getSquareAt(62), 16);
+        Rook r2 = new Rook(board.getSquareAt(30), 0);
+        Rook r3 = new Rook(board.getSquareAt(26), 1);
+        Rook r4 = new Rook(board.getSquareAt(34), 17);
 
         ArrayList<Square> r1Actual = r1.generateMoveLocations();
         ArrayList<Square> r2Actual = r2.generateMoveLocations();

@@ -17,10 +17,10 @@ public class KnightTest
         final int K3_EXPECTED[] = {19, 21, 26, 30, 42, 46, 51, 53};
         final int K4_EXPECTED[] = {3, 5, 10, 14, 26, 35, 37};
 
-        Knight k1 = new Knight(board.getSquareAt(62));
-        Knight k2 = new Knight(board.getSquareAt(30));
-        Knight k3 = new Knight(board.getSquareAt(36));
-        Knight k4 = new Knight(board.getSquareAt(20));
+        Knight k1 = new Knight(board.getSquareAt(62), 16);
+        Knight k2 = new Knight(board.getSquareAt(30), 0);
+        Knight k3 = new Knight(board.getSquareAt(36), 17);
+        Knight k4 = new Knight(board.getSquareAt(20), 1);
 
         ArrayList<Square> k1Actual = k1.generateMoveLocations();
         ArrayList<Square> k2Actual = k2.generateMoveLocations();

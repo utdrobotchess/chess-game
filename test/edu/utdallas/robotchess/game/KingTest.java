@@ -17,10 +17,10 @@ public class KingTest
         final int K3_EXPECTED[] = {26, 27, 28, 34, 42, 43, 44};
         final int K4_EXPECTED[] = {27, 28, 29, 37, 43, 44, 45};
 
-        King k1 = new King(board.getSquareAt(60));
-        King k2 = new King(board.getSquareAt(28));
-        King k3 = new King(board.getSquareAt(35));
-        King k4 = new King(board.getSquareAt(36));
+        King k1 = new King(board.getSquareAt(60), 28);
+        King k2 = new King(board.getSquareAt(28), 4);
+        King k3 = new King(board.getSquareAt(35), 16);
+        King k4 = new King(board.getSquareAt(36), 17);
 
         ArrayList<Square> k1Actual = k1.generateMoveLocations();
         ArrayList<Square> k2Actual = k2.generateMoveLocations();

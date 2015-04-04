@@ -10,11 +10,6 @@ public abstract class ChessPiece
     private boolean active;
     private boolean hasNotMoved;
     
-    public ChessPiece(Square location)
-    {
-        this(location, -1);
-    }
-
     public ChessPiece(Square location, int id)
     {
         setLocation(location);
@@ -59,7 +54,7 @@ public abstract class ChessPiece
     protected abstract ChessPiece copyPiece();
     public abstract String getName();
 
-    protected int getID()
+    public int getID()
     {
         return id;
     }

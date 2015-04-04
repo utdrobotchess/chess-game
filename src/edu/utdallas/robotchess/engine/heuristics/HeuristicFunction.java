@@ -1,8 +1,8 @@
 package edu.utdallas.robotchess.engine.heuristics;
 
-import edu.utdallas.robotchess.engine.State;
+import edu.utdallas.robotchess.game.*;
 
 public interface HeuristicFunction
 {
-    double h(State state);
+    double h(ChessGame game);
 }
