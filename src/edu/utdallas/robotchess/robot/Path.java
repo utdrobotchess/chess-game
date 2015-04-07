@@ -32,11 +32,24 @@ public class Path
 
     public Command generateCommand()
     {
-        int[] payload = new int[path.size()];
+        ArrayList<Integer> payload = new ArrayList<>();
+        
+        int previousDirection = path.get(0) - origin;
 
-        for(int i = 0; i < path.size(); i++)
-            payload[i] = path.get(i);
+        for(int i = 1; i < path.size(); i++) {
+            int newDirection = path.get(i) - path.get(i-1);
+            if (newDirection != currentDirection) {
+                path.add(i-1);
+                currentDirection = newDirection;
+            }
+        }
+        
+        path.add(path.size() - 1);
 
-        return new MoveToSquareCommand(robotID, payload);
+        int payloadArr = new int[path.size()];
+        for (int i = 0; i < payloadArr.length; i++)
+            payloadArr[i] = path.get(i);
+        
+        return new MoveToSquareCommand(robotID, payloadArr);
     }
  }
