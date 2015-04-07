@@ -29,7 +29,7 @@ public class ChessbotCommunicator
 			}
 		}
 	};
-    
+
     public static ChessbotCommunicator create()
     {
         if (instance == null)
@@ -121,7 +121,7 @@ public class ChessbotCommunicator
 
         if (osName.equalsIgnoreCase("Mac OS X"))
             portName = "tty.usbserial";
-        else if (osName.equalsIgnoreCase("Linux")) 
+        else if (osName.equalsIgnoreCase("Linux"))
             portName = "ttyUSB";
 
         if(portName != null)
