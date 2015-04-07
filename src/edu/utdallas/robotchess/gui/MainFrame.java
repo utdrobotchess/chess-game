@@ -1,6 +1,7 @@
 package edu.utdallas.robotchess.gui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
@@ -123,8 +124,18 @@ public class MainFrame extends JFrame
             }
             
             if (e.getSource() == newChessDemoMenuItem) {
-                // display a JOptionPane asking the user for the board dimensions
-                manager = new RobotDemoManager();
+                int[] robotsPresent = determineRobotsPresent();
+                int[] initialLocations = generateInitialLocations(robotsPresent);
+                manager = new RobotDemoManager(initialLocations);
+                
+                int boardRows = determineBoardRows();
+                int boardColumns = determineBoardColumns();
+                
+                manager.setBoardRowCount(boardRows);
+                manager.setBoardColumnCount(boardColumns);
+                
+                boardPanel.setManager(manager);
+                boardPanel.updateDisplay();
             }
             
             if (e.getSource() == newRCDemoMenuItem) {
@@ -172,6 +183,65 @@ public class MainFrame extends JFrame
                 System.exit(0);
             }
         }
+        
+        private int[] determineRobotsPresent()
+        {
+            String robotsPresentStr = (String) JOptionPane.showInputDialog(
+                "Please enter space-separated list of robots present",
+                "e.g. 1 2 4 6");
+            String[] robotsPresentStrArr = robotsPresentStr.split(" ");
+            
+            int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
+            for (int i = 0; i < robotsPresentIntArr.length; i++)
+                robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
+            
+            return robotsPresentIntArr;
+        }
+        
+        private int[] generateInitialLocations(int[] robotsPresent)
+        {
+            int[] locations = new int[32];
+            
+            for (int i = 0; i < locations.length; i++)
+                locations[i] = -1;
+
+            for (int i = 0; i < robotsPresent.length; i++)
+                locations[robotsPresent[i]] = robotsPresent[i];
+            
+            return locations;
+        }
+        
+        private int determineBoardRows()
+        {
+            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            String boardRows = (String) JOptionPane.showInputDialog(
+                (Component) null,
+                "Please enter the number of board rows",
+                "Board Rows",
+                JOptionPane.PLAIN_MESSAGE,
+                (Icon) null,
+                possibleDimensions,
+                "8");
+            int boardRowCount = Integer.parseInt(boardRows);
+            
+            return boardRowCount;
+         }
+
+        private int determineBoardColumns()
+        {
+            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            String boardColumns = (String) JOptionPane.showInputDialog(
+                (Component) null,
+                "Please enter the number of board columns",
+                "Board Columns",
+                JOptionPane.PLAIN_MESSAGE,
+                (Icon) null,
+                possibleDimensions,
+                "8");
+            int boardColumnCount = Integer.parseInt(boardColumns);
+            
+            return boardColumnCount;
+         }
     }
     
     public static void main(String[] args)

@@ -30,7 +30,7 @@ public class MotionPlanner
 
         for (int i = 0; i < movesNeeded.size(); i++) {
             Move thisMove = movesNeeded.get(i);
-            Path path = new Path(thisMove.pieceID);
+            Path path = new Path(thisMove.pieceID, thisMove.origin);
 
             ArrayList<Integer> squareSequence = dijkstra(occupancyGrid,
                                                          thisMove.origin,
@@ -195,43 +195,6 @@ public class MotionPlanner
         return path;
     }
 
-    private Command generateCommandsFromPath(ArrayList<Integer> path)
-    {
-        Command command = new MoveToSquareCommand(0, new int[0]);
-        ArrayList<Integer> payload = new ArrayList<Integer>();
-
-        // path must include at least robot id, plus 2 path squares
-        if (path.size() < 3)
-            return command;
-
-        int robotID = path.get(0); // XXX temporary hack - normally path.get(0);
-        int currentMoveDirection = 0;
-
-        for (int i = 2; i < path.size(); i++) {
-            int currentSquare = path.get(i);
-            int newMoveDirection = currentSquare - path.get(i-1);
-
-            if (currentMoveDirection != 0)
-                if (newMoveDirection != currentMoveDirection)
-                    payload.add(path.get(i-1));
-
-            if (i == path.size() - 1)
-                payload.add(path.get(i));
-
-            currentMoveDirection = newMoveDirection;
-        }
-
-        int[] temp = new int[payload.size()];
-
-        for(int i = 0; i < payload.size(); i++)
-            temp[i] = payload.get(i);
-
-        command = new MoveToSquareCommand(robotID, temp);
-
-        System.out.println(command);
-
-        return command;
-    }
 }
 
 class Vertex

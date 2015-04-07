@@ -6,15 +6,13 @@ import edu.utdallas.robotchess.robot.*;
 
 public class RobotDemoManager extends Manager
 {
-    public RobotDemoManager()
+    private ChessbotCommunicator comm;
+
+    public RobotDemoManager(int[] initialPieceLocations)
     {
         super();
-        int[] pieceLocations = {-1, -1, -1, -1, -1, -1, -1, -1, 
-                                -1, -1, -1, -1, -1, -1, -1, -1,  
-                                -1, -1, -1, -1, -1, -1, -1, -1,    
-                                -1, -1, -1, -1, -1, -1, -1, -1};
-
-        game.initializePieces(pieceLocations);
+        game.initializePieces(initialPieceLocations);
+        comm = ChessbotCommunicator.create();
     }
 
     public void handleSquareClick(int index)
@@ -27,21 +25,30 @@ public class RobotDemoManager extends Manager
                                                   getBoardColumnCount());
         ArrayList<Path> plan = planner.plan(currentLocations, desiredLocations);
         
-        // for every path in plan, communicate to the robots
+        for (int i = 0; i < plan.size(); i++) {
+            Path path = plan.get(i);
+            Command command = path.generateCommand();
+            comm.sendCommand(command);
+        }
     }
     
     protected boolean isValidInitialPieceSelection(int selectionIndex)
     {
-        return false;
+        Square selectedSquare = game.getBoardSquareAt(selectionIndex);
+
+        return selectedSquare.isOccupied();
     }
 
     protected boolean isValidMoveLocationSelection(int selectionIndex)
     {
-        return false;
+        Square selectedSquare = game.getBoardSquareAt(selectionIndex);
+
+        return !selectedSquare.isOccupied();
     }
 
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
-
+        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
+        currentlySelectedPiece = null;
     }
 }

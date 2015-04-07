@@ -5,11 +5,13 @@ import java.util.*;
 public class Path
 {
     private int robotID;
+    private int origin;
     private ArrayList<Integer> path;
 
-    public Path(int robotID)
+    public Path(int robotID, int origin)
     {
         this.robotID = robotID;
+        this.origin = origin;
         path = new ArrayList<>();
     }
     
@@ -27,4 +29,14 @@ public class Path
     {
         return robotID;
     }
-}
+
+    public Command generateCommand()
+    {
+        int[] payload = new int[path.size()];
+
+        for(int i = 0; i < path.size(); i++)
+            payload[i] = path.get(i);
+
+        return new MoveToSquareCommand(robotID, payload);
+    }
+ }
