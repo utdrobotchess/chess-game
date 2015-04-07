@@ -32,6 +32,11 @@ public class MobilityHeuristicFunction implements HeuristicFunction
             }
         }
 
-        return mobilityValue;
+        return normalize(mobilityValue);
+    }
+    
+    private double normalize(double value)
+    {
+        return value / 100.0;
     }
 }
