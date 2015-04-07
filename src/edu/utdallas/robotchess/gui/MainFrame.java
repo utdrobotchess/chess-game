@@ -106,8 +106,6 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
-        //RemoteController rc = new RemoteController();
-
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -139,9 +137,10 @@ public class MainFrame extends JFrame
             }
             
             if (e.getSource() == newRCDemoMenuItem) {
-                // create a remote controller
-                // pass it the communicator
-                // display a JOptionPane allowing the user to end
+                ChessbotCommunicator comm = ChessbotCommunicator.create();
+                RemoteController rc = new RemoteController(comm);
+                JOptionPane.showMessageDialog(null, "Press OK to exit RC mode");
+                rc.terminate();
             }
 
             if (e.getSource() == enableRobotsMenuItem) {
@@ -157,24 +156,7 @@ public class MainFrame extends JFrame
                     comm = ChessbotCommunicator.create();
             }
 
-            // if(e.getSource() == demoModeMenuItem || 
-            //    e.getSource() == rcModeMenuItem || 
-            //    e.getSource() == chessModeMenuItem){
-            //     boolean enableDemo = demoModeMenuItem.isSelected();
-            //     boolean enableRC = rcModeMenuItem.isSelected();
-            //     boolean enableChess = chessModeMenuItem.isSelected();
-            //     if(enableDemo) {
-            //         resizeBoard(4, 8); // TODO allow the user to pick the size of the board
-            //         boardPanel.initializeDemo();
-            //     }
-
-            //     // if(enableRC)
-            //     //     rc.start();
-            //     // else
-            //     //     rc.terminate();
-            // }
-
-            if(e.getSource() == robotsDiscoveredMenuItem){
+            if (e.getSource() == robotsDiscoveredMenuItem){
                  boolean enable = robotsDiscoveredMenuItem.getState();
                  discoveredRobotsFrame.setVisible(enable);
             }
