@@ -22,7 +22,6 @@ public class ChessGame
   
     public ChessGame()
     {
-        board = new ChessBoard();
         initializePieces();
         activeTeam = Team.ORANGE;
     }
@@ -44,6 +43,8 @@ public class ChessGame
 
     public void initializePieces(int[] pieceLocations)
     {
+        board = new ChessBoard();
+
         allPieces = new ChessPiece[NUM_PIECES];
         
         for (int i = 0; i < ROOK_IDS.length; i++) {
