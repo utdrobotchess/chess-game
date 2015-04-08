@@ -17,6 +17,13 @@ public class RobotDemoManager extends Manager
 
     public void handleSquareClick(int index)
     {
+        if (currentlySelectedPiece != null &&
+            index == currentlySelectedPiece.getIntLocation()) {
+            comm.sendCommand(new SmartCenterCommand(currentlySelectedPiece.getID()));
+            currentlySelectedPiece = null;
+            return;
+        }
+
         int[] currentLocations = game.getPieceLocations();
         super.handleSquareClick(index);
         int[] desiredLocations = game.getPieceLocations();
