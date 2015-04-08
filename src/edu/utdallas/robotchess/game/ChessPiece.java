@@ -69,7 +69,7 @@ public abstract class ChessPiece
     protected abstract ChessPiece copyPiece();
     public abstract String getName();
 
-    protected int getID()
+    public int getID()
     {
         return id;
     }
