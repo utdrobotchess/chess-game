@@ -20,18 +20,18 @@ public class RobotDemoManager extends Manager
         int[] currentLocations = game.getPieceLocations();
         super.handleSquareClick(index);
         int[] desiredLocations = game.getPieceLocations();
-        
-        MotionPlanner planner = new MotionPlanner(getBoardRowCount(), 
+
+        MotionPlanner planner = new MotionPlanner(getBoardRowCount(),
                                                   getBoardColumnCount());
         ArrayList<Path> plan = planner.plan(currentLocations, desiredLocations);
-        
+
         for (int i = 0; i < plan.size(); i++) {
             Path path = plan.get(i);
             Command command = path.generateCommand();
             comm.sendCommand(command);
         }
     }
-    
+
     protected boolean isValidInitialPieceSelection(int selectionIndex)
     {
         Square selectedSquare = game.getBoardSquareAt(selectionIndex);

@@ -36,7 +36,7 @@ public abstract class Manager
         else
             currentlySelectedPiece = null;
     }
-    
+
     protected abstract boolean isValidInitialPieceSelection(int selectionIndex);
 
     private void makeUpdatesFromValidPieceSelection(int selectionIndex)
@@ -50,7 +50,7 @@ public abstract class Manager
         if (isValidMoveLocationSelection(selectionIndex))
             makeUpdatesFromValidMoveSelection(selectionIndex);
     }
-    
+
     protected abstract boolean isValidMoveLocationSelection(int selectionIndex);
     protected abstract void makeUpdatesFromValidMoveSelection(int selectionIndex);
 
@@ -63,12 +63,12 @@ public abstract class Manager
     {
         return boardRowCount;
     }
-    
+
     public int getBoardColumnCount()
     {
         return boardColumnCount;
     }
-    
+
     public void setBoardRowCount(int boardRowCount)
     {
         this.boardRowCount = boardRowCount;

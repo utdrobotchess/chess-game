@@ -25,7 +25,7 @@ public class BoardPanel extends JPanel
                                  "orange-king"};
 
     final int TOTAL_SQUARES = 64;
-    
+
     private Manager manager;
     private SquareButton squares[];
     private Map<String, ImageIcon> imageMap;
@@ -63,11 +63,11 @@ public class BoardPanel extends JPanel
                 whiteSquare = !whiteSquare;
         }
     }
-    
+
     private void configureImages()
     {
         final String basePath = "resources/";
-        
+
         imageMap = new HashMap<>();
 
         for (int i = 0; i < imageNames.length; i++)
@@ -88,7 +88,7 @@ public class BoardPanel extends JPanel
             g.dispose();
             imageMap.put(imageNames[i], new ImageIcon(scaledBI));
         }
-    }    
+    }
 
     protected void updateDisplay()
     {
@@ -96,7 +96,7 @@ public class BoardPanel extends JPanel
             squares[i].setIcon(null);
 
         ArrayList<ChessPiece> pieces = manager.getActivePieces();
-        
+
         for (int i = 0; i < pieces.size(); i++) {
             ChessPiece piece = pieces.get(i);
             int location = piece.getIntLocation();
@@ -105,10 +105,10 @@ public class BoardPanel extends JPanel
             squares[location].setIcon(icon);
         }
     }
-    
+
     protected void setManager(Manager manager)
     {
-        this.manager = manager; 
+        this.manager = manager;
     }
 
     class ButtonListener implements ActionListener

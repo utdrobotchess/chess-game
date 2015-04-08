@@ -17,13 +17,13 @@ public class MotionPlanner
         this.boardRows = boardRows;
         this.boardColumns = boardColumns;
     }
-    
+
     public ArrayList<Path> plan(int currentLocations[], int desiredLocations[])
     {
         ArrayList<Path> plan = new ArrayList<>();
         boolean occupancyGrid[] = fillOccupancyGrid(currentLocations);
         ArrayList<Move> movesNeeded = generateMoves(currentLocations, desiredLocations);
-        
+
         // for now, let's not handle any more than single move plans
         if (movesNeeded.size() > 1)
             return plan;
@@ -38,7 +38,7 @@ public class MotionPlanner
 
             for (int j = 0; j < squareSequence.size(); j++)
                 path.add(squareSequence.get(j));
-            
+
             plan.add(path);
         }
 
@@ -125,7 +125,7 @@ public class MotionPlanner
         return edges;
     }
 
-    private ArrayList<Integer> dijkstra(boolean[] occupancyGrid, 
+    private ArrayList<Integer> dijkstra(boolean[] occupancyGrid,
                                         int origin, int destination)
     {
         Vertex vertices[] = new Vertex[REGULAR_SQUARE_COUNT];
@@ -153,7 +153,7 @@ public class MotionPlanner
         }
     }
 
-    private void updateDistances(boolean[] occupancyGrid, Vertex vertices[], 
+    private void updateDistances(boolean[] occupancyGrid, Vertex vertices[],
                                  PriorityQueue<Vertex> queue)
     {
         while (queue.size() > 0) {

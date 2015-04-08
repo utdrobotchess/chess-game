@@ -10,12 +10,12 @@ public class SquareButton extends JButton
 {
     int index;
     int occupantID;
-    
+
     protected SquareButton(int index, Color color)
     {
         this.index = index;
         occupantID = -1;
-        
+
         setBackground(color);
         setBorderPainted(false);
     }
@@ -27,7 +27,7 @@ public class SquareButton extends JButton
 
     protected int getIndex()
     {
-        return index; 
+        return index;
     }
 
     protected boolean isOccupied()

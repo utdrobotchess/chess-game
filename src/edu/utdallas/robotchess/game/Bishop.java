@@ -26,7 +26,7 @@ public class Bishop extends ChessPiece
                                             isActive(), hasNotMoved());
         return copiedPiece;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-bishop";

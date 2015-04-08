@@ -10,7 +10,7 @@ public enum Team
 	ORANGE(-1), GREEN(1);
 
 	private final int directionalValue;
-    
+
 	private Team(int value)
     {
 		directionalValue = value;
@@ -20,13 +20,13 @@ public enum Team
     {
 		return directionalValue;
 	}
-    
+
     @Override
     public String toString()
     {
         if (directionalValue == -1)
             return "orange";
-        else 
+        else
             return "green";
     }
 }

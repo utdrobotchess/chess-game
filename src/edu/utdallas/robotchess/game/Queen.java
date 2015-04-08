@@ -12,7 +12,7 @@ public class Queen extends ChessPiece
 
     public Queen(Square location, int id)
     {
-        super(location, id); 
+        super(location, id);
     }
 
     public Queen(int id, Team team,
@@ -20,14 +20,14 @@ public class Queen extends ChessPiece
     {
         super(id, team, active, hasNotMoved);
     }
-    
+
     protected ChessPiece copyPiece()
     {
         ChessPiece copiedPiece = new Queen(getID(), getTeam(),
                                            isActive(), hasNotMoved());
         return copiedPiece;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-queen";

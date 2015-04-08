@@ -14,16 +14,16 @@ public class ChessBoard
     private final int SOUTHWEST = 5;
     private final int WEST = 6;
     private final int NORTHWEST = 7;
-    
+
 
     Square squares[] = new Square[NUM_SQUARES];
-    
+
     public ChessBoard()
     {
         createSquares();
         assignAllNeighbors();
     }
-    
+
     private void createSquares()
     {
         for (int i = 0; i < NUM_SQUARES; i++)
@@ -43,12 +43,12 @@ public class ChessBoard
             neighborIndexes[SOUTHWEST] = calculateSouthwestNeighborIndex(i);
             neighborIndexes[WEST] = calculateWestNeighborIndex(i);
             neighborIndexes[NORTHWEST] = calculateNorthwestNeighborIndex(i);
-            
+
             for (int j = 0; j < neighborIndexes.length; j++)
                 assignNeighbor(i, j, neighborIndexes[j]);
         }
     }
-    
+
     private int calculateNorthNeighborIndex(int squareIndex)
     {
         if (squareIndex / NUM_ROWS != 0)
@@ -59,7 +59,7 @@ public class ChessBoard
 
     private int calculateNortheastNeighborIndex(int squareIndex)
     {
-        if (squareIndex / NUM_ROWS != 0 && 
+        if (squareIndex / NUM_ROWS != 0 &&
             squareIndex % NUM_COLUMNS != (NUM_COLUMNS - 1))
             return squareIndex - NUM_COLUMNS + 1;
 
@@ -76,13 +76,13 @@ public class ChessBoard
 
     private int calculateSoutheastNeighborIndex(int squareIndex)
     {
-        if (squareIndex / NUM_ROWS != (NUM_ROWS - 1) && 
+        if (squareIndex / NUM_ROWS != (NUM_ROWS - 1) &&
             squareIndex % NUM_COLUMNS != (NUM_COLUMNS - 1))
             return squareIndex + NUM_COLUMNS + 1;
 
         return -1;
     }
-    
+
     private int calculateSouthNeighborIndex(int squareIndex)
     {
         if (squareIndex / NUM_ROWS != (NUM_ROWS - 1))
@@ -110,13 +110,13 @@ public class ChessBoard
 
     private int calculateNorthwestNeighborIndex(int squareIndex)
     {
-        if (squareIndex / NUM_ROWS != 0 && 
+        if (squareIndex / NUM_ROWS != 0 &&
             squareIndex % NUM_COLUMNS != 0)
             return squareIndex - NUM_COLUMNS - 1;
 
         return -1;
     }
-    
+
     private void assignNeighbor(int squareIndex, int direction, int neighborIndex)
     {
         if (neighborIndex != -1)

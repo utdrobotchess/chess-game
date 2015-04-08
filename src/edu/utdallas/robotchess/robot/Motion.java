@@ -4,7 +4,7 @@ public class Motion
 {
     private int currentRobotPositions[];
     private int desiredRobotPositions[];
-    
+
     public Motion(int current[], int desired[])
     {
         currentRobotPositions = current;
@@ -20,7 +20,7 @@ public class Motion
     {
         return desiredRobotPositions;
     }
-    
+
     @Override
     public String toString()
     {
@@ -35,7 +35,7 @@ public class Motion
             output += " " + desiredRobotPositions[i];
 
         output += "\n";
-        
+
         return output;
     }
 }

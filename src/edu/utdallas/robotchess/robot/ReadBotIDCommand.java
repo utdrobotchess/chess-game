@@ -25,7 +25,7 @@ public class ReadBotIDCommand extends Command
         int payload[] = new int[payloadLength];
 
         payload[0] =  commandID;
-        
+
         return payload;
     }
 }

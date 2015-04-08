@@ -5,7 +5,7 @@ public class WriteBotIDCommand extends Command
     final int MIN_ID = 0;
     final int MAX_ID = 31;
     private int newRobotID;
-    
+
     public WriteBotIDCommand(int currentRobotID, int newRobotID)
     {
         commandID = 0x1;

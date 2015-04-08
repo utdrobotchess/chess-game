@@ -12,7 +12,7 @@ public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
     private static final long serialVersionUID = 3;
-    
+
     Manager manager;
 
     private ChessbotCommunicator comm;
@@ -60,7 +60,7 @@ public class MainFrame extends JFrame
         newChessDemoMenuItem = new JMenuItem("New Chess Demo");
         newRCDemoMenuItem = new JMenuItem("New RC Demo");
         exitMenuItem = new JMenuItem("Exit");
-        
+
         newChessDemoMenuItem.setEnabled(false);
         newRCDemoMenuItem.setEnabled(false);
 
@@ -111,31 +111,31 @@ public class MainFrame extends JFrame
         {
             if (e.getSource() == newGameMenuItem) {
                 boolean robotsEnabled = enableRobotsMenuItem.getState();
-                
+
                 if (robotsEnabled)
                     manager = new RobotChessManager();
                 else
                     manager = new ChessManager();
-                
+
                 boardPanel.setManager(manager);
                 boardPanel.updateDisplay();
             }
-            
+
             if (e.getSource() == newChessDemoMenuItem) {
                 int[] robotsPresent = determineRobotsPresent();
                 int[] initialLocations = generateInitialLocations(robotsPresent);
                 manager = new RobotDemoManager(initialLocations);
-                
+
                 int boardRows = determineBoardRows();
                 int boardColumns = determineBoardColumns();
-                
+
                 manager.setBoardRowCount(boardRows);
                 manager.setBoardColumnCount(boardColumns);
-                
+
                 boardPanel.setManager(manager);
                 boardPanel.updateDisplay();
             }
-            
+
             if (e.getSource() == newRCDemoMenuItem) {
                 ChessbotCommunicator comm = ChessbotCommunicator.create();
                 RemoteController rc = new RemoteController(comm);
@@ -151,7 +151,7 @@ public class MainFrame extends JFrame
 
                 if(!enable)
                     discoveredRobotsFrame.setVisible(false);
-               
+
                 if (enable)
                     comm = ChessbotCommunicator.create();
             }
@@ -165,34 +165,34 @@ public class MainFrame extends JFrame
                 System.exit(0);
             }
         }
-        
+
         private int[] determineRobotsPresent()
         {
             String robotsPresentStr = (String) JOptionPane.showInputDialog(
                 "Please enter space-separated list of robots present",
                 "e.g. 1 2 4 6");
             String[] robotsPresentStrArr = robotsPresentStr.split(" ");
-            
+
             int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
             for (int i = 0; i < robotsPresentIntArr.length; i++)
                 robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
-            
+
             return robotsPresentIntArr;
         }
-        
+
         private int[] generateInitialLocations(int[] robotsPresent)
         {
             int[] locations = new int[32];
-            
+
             for (int i = 0; i < locations.length; i++)
                 locations[i] = -1;
 
             for (int i = 0; i < robotsPresent.length; i++)
                 locations[robotsPresent[i]] = robotsPresent[i];
-            
+
             return locations;
         }
-        
+
         private int determineBoardRows()
         {
             Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
@@ -205,7 +205,7 @@ public class MainFrame extends JFrame
                 possibleDimensions,
                 "8");
             int boardRowCount = Integer.parseInt(boardRows);
-            
+
             return boardRowCount;
          }
 
@@ -221,11 +221,11 @@ public class MainFrame extends JFrame
                 possibleDimensions,
                 "8");
             int boardColumnCount = Integer.parseInt(boardColumns);
-            
+
             return boardColumnCount;
          }
     }
-    
+
     public static void main(String[] args)
     {
         MainFrame frame = new MainFrame();

@@ -9,9 +9,9 @@ public class NullManager extends Manager
     public NullManager()
     {
         super();
-        int[] pieceLocations = {-1, -1, -1, -1, -1, -1, -1, -1, 
-                                -1, -1, -1, -1, -1, -1, -1, -1,  
-                                -1, -1, -1, -1, -1, -1, -1, -1,    
+        int[] pieceLocations = {-1, -1, -1, -1, -1, -1, -1, -1,
+                                -1, -1, -1, -1, -1, -1, -1, -1,
+                                -1, -1, -1, -1, -1, -1, -1, -1,
                                 -1, -1, -1, -1, -1, -1, -1, -1};
 
         game.initializePieces(pieceLocations);

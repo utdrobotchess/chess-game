@@ -19,7 +19,7 @@ public class ChessGame
 
     ChessBoard board;
     Team activeTeam;
-  
+
     public ChessGame()
     {
         initializePieces();
@@ -34,7 +34,7 @@ public class ChessGame
 
     private void initializePieces()
     {
-        int[] pieceLocations = {0 ,  1,  2,  3,  4,  5,  6,  7, 
+        int[] pieceLocations = {0 ,  1,  2,  3,  4,  5,  6,  7,
                                 8 ,  9, 10, 11, 12, 13, 14, 15,
                                 48, 49, 50, 51, 52, 53, 54, 55,
                                 56, 57, 58, 59, 60, 61, 62, 63};
@@ -46,7 +46,7 @@ public class ChessGame
         board = new ChessBoard();
 
         allPieces = new ChessPiece[NUM_PIECES];
-        
+
         for (int i = 0; i < ROOK_IDS.length; i++) {
             int id = ROOK_IDS[i];
             Square position = board.getSquareAt(pieceLocations[id]);
@@ -76,7 +76,7 @@ public class ChessGame
             Square position = board.getSquareAt(pieceLocations[id]);
             allPieces[id] = new King(position, id);
         }
-        
+
         for (int i = 0; i < PAWN_IDS.length; i++) {
             int id = PAWN_IDS[i];
             Square position = board.getSquareAt(pieceLocations[id]);
@@ -99,7 +99,7 @@ public class ChessGame
                 copiedPieces[i].setLocation(copiedBoard.getSquareAt(intLocation));
             }
         }
-        
+
         ChessGame copiedGame = new ChessGame(copiedBoard, copiedPieces);
 
         return copiedGame;
@@ -109,7 +109,7 @@ public class ChessGame
     {
         ArrayList<Square> moveLocations = piece.generateMoveLocations();
         // add castling here
-        
+
         for (int i = 0; i < moveLocations.size(); i++) {
             ChessGame copiedGame = copyGameAndMovePiece(piece, moveLocations.get(i));
 
@@ -131,7 +131,7 @@ public class ChessGame
 
         return copiedGame;
     }
-    
+
     protected ArrayList<Square> generateCastlingMoves(ChessPiece king)
     {
         ArrayList<Square> castlingMoves = new ArrayList<>();
@@ -151,23 +151,23 @@ public class ChessGame
 
         return castlingMoves;
     }
-    
+
     private int determineCastleOnSide(ChessPiece king, boolean kingSide)
     {
         int sideSquareIndexes[] = getSideSquareIndexes(king, kingSide);
 
         if (isSideSquareOccupied(sideSquareIndexes))
             return -1;
-        
+
         if (castlingRookHasMoved(king, kingSide))
             return -1;
-       
+
         if (isInCheckWhileCastling(king, sideSquareIndexes))
             return -1;
-       
+
         return sideSquareIndexes[1];
     }
-    
+
     private int[] getSideSquareIndexes(ChessPiece king, boolean kingSide)
     {
         final int NUM_KING_SIDE_SQUARES = 2;
@@ -183,23 +183,23 @@ public class ChessGame
             sideSquareIndexes[1] = 2;
             sideSquareIndexes[2] = 3;
         }
-        
+
         if (king.getTeam() == Team.ORANGE)
             for (int i = 0; i < sideSquareIndexes.length; i++)
                 sideSquareIndexes[i] += 56;
 
          return sideSquareIndexes;
     }
-    
+
     private boolean isSideSquareOccupied(int sideSquareIndexes[])
     {
         for (int i = 0; i < sideSquareIndexes.length; i++)
             if (board.getSquareAt(sideSquareIndexes[i]).isOccupied())
                 return true;
-        
+
         return false;
     }
-    
+
     private boolean castlingRookHasMoved(ChessPiece king, boolean kingSide)
     {
         int castlingRookIndex = getCastlingRookIndex(king, kingSide);
@@ -207,30 +207,30 @@ public class ChessGame
 
         if (castlingRook.hasNotMoved())
             return false;
-        
+
         return true;
     }
-    
+
     private int getCastlingRookIndex(ChessPiece king, boolean kingSide)
     {
         int castlingRookIndex = kingSide ? 7 : 0;
-        
+
         if (king.getTeam() == Team.ORANGE)
             castlingRookIndex += 16;
 
         return castlingRookIndex;
     }
-    
+
     private boolean isInCheckWhileCastling(ChessPiece king, int sideSquareIndexes[])
     {
         for (int i = 0; i < sideSquareIndexes.length; i++) {
             ChessGame copiedGame = copyGameAndMovePiece(king,
                                                         board.getSquareAt(sideSquareIndexes[i]));
-            
+
             if (copiedGame.isInCheck(king.getTeam()))
                 return true;
         }
-        
+
         return false;
     }
 
@@ -238,7 +238,7 @@ public class ChessGame
     {
         return allPieces;
     }
-    
+
     public ArrayList<ChessPiece> getActivePieces()
     {
         ArrayList<ChessPiece> activePieces = new ArrayList<>();
@@ -249,17 +249,17 @@ public class ChessGame
 
         return activePieces;
     }
-    
+
     public int[] getPieceLocations()
     {
         int[] locations = new int[32];
 
-        for (int i = 0; i < locations.length; i++) 
+        for (int i = 0; i < locations.length; i++)
             locations[i] = allPieces[i].getIntLocation();
-            
+
         return locations;
     }
-    
+
     public Team getActiveTeam()
     {
         return activeTeam;
@@ -269,7 +269,7 @@ public class ChessGame
     {
         return board;
     }
-    
+
     public Square getBoardSquareAt(int index)
     {
         return board.getSquareAt(index);
@@ -286,7 +286,7 @@ public class ChessGame
     protected boolean isInCheck(Team team)
     {
         ChessPiece king = getKing(team);
-        
+
         for (int i = 0; i < allPieces.length; i++) {
             if (allPieces[i].getTeam() != team && allPieces[i].isActive()) {
                 ArrayList<Square> moveLocations = allPieces[i].generateMoveLocations();
@@ -294,7 +294,7 @@ public class ChessGame
                     return true;
             }
         }
-        
+
         return false;
     }
 
@@ -308,10 +308,10 @@ public class ChessGame
                     return false;
             }
         }
-        
+
         return true;
     }
-    
+
     public void setActiveTeam(Team team)
     {
         activeTeam = team;

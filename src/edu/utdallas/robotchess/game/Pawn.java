@@ -22,11 +22,11 @@ public class Pawn extends ChessPiece
 
     protected ChessPiece copyPiece()
     {
-        ChessPiece copiedPawn = new Pawn(getID(), getTeam(), 
+        ChessPiece copiedPawn = new Pawn(getID(), getTeam(),
                                          isActive(), hasNotMoved());
         return copiedPawn;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-pawn";
@@ -39,7 +39,7 @@ public class Pawn extends ChessPiece
         int neighborDirection;
         Square neighbor;
         Square currentLocation = getLocation();
-        
+
 
         if (getTeam() == Team.ORANGE)
             neighborDirection = 0;
@@ -62,7 +62,7 @@ public class Pawn extends ChessPiece
         int captureDirections[] = new int[2];
         captureDirections[0] = (neighborDirection + 7) % 8;
         captureDirections[1] = (neighborDirection + 9) % 8;
-        
+
         for (int i = 0; i < captureDirections.length; i++) {
             neighbor = currentLocation.getNeighbor(captureDirections[i]);
 
@@ -70,7 +70,7 @@ public class Pawn extends ChessPiece
                 ChessPiece occupant = neighbor.getOccupant();
                 Team ourTeam = getTeam();
                 Team theirTeam = occupant.getTeam();
-                
+
                 if (ourTeam != theirTeam)
                     moveList.add(neighbor);
             }
