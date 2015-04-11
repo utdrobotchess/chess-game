@@ -23,10 +23,23 @@ public abstract class Manager
 
     public void handleSquareClick(int index)
     {
-        if (currentlySelectedPiece == null)
+        if (isInitialPieceSelection(index))
             handleInitialPieceSelection(index);
         else
             handleMoveLocationSelection(index);
+    }
+
+    private boolean isInitialPieceSelection(int selectionIndex)
+    {
+        if (currentlySelectedPiece == null)
+            return true;
+
+        ArrayList<Integer> possibleMoveLocations = getValidMoveLocations();
+        for (int i = 0; i < possibleMoveLocations.size(); i++)
+            if (selectionIndex == possibleMoveLocations.get(i))
+                return false;
+
+        return true;
     }
 
     private void handleInitialPieceSelection(int selectionIndex)
