@@ -48,10 +48,7 @@ public class Path
 
         int[] payloadArr = new int[payload.size()];
         for (int i = 0; i < payloadArr.length; i++)
-        {
             payloadArr[i] = payload.get(i);
-            System.out.println(payloadArr[i]);
-        }
 
         return new MoveToSquareCommand(robotID, payloadArr);
     }
