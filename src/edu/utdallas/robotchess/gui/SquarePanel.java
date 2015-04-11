@@ -23,7 +23,7 @@ public class SquarePanel extends JPanel
                                                          BORDER_WIDTH,
                                                          BORDER_WIDTH,
                                                          BORDER_WIDTH,
-                                                         new Color(0, 120, 0));
+                                                         new Color(120, 0, 240));
 
         moveLocationBorder = BorderFactory.createMatteBorder(BORDER_WIDTH,
                                                              BORDER_WIDTH,

@@ -12,6 +12,7 @@ public class SquareButton extends JButton
         this.index = index;
         setBackground(color);
         setBorderPainted(false);
+        setOpaque(true);
     }
 
     protected int getIndex()
