@@ -132,8 +132,11 @@ public class MainFrame extends JFrame
                 manager.setBoardRowCount(boardRows);
                 manager.setBoardColumnCount(boardColumns);
 
-                boardPanel.setManager(manager);
+                remove(boardPanel);
+                boardPanel = new BoardPanel(manager);
+                add(boardPanel);
                 boardPanel.updateDisplay();
+                setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
 
             if (e.getSource() == newRCDemoMenuItem) {

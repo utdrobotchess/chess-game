@@ -23,7 +23,7 @@ public abstract class Manager
 
     public void handleSquareClick(int index)
     {
-        if (currentlySelectedPiece == null)
+        if (isValidInitialPieceSelection(index))
             handleInitialPieceSelection(index);
         else
             handleMoveLocationSelection(index);
@@ -51,12 +51,18 @@ public abstract class Manager
             makeUpdatesFromValidMoveSelection(selectionIndex);
     }
 
+    public abstract ArrayList<Integer> getValidMoveLocations();
     protected abstract boolean isValidMoveLocationSelection(int selectionIndex);
     protected abstract void makeUpdatesFromValidMoveSelection(int selectionIndex);
 
     public ArrayList<ChessPiece> getActivePieces()
     {
         return game.getActivePieces();
+    }
+
+    public ChessPiece getCurrentlySelectedPiece()
+    {
+        return currentlySelectedPiece;
     }
 
     public int getBoardRowCount()

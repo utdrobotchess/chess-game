@@ -34,6 +34,17 @@ public class ChessManager extends Manager
         return false;
     }
 
+    public ArrayList<Integer> getValidMoveLocations()
+    {
+        ArrayList<Square> moveSquares = game.generateMoveLocations(currentlySelectedPiece);
+        ArrayList<Integer> moveIndexes = new ArrayList<Integer>();
+
+        for (int i = 0; i < moveSquares.size(); i++)
+            moveIndexes.add(moveSquares.get(i).toInt());
+
+        return moveIndexes;
+    }
+
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
         currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
