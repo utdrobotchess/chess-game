@@ -53,6 +53,11 @@ public class RobotDemoManager extends Manager
         return !selectedSquare.isOccupied();
     }
 
+    public ArrayList<Integer> getValidMoveLocations()
+    {
+        return new ArrayList<>();
+    }
+
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
         currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));

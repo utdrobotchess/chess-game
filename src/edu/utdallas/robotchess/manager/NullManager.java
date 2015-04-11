@@ -27,6 +27,11 @@ public class NullManager extends Manager
         return false;
     }
 
+    public ArrayList<Integer> getValidMoveLocations()
+    {
+        return new ArrayList<>();
+    }
+
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
 

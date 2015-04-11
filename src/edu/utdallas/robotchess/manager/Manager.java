@@ -51,6 +51,7 @@ public abstract class Manager
             makeUpdatesFromValidMoveSelection(selectionIndex);
     }
 
+    public abstract ArrayList<Integer> getValidMoveLocations();
     protected abstract boolean isValidMoveLocationSelection(int selectionIndex);
     protected abstract void makeUpdatesFromValidMoveSelection(int selectionIndex);
 
