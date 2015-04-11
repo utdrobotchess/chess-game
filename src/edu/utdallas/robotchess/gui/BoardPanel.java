@@ -27,7 +27,7 @@ public class BoardPanel extends JPanel
     final int TOTAL_SQUARES = 64;
 
     private Manager manager;
-    private SquareButton squares[];
+    private SquarePanel squares[];
     private Map<String, ImageIcon> imageMap;
 
     protected BoardPanel(Manager manager)
@@ -39,7 +39,7 @@ public class BoardPanel extends JPanel
 
         setLayout(new GridLayout(rows, columns));
 
-        squares = new SquareButton[TOTAL_SQUARES];
+        squares = new SquarePanel[TOTAL_SQUARES];
 
         initializeSquares(rows, columns);
         configureImages();
@@ -51,8 +51,8 @@ public class BoardPanel extends JPanel
 
         for (int i = 0; i < squares.length; i++) {
             Color squareColor = whiteSquare ? Color.WHITE : Color.BLACK;
-            squares[i] = new SquareButton(i, squareColor);
-            squares[i].addActionListener(new ButtonListener());
+            squares[i] = new SquarePanel(i, squareColor);
+            squares[i].setButtonActionListener(new ButtonListener());
 
             squares[i].setOpaque(true);
 
@@ -84,7 +84,8 @@ public class BoardPanel extends JPanel
                                                        BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = scaledBI.createGraphics();
             g.setComposite(AlphaComposite.Src);
-            g.drawImage(imageMap.get(imageNames[i]).getImage(), 0, 0, scaledWidth, scaledHeight, null);
+            g.drawImage(imageMap.get(imageNames[i]).getImage(), 0, 0,
+                        scaledWidth, scaledHeight, null);
             g.dispose();
             imageMap.put(imageNames[i], new ImageIcon(scaledBI));
         }
@@ -92,8 +93,10 @@ public class BoardPanel extends JPanel
 
     protected void updateDisplay()
     {
-        for (int i = 0; i < squares.length; i++)
-            squares[i].setIcon(null);
+        for (int i = 0; i < squares.length; i++) {
+            squares[i].clearBorder();
+            squares[i].setButtonIcon(null);
+        }
 
         ArrayList<ChessPiece> pieces = manager.getActivePieces();
 
@@ -102,7 +105,17 @@ public class BoardPanel extends JPanel
             int location = piece.getIntLocation();
             String pieceName = piece.getName();
             Icon icon = imageMap.get(pieceName);
-            squares[location].setIcon(icon);
+            squares[location].setButtonIcon(icon);
+        }
+
+        ChessPiece currentlySelectedPiece = manager.getCurrentlySelectedPiece();
+        if (currentlySelectedPiece != null) {
+            int currentlySelectedIndex = currentlySelectedPiece.getIntLocation();
+            squares[currentlySelectedIndex].setSelectedPieceBorder();
+
+            ArrayList<Integer> possibleMoveLocations = manager.getValidMoveLocations();
+            for (int i = 0; i < possibleMoveLocations.size(); i++)
+                squares[possibleMoveLocations.get(i)].setMoveLocationBorder();
         }
     }
 
