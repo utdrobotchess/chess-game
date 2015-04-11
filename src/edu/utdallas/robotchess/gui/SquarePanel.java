@@ -23,13 +23,13 @@ public class SquarePanel extends JPanel
                                                          BORDER_WIDTH,
                                                          BORDER_WIDTH,
                                                          BORDER_WIDTH,
-                                                         Color.RED);
+                                                         new Color(0, 120, 0));
 
         moveLocationBorder = BorderFactory.createMatteBorder(BORDER_WIDTH,
                                                              BORDER_WIDTH,
                                                              BORDER_WIDTH,
                                                              BORDER_WIDTH,
-                                                             Color.YELLOW);
+                                                             new Color(0, 240, 0));
 
         setLayout(new GridLayout(1, 1));
         add(button);
