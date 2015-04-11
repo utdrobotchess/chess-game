@@ -59,6 +59,11 @@ public abstract class Manager
         return game.getActivePieces();
     }
 
+    public ChessPiece getCurrentlySelectedPiece()
+    {
+        return currentlySelectedPiece;
+    }
+
     public int getBoardRowCount()
     {
         return boardRowCount;
