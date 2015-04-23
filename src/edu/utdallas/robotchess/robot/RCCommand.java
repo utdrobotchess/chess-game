@@ -13,7 +13,7 @@ public class RCCommand extends Command
         this.robotID = robotID;
         this.velocities = velocities;
     }
-    
+
     @Override
     protected int[] generatePayload()
     {

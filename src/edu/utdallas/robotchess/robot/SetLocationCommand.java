@@ -5,7 +5,7 @@ public class SetLocationCommand extends Command
     final int MIN_LOCATION = 0;
     final int MAX_LOCATION = 63;
     private int location;
-    
+
     public SetLocationCommand(int robotID, int location)
     {
         commandID = 0x5;

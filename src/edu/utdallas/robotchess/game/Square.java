@@ -42,7 +42,7 @@ public class Square implements Comparable<Square>
     {
         return occupant;
     }
-    
+
     public Team getOccupyingTeam()
     {
         return occupant.getTeam();

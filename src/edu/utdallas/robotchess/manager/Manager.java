@@ -23,7 +23,7 @@ public abstract class Manager
 
     public void handleSquareClick(int index)
     {
-        if (currentlySelectedPiece == null)
+        if (isValidInitialPieceSelection(index))
             handleInitialPieceSelection(index);
         else
             handleMoveLocationSelection(index);
@@ -36,7 +36,7 @@ public abstract class Manager
         else
             currentlySelectedPiece = null;
     }
-    
+
     protected abstract boolean isValidInitialPieceSelection(int selectionIndex);
 
     private void makeUpdatesFromValidPieceSelection(int selectionIndex)
@@ -50,7 +50,8 @@ public abstract class Manager
         if (isValidMoveLocationSelection(selectionIndex))
             makeUpdatesFromValidMoveSelection(selectionIndex);
     }
-    
+
+    public abstract ArrayList<Integer> getValidMoveLocations();
     protected abstract boolean isValidMoveLocationSelection(int selectionIndex);
     protected abstract void makeUpdatesFromValidMoveSelection(int selectionIndex);
 
@@ -59,16 +60,21 @@ public abstract class Manager
         return game.getActivePieces();
     }
 
+    public ChessPiece getCurrentlySelectedPiece()
+    {
+        return currentlySelectedPiece;
+    }
+
     public int getBoardRowCount()
     {
         return boardRowCount;
     }
-    
+
     public int getBoardColumnCount()
     {
         return boardColumnCount;
     }
-    
+
     public void setBoardRowCount(int boardRowCount)
     {
         this.boardRowCount = boardRowCount;

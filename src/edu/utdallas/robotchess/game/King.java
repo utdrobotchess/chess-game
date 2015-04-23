@@ -7,7 +7,7 @@ public class King extends ChessPiece
 {
     public King(Square location, int id)
     {
-        super(location, id); 
+        super(location, id);
     }
 
     public King(int id, Team team, boolean active, boolean hasNotMoved)
@@ -21,7 +21,7 @@ public class King extends ChessPiece
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-king";

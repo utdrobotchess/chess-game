@@ -21,7 +21,7 @@ public class Rook extends ChessPiece
                                           isActive(), hasNotMoved());
         return copiedPiece;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-rook";
@@ -35,7 +35,7 @@ public class Rook extends ChessPiece
             addMovesInDirection(moveList, i, 8);
 
         Collections.sort(moveList);
-        
+
         return moveList;
     }
 }

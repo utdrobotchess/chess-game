@@ -1,6 +1,7 @@
 package edu.utdallas.robotchess.gui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
@@ -11,7 +12,7 @@ public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
     private static final long serialVersionUID = 3;
-    
+
     Manager manager;
 
     private ChessbotCommunicator comm;
@@ -59,7 +60,7 @@ public class MainFrame extends JFrame
         newChessDemoMenuItem = new JMenuItem("New Chess Demo");
         newRCDemoMenuItem = new JMenuItem("New RC Demo");
         exitMenuItem = new JMenuItem("Exit");
-        
+
         newChessDemoMenuItem.setEnabled(false);
         newRCDemoMenuItem.setEnabled(false);
 
@@ -105,32 +106,44 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
-        //RemoteController rc = new RemoteController();
-
         @Override
         public void actionPerformed(ActionEvent e)
         {
             if (e.getSource() == newGameMenuItem) {
                 boolean robotsEnabled = enableRobotsMenuItem.getState();
-                
+
                 if (robotsEnabled)
                     manager = new RobotChessManager();
                 else
                     manager = new ChessManager();
-                
+
                 boardPanel.setManager(manager);
                 boardPanel.updateDisplay();
             }
-            
+
             if (e.getSource() == newChessDemoMenuItem) {
-                // display a JOptionPane asking the user for the board dimensions
-                manager = new RobotDemoManager();
+                int[] robotsPresent = determineRobotsPresent();
+                int[] initialLocations = generateInitialLocations(robotsPresent);
+                manager = new RobotDemoManager(initialLocations);
+
+                int boardRows = determineBoardRows();
+                int boardColumns = determineBoardColumns();
+
+                manager.setBoardRowCount(boardRows);
+                manager.setBoardColumnCount(boardColumns);
+
+                remove(boardPanel);
+                boardPanel = new BoardPanel(manager);
+                add(boardPanel);
+                boardPanel.updateDisplay();
+                setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
-            
+
             if (e.getSource() == newRCDemoMenuItem) {
-                // create a remote controller
-                // pass it the communicator
-                // display a JOptionPane allowing the user to end
+                ChessbotCommunicator comm = ChessbotCommunicator.create();
+                RemoteController rc = new RemoteController(comm);
+                JOptionPane.showMessageDialog(null, "Press OK to exit RC mode");
+                rc.terminate();
             }
 
             if (e.getSource() == enableRobotsMenuItem) {
@@ -141,29 +154,12 @@ public class MainFrame extends JFrame
 
                 if(!enable)
                     discoveredRobotsFrame.setVisible(false);
-               
+
                 if (enable)
                     comm = ChessbotCommunicator.create();
             }
 
-            // if(e.getSource() == demoModeMenuItem || 
-            //    e.getSource() == rcModeMenuItem || 
-            //    e.getSource() == chessModeMenuItem){
-            //     boolean enableDemo = demoModeMenuItem.isSelected();
-            //     boolean enableRC = rcModeMenuItem.isSelected();
-            //     boolean enableChess = chessModeMenuItem.isSelected();
-            //     if(enableDemo) {
-            //         resizeBoard(4, 8); // TODO allow the user to pick the size of the board
-            //         boardPanel.initializeDemo();
-            //     }
-
-            //     // if(enableRC)
-            //     //     rc.start();
-            //     // else
-            //     //     rc.terminate();
-            // }
-
-            if(e.getSource() == robotsDiscoveredMenuItem){
+            if (e.getSource() == robotsDiscoveredMenuItem){
                  boolean enable = robotsDiscoveredMenuItem.getState();
                  discoveredRobotsFrame.setVisible(enable);
             }
@@ -172,8 +168,67 @@ public class MainFrame extends JFrame
                 System.exit(0);
             }
         }
+
+        private int[] determineRobotsPresent()
+        {
+            String robotsPresentStr = (String) JOptionPane.showInputDialog(
+                "Please enter space-separated list of robots present",
+                "e.g. 1 2 4 6");
+            String[] robotsPresentStrArr = robotsPresentStr.split(" ");
+
+            int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
+            for (int i = 0; i < robotsPresentIntArr.length; i++)
+                robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
+
+            return robotsPresentIntArr;
+        }
+
+        private int[] generateInitialLocations(int[] robotsPresent)
+        {
+            int[] locations = new int[32];
+
+            for (int i = 0; i < locations.length; i++)
+                locations[i] = -1;
+
+            for (int i = 0; i < robotsPresent.length; i++)
+                locations[robotsPresent[i]] = robotsPresent[i];
+
+            return locations;
+        }
+
+        private int determineBoardRows()
+        {
+            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            String boardRows = (String) JOptionPane.showInputDialog(
+                (Component) null,
+                "Please enter the number of board rows",
+                "Board Rows",
+                JOptionPane.PLAIN_MESSAGE,
+                (Icon) null,
+                possibleDimensions,
+                "8");
+            int boardRowCount = Integer.parseInt(boardRows);
+
+            return boardRowCount;
+         }
+
+        private int determineBoardColumns()
+        {
+            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            String boardColumns = (String) JOptionPane.showInputDialog(
+                (Component) null,
+                "Please enter the number of board columns",
+                "Board Columns",
+                JOptionPane.PLAIN_MESSAGE,
+                (Icon) null,
+                possibleDimensions,
+                "8");
+            int boardColumnCount = Integer.parseInt(boardColumns);
+
+            return boardColumnCount;
+         }
     }
-    
+
     public static void main(String[] args)
     {
         MainFrame frame = new MainFrame();

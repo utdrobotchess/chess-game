@@ -22,7 +22,7 @@ public class RemoteController extends Thread
 
         Controllers.poll();
 
-        if(Controllers.getControllerCount() != 0) {
+        if (Controllers.getControllerCount() != 0) {
             controller = Controllers.getController(0);
             System.out.println("Found controller");
         } else {

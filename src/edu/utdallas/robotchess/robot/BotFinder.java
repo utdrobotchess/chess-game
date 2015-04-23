@@ -106,7 +106,11 @@ public class BotFinder extends Thread
         xbee.addPacketListener(listenForIncomingNodes);
         xbee.addPacketListener(listenForIncomingBotIDs);
 
-        try{ xbee.sendAsynchronous(new AtCommand("ND")); }
+        try
+        {
+            xbee.sendAsynchronous(new AtCommand("ND"));
+            log.debug("Sent NodeDiscover");
+        }
         catch(XBeeException e) { log.debug("Couldn't send ND command"); }
 
         while(keepAlive)
@@ -124,7 +128,11 @@ public class BotFinder extends Thread
 
                 updateBotList();
 
-                try{ xbee.sendAsynchronous(new AtCommand("ND")); }
+                try
+                {
+                    xbee.sendAsynchronous(new AtCommand("ND"));
+                    log.debug("Sent NodeDiscover");
+                }
                 catch(XBeeException e) { log.debug("Couldn't send ND command"); }
 
                 startTime = System.currentTimeMillis();
@@ -221,8 +229,6 @@ public class BotFinder extends Thread
                 botList.add(Integer.toString(bot));
             }
         }
-
-        //robotState.updateBotList(botList);
     }
 
     @SuppressWarnings("unused")

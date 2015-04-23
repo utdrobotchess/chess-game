@@ -21,7 +21,7 @@ public class Knight extends ChessPiece
                                             isActive(), hasNotMoved());
         return copiedPiece;
     }
-    
+
     public String getName()
     {
         return getTeam() + "-knight";
@@ -37,12 +37,12 @@ public class Knight extends ChessPiece
 
             if (neighbor == null)
                 continue;
-            
+
             Square twoAwayNeighbor = neighbor.getNeighbor(i);
 
             if (twoAwayNeighbor == null)
                 continue;
-            
+
             Square potentialMove;
 
             for (int j = 2; j < 7; j += 4) {
@@ -65,7 +65,7 @@ public class Knight extends ChessPiece
         }
 
         Collections.sort(moveList);
-        
+
         return moveList;
     }
 }
