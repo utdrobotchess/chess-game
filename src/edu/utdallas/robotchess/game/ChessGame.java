@@ -101,6 +101,7 @@ public class ChessGame
         }
 
         ChessGame copiedGame = new ChessGame(copiedBoard, copiedPieces);
+        copiedGame.setActiveTeam(activeTeam);
 
         return copiedGame;
     }
@@ -119,10 +120,10 @@ public class ChessGame
 
         return moveLocations;
     }
-    
+
     public ChessGame copyGameAndMovePiece(int pieceID, int destination)
     {
-        return copyGameAndMovePiece(allPieces[pieceID], 
+        return copyGameAndMovePiece(allPieces[pieceID],
                                     getBoardSquareAt(destination));
     }
 
@@ -134,6 +135,7 @@ public class ChessGame
         ChessPiece copiedTestPiece = copiedPieces[piece.getID()];
         Square copiedDestinationSquare = copiedBoard.getSquareAt(destination.toInt());
         copiedTestPiece.moveTo(copiedDestinationSquare);
+        copiedGame.toggleActiveTeam();
 
         return copiedGame;
     }
@@ -303,7 +305,7 @@ public class ChessGame
 
         return false;
     }
-    
+
     public boolean isInCheckmate()
     {
         return isInCheckmate(activeTeam);
@@ -326,5 +328,13 @@ public class ChessGame
     public void setActiveTeam(Team team)
     {
         activeTeam = team;
+    }
+
+    public void toggleActiveTeam()
+    {
+        if (activeTeam == Team.ORANGE)
+            activeTeam = Team.GREEN;
+        else
+            activeTeam = Team.ORANGE;
     }
 }

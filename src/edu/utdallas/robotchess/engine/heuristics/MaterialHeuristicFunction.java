@@ -21,15 +21,16 @@ public class MaterialHeuristicFunction implements HeuristicFunction
 
         for (int i = 0; i < activePieces.size(); i++) {
             ChessPiece piece = activePieces.get(i);
-            double multiplier = piece.getTeam() == game.getActiveTeam() ? 1.0 : -1.0;
+            Team team = piece.getTeam();
+            double multiplier = team.getDirectionalValue();
             materialValue += multiplier * getPieceValue(piece);
         }
-        
+
         normalize(materialValue);
 
         return materialValue;
     }
-    
+
     private double getPieceValue(ChessPiece piece)
     {
         if (piece instanceof Pawn)
@@ -49,7 +50,7 @@ public class MaterialHeuristicFunction implements HeuristicFunction
 
         return 0.0;
     }
-    
+
     private double normalize(double value)
     {
         final double MAX = 8 * PAWN_VALUE +
@@ -57,7 +58,7 @@ public class MaterialHeuristicFunction implements HeuristicFunction
             2 * BISHOP_VALUE +
             2 * ROOK_VALUE +
             2 * QUEEN_VALUE;
-        
+
         return value / MAX;
     }
 }

@@ -8,6 +8,7 @@ import java.awt.image.*;
 
 import edu.utdallas.robotchess.manager.Manager;
 import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.engine.*;
 
 public class BoardPanel extends JPanel
 {
@@ -132,6 +133,10 @@ public class BoardPanel extends JPanel
             SquareButton buttonPressed = (SquareButton) e.getSource();
             int buttonIndex = buttonPressed.getIndex();
             manager.handleSquareClick(buttonIndex);
+
+            AlphaBetaSearch abs = new AlphaBetaSearch();
+            System.out.println(abs.search(manager.game));
+
             updateDisplay();
         }
     }

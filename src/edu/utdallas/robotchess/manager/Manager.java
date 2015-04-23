@@ -9,7 +9,7 @@ public abstract class Manager
     private int boardRowCount;
     private int boardColumnCount;
 
-    protected ChessGame game;
+    public ChessGame game;
     protected ChessPiece currentlySelectedPiece;
 
     protected Manager()

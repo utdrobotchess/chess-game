@@ -92,9 +92,6 @@ public class ChessManager extends Manager
 
     private void toggleActiveTeam()
     {
-        if (game.getActiveTeam() == Team.ORANGE)
-            game.setActiveTeam(Team.GREEN);
-        else
-            game.setActiveTeam(Team.ORANGE);
+        game.toggleActiveTeam();
     }
 }
