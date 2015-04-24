@@ -5,8 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
-import edu.utdallas.robotchess.robot.ChessbotCommunicator;
-import edu.utdallas.robotchess.robot.RemoteController;
+import edu.utdallas.robotchess.robot.*;
+import edu.utdallas.robotchess.game.*;
 
 public class MainFrame extends JFrame
 {
@@ -29,6 +29,7 @@ public class MainFrame extends JFrame
 
     JCheckBoxMenuItem enableRobotsMenuItem;
     JCheckBoxMenuItem robotsDiscoveredMenuItem;
+    JCheckBoxMenuItem enableChessAIMenuItem;
 
     MenuItemListener menuListener;
 
@@ -88,6 +89,10 @@ public class MainFrame extends JFrame
         robotsDiscoveredMenuItem.setEnabled(false);
         optionsMenu.add(robotsDiscoveredMenuItem);
         robotsDiscoveredMenuItem.addActionListener(menuListener);
+
+        enableChessAIMenuItem = new JCheckBoxMenuItem("Enable Chess AI");
+        optionsMenu.add(enableChessAIMenuItem);
+        enableChessAIMenuItem.addActionListener(menuListener);
     }
 
     private void setupMenuBar()
@@ -119,6 +124,13 @@ public class MainFrame extends JFrame
 
                 boardPanel.setManager(manager);
                 boardPanel.updateDisplay();
+            }
+
+            if (e.getSource() == enableChessAIMenuItem) {
+                if (manager instanceof ChessManager) {
+                    boolean state = enableChessAIMenuItem.getState();
+                    ((ChessManager) manager).setComputerControlsTeam(state, Team.GREEN);
+                }
             }
 
             if (e.getSource() == newChessDemoMenuItem) {

@@ -14,10 +14,6 @@ public class AlphaBetaSearch
     {
         currentDepth = 0;
 
-        // System.out.println("material: " + (new MaterialHeuristicFunction()).h(game));
-        // System.out.println("mobility: " + (new MobilityHeuristicFunction()).h(game));
-        // System.out.println("overall: " + (new EvaluationFunction()).f(game));
-
         Move action = null;
         Team activeTeam = game.getActiveTeam();
         double actionValue = (activeTeam == Team.GREEN) ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -25,7 +21,6 @@ public class AlphaBetaSearch
 
         for (int i = 0; i < possibleMoves.size(); i++) {
             Move move = possibleMoves.get(i);
-            System.out.print(move);
             ChessGame resultingGame = getResult(game, move);
             double value = (activeTeam == Team.GREEN) ?
                 minValue(resultingGame,
@@ -35,8 +30,6 @@ public class AlphaBetaSearch
                          Double.NEGATIVE_INFINITY,
                          Double.POSITIVE_INFINITY);
 
-            System.out.println(": " + value);
-
             if (activeTeam == Team.GREEN && value > actionValue ||
                 activeTeam == Team.ORANGE && value < actionValue) {
                 actionValue = value;
@@ -45,10 +38,6 @@ public class AlphaBetaSearch
         }
 
         ChessGame resultingGame = getResult(game, action);
-
-        // System.out.println("material: " + (new MaterialHeuristicFunction()).h(resultingGame));
-        // System.out.println("mobility: " + (new MobilityHeuristicFunction()).h(resultingGame));
-        // System.out.println("overall: " + (new EvaluationFunction()).f(resultingGame));
 
         return action;
     }

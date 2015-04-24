@@ -6,6 +6,9 @@ import edu.utdallas.robotchess.game.*;
 
 public class ChessManager extends Manager
 {
+    private boolean computerControlsOrange = false;
+    private boolean computerControlsGreen = false;
+
     public ChessManager()
     {
         super();
@@ -88,6 +91,25 @@ public class ChessManager extends Manager
         Square rookDestinationSquare = game.getBoardSquareAt(rookDestinationIndex);
         ChessPiece rook = rookOriginSquare.getOccupant();
         rook.moveTo(rookDestinationSquare);
+    }
+
+    public boolean isActiveTeamComputerControlled()
+    {
+        Team activeTeam = game.getActiveTeam();
+
+        if (activeTeam == Team.ORANGE && computerControlsOrange ||
+            activeTeam == Team.GREEN && computerControlsGreen)
+            return true;
+
+        return false;
+    }
+
+    public void setComputerControlsTeam(boolean computerControls, Team team)
+    {
+        if (team == Team.ORANGE)
+            computerControlsOrange = computerControls;
+        else
+            computerControlsGreen = computerControls;
     }
 
     private void toggleActiveTeam()

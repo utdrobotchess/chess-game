@@ -8,10 +8,13 @@ public class EvaluationFunction
     {
         MaterialHeuristicFunction material = new MaterialHeuristicFunction();
         double materialValue = material.h(game);
-        
+
         MobilityHeuristicFunction mobility = new MobilityHeuristicFunction();
-        double mobiliyValue = mobility.h(game);
-        
-        return 1.0 * materialValue + 1.0 * mobiliyValue;
+        double mobilityValue = mobility.h(game);
+
+        PieceSquaresHeuristicFunction pieceSquares = new PieceSquaresHeuristicFunction();
+        double pieceSquaresValue = pieceSquares.h(game);
+
+        return 1.0 * materialValue + 1.0 * mobilityValue + 1.0 * pieceSquaresValue;
     }
 }

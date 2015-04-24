@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-import edu.utdallas.robotchess.manager.Manager;
+import edu.utdallas.robotchess.manager.*;
 import edu.utdallas.robotchess.game.*;
 import edu.utdallas.robotchess.engine.*;
 
@@ -134,9 +134,25 @@ public class BoardPanel extends JPanel
             int buttonIndex = buttonPressed.getIndex();
             manager.handleSquareClick(buttonIndex);
 
-            AlphaBetaSearch abs = new AlphaBetaSearch();
-            System.out.println(abs.search(manager.game));
+            updateDisplay();
 
+            if (manager instanceof ChessManager &&
+                ((ChessManager) manager).isActiveTeamComputerControlled()) {
+                (new Thread(new EngineRunner())).start();
+            }
+        }
+    }
+
+    class EngineRunner implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            ChessGame game = manager.getGame();
+            AlphaBetaSearch abs = new AlphaBetaSearch();
+            Move move = abs.search(game);
+            manager.handleSquareClick(move.origin);
+            manager.handleSquareClick(move.destination);
             updateDisplay();
         }
     }

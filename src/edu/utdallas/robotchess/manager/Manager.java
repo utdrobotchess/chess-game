@@ -9,7 +9,7 @@ public abstract class Manager
     private int boardRowCount;
     private int boardColumnCount;
 
-    public ChessGame game;
+    protected ChessGame game;
     protected ChessPiece currentlySelectedPiece;
 
     protected Manager()
@@ -54,6 +54,11 @@ public abstract class Manager
     public abstract ArrayList<Integer> getValidMoveLocations();
     protected abstract boolean isValidMoveLocationSelection(int selectionIndex);
     protected abstract void makeUpdatesFromValidMoveSelection(int selectionIndex);
+
+    public ChessGame getGame()
+    {
+        return game;
+    }
 
     public ArrayList<ChessPiece> getActivePieces()
     {
