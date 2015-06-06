@@ -1,4 +1,4 @@
-Robotchess Chess Game Application
+Chess Game App
 ========
 This repository contains the source code developed for the Chessgame
 Application to be used in Robotchess demos. The Robotchess project is developed
