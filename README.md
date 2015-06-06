@@ -4,7 +4,7 @@ This repository contains the source code developed for the Chessgame
 Application to be used in Robotchess demos. The Robotchess project is developed
 and hosted by the University of Texas at Dallas.
 
-![Alt text](/doc/pics/chessboard.jpg?raw=true)
+![Alt text](/resources/chessboard.jpg?raw=true)
 
 For more information about the UTDallas Robotchess project, visit our website
 at http://www.utdallas.edu/robotchess.
