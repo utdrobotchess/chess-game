@@ -10,3 +10,7 @@
 /dist/
 /lib/resources.jar
 workbench.xmi
+/doc/*aux
+/doc/*out
+/doc/*pdf
+/doc/*toc
