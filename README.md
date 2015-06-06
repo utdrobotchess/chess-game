@@ -11,11 +11,32 @@ at http://www.utdallas.edu/robotchess.
 
 Contents
 --------
+* lib/
+  - Contains java libraries needed to compile the app.
 
+* log/
+  - Contains the log4j configuration file as well as the .log files that are
+generated when the app is run.
+
+* resources/
+  - Contains pictures for the app as well as the github repo.
+
+* src/edu/utdallas/robotchess
+  - Contains all source code for the app
+
+* test/edu/utdallas/robotchess
+  - Contains the source code for the unit tests for the app.
+
+* build.xml
+  - makefile for the Ant build system that our app uses. For more information
+about Ant: http://ant.apache.org
 
 Running the app
 --------
-
+If you are familiar with Ant, then you should be able to understand how to run
+the app by inspecting the build.xml. Regardless, to run the app you need to
+clone this repo, cd to this directory with some kind of shell, and enter 'ant run'.
+You must have the ant command line tool installed to do this.
 
 Issues
 --------
