@@ -7,3 +7,6 @@
 .classpath
 .project
 *.log
+/dist/
+/lib/resources.jar
+workbench.xmi
