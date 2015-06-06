@@ -50,10 +50,10 @@ public class ChessManager extends Manager
 
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
-        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
-
         if (isCastlingMove(selectionIndex))
             moveCastlingPiece(selectionIndex);
+
+        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
 
         currentlySelectedPiece = null;
         toggleActiveTeam();
