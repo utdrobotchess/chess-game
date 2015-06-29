@@ -11,7 +11,7 @@ public class SmartCenterCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         int payload[] = new int[payloadLength];
         payload[0] = commandID;

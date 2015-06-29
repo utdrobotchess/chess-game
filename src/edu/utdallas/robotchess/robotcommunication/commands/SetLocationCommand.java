@@ -15,7 +15,7 @@ public class SetLocationCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         if (location > MAX_LOCATION || location < MIN_LOCATION)
             return null;

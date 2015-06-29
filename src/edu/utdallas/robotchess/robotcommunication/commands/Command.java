@@ -12,7 +12,7 @@ public abstract class Command
     public boolean requiresACK = true;
     public XBeeAddress64 xbeeAddress;
 
-    protected abstract int[] generatePayload();
+    public abstract int[] generatePayload();
 
     public XBeeAddress64 GetXbeeAddress()
     {

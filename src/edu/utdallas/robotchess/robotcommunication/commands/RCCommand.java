@@ -15,7 +15,7 @@ public class RCCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         int payload[] = new int[payloadLength];
 

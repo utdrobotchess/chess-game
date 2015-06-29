@@ -15,7 +15,7 @@ public class MoveToSquareCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         for(int i = 0; i < destinations.length; i++)
             if (destinations[i] > MAX_DESTINATION || destinations[i] < MIN_DESTINATION)

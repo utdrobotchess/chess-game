@@ -15,7 +15,7 @@ public class WriteBotIDCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         if (newRobotID > MAX_ID || newRobotID < MIN_ID)
             return null;

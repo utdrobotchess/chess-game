@@ -20,7 +20,7 @@ public class ReadBotIDCommand extends Command
     }
 
     @Override
-    protected int[] generatePayload()
+    public int[] generatePayload()
     {
         int payload[] = new int[payloadLength];
 
