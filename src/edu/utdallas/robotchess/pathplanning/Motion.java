@@ -1,4 +1,4 @@
-package edu.utdallas.robotchess.robot;
+package edu.utdallas.robotchess.pathplanning;
 
 public class Motion
 {

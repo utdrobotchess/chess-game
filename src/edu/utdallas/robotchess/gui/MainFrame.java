@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
-import edu.utdallas.robotchess.robot.*;
+import edu.utdallas.robotchess.robotcommunication.*;
 import edu.utdallas.robotchess.game.*;
 
 public class MainFrame extends JFrame
@@ -14,11 +14,11 @@ public class MainFrame extends JFrame
     private static final long serialVersionUID = 3;
 
     Manager manager;
-
-    private ChessbotCommunicator comm;
+    private ChessbotCommunicator comm; //This probably should be a member of the manager class
+    DiscoveredBotsFrame discoveredRobotsFrame; //Probably want this to be a panel
+    BoardPanel boardPanel;
 
     JMenuBar menuBar;
-
     JMenu fileMenu;
     JMenu optionsMenu;
 
@@ -32,10 +32,6 @@ public class MainFrame extends JFrame
     JCheckBoxMenuItem enableChessAIMenuItem;
 
     MenuItemListener menuListener;
-
-    DiscoveredBotsFrame discoveredRobotsFrame;
-
-    BoardPanel boardPanel;
 
     public MainFrame()
     {

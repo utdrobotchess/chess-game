@@ -1,4 +1,7 @@
-package edu.utdallas.robotchess.robot;
+package edu.utdallas.robotchess.robotcommunication;
+
+import edu.utdallas.robotchess.robotcommunication.commands.*;
+import edu.utdallas.robotchess.robotcommunication.responses.*;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;

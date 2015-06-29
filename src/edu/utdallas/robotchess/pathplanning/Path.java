@@ -1,4 +1,6 @@
-package edu.utdallas.robotchess.robot;
+package edu.utdallas.robotchess.pathplanning;
+
+import edu.utdallas.robotchess.robotcommunication.commands.*;
 
 import java.util.*;
 

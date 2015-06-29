@@ -2,7 +2,9 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.*;
 import edu.utdallas.robotchess.game.*;
-import edu.utdallas.robotchess.robot.*;
+import edu.utdallas.robotchess.robotcommunication.*;
+import edu.utdallas.robotchess.pathplanning.*;
+import edu.utdallas.robotchess.robotcommunication.commands.*;
 
 public class RobotDemoManager extends Manager
 {

@@ -1,4 +1,4 @@
-package edu.utdallas.robotchess.robot;
+package edu.utdallas.robotchess.robotcommunication.responses;
 
 public class Response
 {
@@ -8,19 +8,19 @@ public class Response
 
     public Response(int[] payload, int robotID)
     {
-    	this.payload = payload;
-    	this.robotID = robotID;
-    	this.responseID = payload[0];
+        this.payload = payload;
+        this.robotID = robotID;
+        this.responseID = payload[0];
     }
 
     public int[] getPayload()
     {
-    	return this.payload;
+        return this.payload;
     }
 
     public int getresponseID()
     {
-    	return this.responseID;
+        return this.responseID;
     }
 
     public int getRobotID()
@@ -30,12 +30,12 @@ public class Response
 
     public int[] putPayload()
     {
-    	return this.payload;
+        return this.payload;
     }
 
     public int putresponseID()
     {
-    	return this.responseID;
+        return this.responseID;
     }
 
     public int putRobotID()
