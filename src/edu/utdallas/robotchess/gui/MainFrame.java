@@ -15,20 +15,23 @@ public class MainFrame extends JFrame
 
     Manager manager;
     private ChessbotCommunicator comm; //This probably should be a member of the manager class
-    DiscoveredBotsFrame discoveredRobotsFrame; //Probably want this to be a panel
     BoardPanel boardPanel;
 
     JMenuBar menuBar;
-    JMenu fileMenu;
+
+    JMenu gameMenu;
+    JMenu chessbotMenu;
     JMenu optionsMenu;
 
     JMenuItem newGameMenuItem;
     JMenuItem newChessDemoMenuItem;
-    JMenuItem newRCDemoMenuItem;
-    JMenuItem exitMenuItem;
+    JRadioButton playWithChessbotsButton;
+    JRadioButton playWithoutChessbotsButton;
 
-    JCheckBoxMenuItem enableRobotsMenuItem;
-    JCheckBoxMenuItem robotsDiscoveredMenuItem;
+    ButtonGroup chessbotButtonGroup;
+
+    JButton showConnectedChessbotButton;
+    JButton connectToXbeeButton;
     JCheckBoxMenuItem enableChessAIMenuItem;
 
     MenuItemListener menuListener;
@@ -36,71 +39,61 @@ public class MainFrame extends JFrame
     public MainFrame()
     {
         boardPanel = new BoardPanel(new NullManager());
-        add(boardPanel);
+        comm = ChessbotCommunicator.create();
 
-        discoveredRobotsFrame = new DiscoveredBotsFrame();
-        discoveredRobotsFrame.setVisible(false);
-
-        setupMenuBar();
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setupMenuBar();
+        add(boardPanel);
         setVisible(true);
-    }
-
-    private void setupFileMenu()
-    {
-        fileMenu = new JMenu("File");
-
-        newGameMenuItem = new JMenuItem("New Game");
-        newChessDemoMenuItem = new JMenuItem("New Chess Demo");
-        newRCDemoMenuItem = new JMenuItem("New RC Demo");
-        exitMenuItem = new JMenuItem("Exit");
-
-        newChessDemoMenuItem.setEnabled(false);
-        newRCDemoMenuItem.setEnabled(false);
-
-        fileMenu.add(newGameMenuItem);
-        fileMenu.add(newChessDemoMenuItem);
-        fileMenu.add(newRCDemoMenuItem);
-        fileMenu.add(exitMenuItem);
-
-        newGameMenuItem.addActionListener(menuListener);
-        newChessDemoMenuItem.addActionListener(menuListener);
-        newRCDemoMenuItem.addActionListener(menuListener);
-        exitMenuItem.addActionListener(menuListener);
-    }
-
-    private void setupOptionMenu()
-    {
-        optionsMenu = new JMenu("Options");
-
-        enableRobotsMenuItem = new JCheckBoxMenuItem("Enable Robots");
-        enableRobotsMenuItem.setEnabled(true);
-        optionsMenu.add(enableRobotsMenuItem);
-        enableRobotsMenuItem.addActionListener(menuListener);
-
-        robotsDiscoveredMenuItem = new JCheckBoxMenuItem("View Discovered Robots");
-        robotsDiscoveredMenuItem.setEnabled(false);
-        optionsMenu.add(robotsDiscoveredMenuItem);
-        robotsDiscoveredMenuItem.addActionListener(menuListener);
-
-        enableChessAIMenuItem = new JCheckBoxMenuItem("Enable Chess AI");
-        optionsMenu.add(enableChessAIMenuItem);
-        enableChessAIMenuItem.addActionListener(menuListener);
     }
 
     private void setupMenuBar()
     {
         menuBar = new JMenuBar();
         menuListener = new MenuItemListener();
+        gameMenu = new JMenu("Play Game");
+        chessbotMenu = new JMenu("Chessbots");
+        optionsMenu = new JMenu("Options");
+        newGameMenuItem = new JMenuItem("New Chessgame");
+        newChessDemoMenuItem = new JMenuItem("New Chessbot Demo");
+        showConnectedChessbotButton = new JButton("Show Connected Chessbots");
+        playWithChessbotsButton = new JRadioButton("Play with Chessbots");
+        playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
+        connectToXbeeButton = new JButton("Connect to Xbee");
+        enableChessAIMenuItem = new JCheckBoxMenuItem("Enable Chess AI");
 
-        setupFileMenu();
-        setupOptionMenu();
+        chessbotButtonGroup = new ButtonGroup();
+        chessbotButtonGroup.add(playWithChessbotsButton);
+        chessbotButtonGroup.add(playWithoutChessbotsButton);
 
-        menuBar.add(fileMenu);
+        gameMenu.add(newGameMenuItem);
+        gameMenu.add(newChessDemoMenuItem);
+        chessbotMenu.add(playWithChessbotsButton);
+        chessbotMenu.add(playWithoutChessbotsButton);
+        chessbotMenu.add(showConnectedChessbotButton);
+        optionsMenu.add(enableChessAIMenuItem);
+
+        gameMenu.setEnabled(false);
+        showConnectedChessbotButton.setEnabled(false);
+        connectToXbeeButton.setEnabled(false);
+        enableChessAIMenuItem.setEnabled(false);
+
+        newGameMenuItem.addActionListener(menuListener);
+        newChessDemoMenuItem.addActionListener(menuListener);
+        showConnectedChessbotButton.addActionListener(menuListener);
+        playWithChessbotsButton.addActionListener(menuListener);
+        playWithoutChessbotsButton.addActionListener(menuListener);
+        connectToXbeeButton.addActionListener(menuListener);
+        enableChessAIMenuItem.addActionListener(menuListener);
+
+        menuBar.add(gameMenu);
+        menuBar.add(chessbotMenu);
         menuBar.add(optionsMenu);
+        menuBar.add(connectToXbeeButton);
 
         setJMenuBar(menuBar);
     }
@@ -110,10 +103,27 @@ public class MainFrame extends JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            if (e.getSource() == newGameMenuItem) {
-                boolean robotsEnabled = enableRobotsMenuItem.getState();
+            if (e.getSource() == playWithChessbotsButton) {
+                gameMenu.setEnabled(true);
+                connectToXbeeButton.setEnabled(true);
+                enableChessAIMenuItem.setEnabled(true);
+                showConnectedChessbotButton.setEnabled(true);
+                newChessDemoMenuItem.setEnabled(true);
+            }
 
-                if (robotsEnabled)
+            if (e.getSource() == playWithoutChessbotsButton) {
+                gameMenu.setEnabled(true);
+                connectToXbeeButton.setEnabled(false);
+                enableChessAIMenuItem.setEnabled(true);
+                showConnectedChessbotButton.setEnabled(false);
+                newChessDemoMenuItem.setEnabled(false);
+
+                if (comm.isConnected())
+                    comm.endCommnication();
+            }
+
+            if (e.getSource() == newGameMenuItem) {
+                if (playWithChessbotsButton.isSelected())
                     manager = new RobotChessManager();
                 else
                     manager = new ChessManager();
@@ -147,33 +157,22 @@ public class MainFrame extends JFrame
                 setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
 
-            if (e.getSource() == newRCDemoMenuItem) {
-                ChessbotCommunicator comm = ChessbotCommunicator.create();
-                RemoteController rc = new RemoteController(comm);
-                JOptionPane.showMessageDialog(null, "Press OK to exit RC mode");
-                rc.terminate();
-            }
+            if (e.getSource() == connectToXbeeButton) {
 
-            if (e.getSource() == enableRobotsMenuItem) {
-                boolean enable = enableRobotsMenuItem.getState();
-                robotsDiscoveredMenuItem.setEnabled(enable);
-                newChessDemoMenuItem.setEnabled(enable);
-                newRCDemoMenuItem.setEnabled(enable);
+                if(comm.isConnected())
+                    JOptionPane.showMessageDialog(null, "XBee is connected");
+                else
+                {
+                    comm.SearchForXbeeOnComports();
 
-                if(!enable)
-                    discoveredRobotsFrame.setVisible(false);
+                    if(comm.isConnected())
+                        JOptionPane.showMessageDialog(null, "Successfully connected to Xbee");
+                    else
+                        JOptionPane.showMessageDialog(null, "Could not connect to Xbee. " +
+                                "Try again after unplugging and plugging in the Xbee. " +
+                                "If this does not work, restart the app.");
+                }
 
-                if (enable)
-                    comm = ChessbotCommunicator.create();
-            }
-
-            if (e.getSource() == robotsDiscoveredMenuItem){
-                 boolean enable = robotsDiscoveredMenuItem.getState();
-                 discoveredRobotsFrame.setVisible(enable);
-            }
-
-            if (e.getSource() == exitMenuItem) {
-                System.exit(0);
             }
         }
 

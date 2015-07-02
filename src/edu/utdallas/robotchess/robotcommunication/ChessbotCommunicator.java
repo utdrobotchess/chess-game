@@ -14,12 +14,8 @@ public class ChessbotCommunicator
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
 
     private static ChessbotCommunicator instance = null;
-
-    private XBee xbee = new XBee();
+    private XBee xbee;
     private BotFinder botFinder;
-
-    private int baudrate;
-    private String comport;
 
 	private PacketListener listenForIncomingResponses = new PacketListener()
 	{
@@ -43,26 +39,18 @@ public class ChessbotCommunicator
 
     private ChessbotCommunicator()
     {
-        PropertyConfigurator.configure("log/log4j.properties");
+        PropertyConfigurator.configure("log/log4j.properties"); //Should migrate this to all source code for logging
+        xbee = new XBee();
 
-        this.baudrate = 57600; // check xbee for this in the future
-        SearchForXbeeOnComports();
+        // botFinder = new BotFinder(xbee, this); //This may be a strange way of doing this....
+        // botFinder.start();
 
-        if(xbee == null)
-        {
-            log.debug("Cannot run ChessbotCommunicator Thread since no XBee on Comport");
-            return;
-        }
-
-        botFinder = new BotFinder(xbee, this); //This may be a strange way of doing this....
-        botFinder.start();
-
-        xbee.addPacketListener(listenForIncomingResponses);
+        // xbee.addPacketListener(listenForIncomingResponses);
     }
 
     public void endCommnication()
     {
-        xbee.close();
+        xbee.close(); //There is an issue with this method crashing the program
     }
 
     public void sendCommand(Command cmd)
@@ -110,22 +98,30 @@ public class ChessbotCommunicator
         log.debug("Sent Command");
     }
 
+    public boolean isConnected()
+    {
+        return xbee.isConnected();
+    }
+
     public void SearchForXbeeOnComports()
     {
+        if(isConnected())
+            return;
+
         @SuppressWarnings("unchecked")
         Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
 
         String osName = System.getProperty("os.name");
         String portName = null;
-
         boolean foundXbee = false;
-
-        log.debug("Searching Comports for XBee");
+        String comport;
 
         if (osName.equalsIgnoreCase("Mac OS X"))
             portName = "tty.usbserial";
         else if (osName.equalsIgnoreCase("Linux"))
             portName = "ttyUSB";
+
+        log.debug("Searching Comports for XBee");
 
         if(portName != null)
         {
@@ -135,17 +131,17 @@ public class ChessbotCommunicator
 
                 if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains(portName))
                 {
-                    this.comport = pid.getName();
+                    comport = pid.getName();
                     try
                     {
-                        xbee.open(this.comport, this.baudrate);
-                        log.debug("Found XBee on comport" + this.comport);
+                        xbee.open(comport, 57600);
+                        log.debug("Found XBee on comport" + comport);
                         foundXbee = true;
                         break;
                     }
                     catch(XBeeException e)
                     {
-                        log.debug("Did not find XBee on comport " + this.comport);
+                        log.debug("Did not find XBee on comport " + comport);
                     }
 
                 }
@@ -153,10 +149,6 @@ public class ChessbotCommunicator
         }
 
         if(!foundXbee)
-        {
             log.debug("Couldn't find Xbee on any available COMPORT");
-            xbee = null;
-            this.comport = null;
-        }
     }
 }
