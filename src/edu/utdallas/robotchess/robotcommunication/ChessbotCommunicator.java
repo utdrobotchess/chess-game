@@ -29,8 +29,8 @@ public class ChessbotCommunicator
     private static ChessbotCommunicator instance = null;
     private XBee xbee;
 
-    private ArrayList<XBeeAddress64> nodeAddresses = new ArrayList<XBeeAddress64>();
-    private ArrayList<XBeeAddress64> botAddresses = new ArrayList<XBeeAddress64>();
+    private ArrayList<XBeeAddress64> xbeeAddresses = new ArrayList<XBeeAddress64>();
+    private ArrayList<XBeeAddress64> chessbotAddresses = new ArrayList<XBeeAddress64>();
 
     private PacketListener nodeDiscoverResponseListener = new PacketListener()
     {
@@ -41,9 +41,9 @@ public class ChessbotCommunicator
                 NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
 
-                if(!nodeAddresses.contains(addr))
+                if(!xbeeAddresses.contains(addr))
                 {
-                    nodeAddresses.add(addr);
+                    xbeeAddresses.add(addr);
                     log.debug(nd);
                 }
             }
@@ -63,7 +63,7 @@ public class ChessbotCommunicator
 
                 switch (payload[0]) {
                     case 2:
-                        botAddresses.set(payload[1], addr);
+                        chessbotAddresses.set(payload[1], addr);
                         log.debug(rx);
                         break;
                 }
@@ -85,7 +85,7 @@ public class ChessbotCommunicator
         xbee = new XBee();
 
         for(int i = 0; i < 32; i++)
-            botAddresses.add(null);
+            chessbotAddresses.add(null);
     }
 
     public boolean initializeCommunication()
@@ -124,28 +124,28 @@ public class ChessbotCommunicator
             return false;
     }
 
-    public int returnNumberofConnectedChessbots()
-    {
-        return 0; //still need to implement this
-    }
-
     public void endCommnication()
     {
         xbee.close(); //There is an issue with this method crashing the program
     }
 
-    public ArrayList<XBeeAddress64> GetBotAddresses()
+    public int returnNumberofConnectedChessbots()
     {
-        return botAddresses;
+        return 0; //still need to implement this
     }
 
-    private void discoverBots()
+    public ArrayList<XBeeAddress64> getChessbotAddresses()
+    {
+        return chessbotAddresses;
+    }
+
+    public void discoverChessbots()
     {
         ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<XBeeAddress64>();
 
-        for(int i = 0; i < nodeAddresses.size(); i++)
-            if(!botAddresses.contains(nodeAddresses.get(i)))
-                undiscoveredBots.add(nodeAddresses.get(i));
+        for(int i = 0; i < xbeeAddresses.size(); i++)
+            if(!chessbotAddresses.contains(xbeeAddresses.get(i)))
+                undiscoveredBots.add(xbeeAddresses.get(i));
 
         for(int i = 0; i < undiscoveredBots.size(); i++)
         {
@@ -156,7 +156,6 @@ public class ChessbotCommunicator
         }
     }
 
-
     public void sendCommand(Command cmd)
     {
         int[] payload = cmd.generatePayload();
@@ -165,7 +164,7 @@ public class ChessbotCommunicator
         if(cmd.GetXbeeAddress() != null)
             addr = cmd.GetXbeeAddress();
         else
-            // addr = botFinder.GetBotAddresses().get(cmd.getRobotID());
+            addr = chessbotAddresses.get(cmd.getRobotID());
 
         if(addr == null)
         {
@@ -175,26 +174,36 @@ public class ChessbotCommunicator
 
         ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
 
+        //I'm going to change how (below) is done. Probably, I will not use
+        //retries and instead create a thread for each command that requires an
+        //ACK. I'm only worried about how the Xbee class will internal handle
+        //multiple threads writing at a time... I know that sendSynchronous()
+        //is thread safe, but I don't know if threads will just end up exiting
+        //without sending their information if another thread is currently
+        //writing to the serial port.
         if(cmd.RequiresACK())
         {
             for(int i = 0; i < cmd.getRetries(); i++)
             {
-                try
-                {
+                try {
                     ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
 
                     if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
                         break;
+                } catch(XBeeException e) {
+                    log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
                 }
-                catch(XBeeException e) { log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected"); }
             }
 
         }
         else
         {
             tx.setFrameId(0);
-            try { xbee.sendAsynchronous(tx); }
-            catch(XBeeException e) { log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected"); }
+            try {
+                xbee.sendAsynchronous(tx);
+            } catch(XBeeException e) {
+               log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+            }
         }
 
         log.debug("Sent Command");
@@ -227,14 +236,11 @@ public class ChessbotCommunicator
                 if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL && !pid.isCurrentlyOwned() && pid.getName().contains(portName))
                 {
                     comport = pid.getName();
-                    try
-                    {
+                    try {
                         xbee.open(comport, 57600);
                         foundXbee = true;
                         break;
-                    }
-                    catch(XBeeException e)
-                    {
+                    } catch(XBeeException e) {
                         log.debug("Did not find XBee on comport " + comport);
                     }
 
