@@ -1,5 +1,5 @@
 package edu.utdallas.robotchess.robotcommunication.responses;
-
+@Deprecated
 public class Response
 {
     private int responseID;
