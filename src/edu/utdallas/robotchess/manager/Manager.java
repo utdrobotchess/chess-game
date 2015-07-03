@@ -3,6 +3,7 @@ package edu.utdallas.robotchess.manager;
 import java.util.ArrayList;
 
 import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
 
 public abstract class Manager
 {
@@ -11,6 +12,7 @@ public abstract class Manager
 
     protected ChessGame game;
     protected ChessPiece currentlySelectedPiece;
+    protected ChessbotCommunicator comm;
 
     protected Manager()
     {
@@ -88,5 +90,31 @@ public abstract class Manager
     public void setBoardColumnCount(int boardColumnCount)
     {
         this.boardColumnCount = boardColumnCount;
+    }
+
+    public boolean isXbeeConnected()
+    {
+        if(comm == null)
+            return false;
+        else
+            return comm.isConnected();
+    }
+
+    public boolean connectToXbee()
+    {
+        if(comm == null)
+        {
+            comm = ChessbotCommunicator.create();
+            return comm.initializeCommunication();
+        }
+        else if(comm.isConnected())
+            return true;
+        else
+            return comm.initializeCommunication();
+    }
+
+    public boolean checkIfAllChessbotsAreConnected()
+    {
+        return (comm.returnNumberofConnectedChessbots() == 32);
     }
 }
