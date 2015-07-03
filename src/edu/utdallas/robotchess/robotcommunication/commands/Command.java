@@ -4,15 +4,18 @@ import com.rapplogic.xbee.api.XBeeAddress64;
 
 public abstract class Command
 {
-    public int commandID;
-    public int payloadLength;
-    public int robotID;
-    public int timeout = 5000;
-    public int retries = 3;
-    public boolean requiresACK = true;
-    public XBeeAddress64 xbeeAddress;
+    protected int commandID;
+    protected int payloadLength;
+    protected int robotID;
+    protected int timeout = 5000;
+    protected int retries = 3;
+    protected boolean requiresACK = true;
+    protected XBeeAddress64 xbeeAddress;
 
-    public abstract int[] generatePayload();
+    public int[] generatePayload()
+    {
+        return null;
+    }
 
     public XBeeAddress64 GetXbeeAddress()
     {
