@@ -1,11 +1,11 @@
 package edu.utdallas.robotchess.gui;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
 import edu.utdallas.robotchess.manager.*;
-import edu.utdallas.robotchess.robotcommunication.*;
 import edu.utdallas.robotchess.game.*;
 
 public class MainFrame extends JFrame
@@ -14,7 +14,6 @@ public class MainFrame extends JFrame
     private static final long serialVersionUID = 3;
 
     Manager manager;
-    private ChessbotCommunicator comm; //This probably should be a member of the manager class
     BoardPanel boardPanel;
 
     JMenuBar menuBar;
@@ -39,7 +38,7 @@ public class MainFrame extends JFrame
     public MainFrame()
     {
         boardPanel = new BoardPanel(new NullManager());
-        comm = ChessbotCommunicator.create();
+        manager = new NullManager();
 
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
@@ -60,7 +59,7 @@ public class MainFrame extends JFrame
         optionsMenu = new JMenu("Options");
         newGameMenuItem = new JMenuItem("New Chessgame");
         newChessDemoMenuItem = new JMenuItem("New Chessbot Demo");
-        showConnectedChessbotButton = new JButton("Show Connected Chessbots");
+        showConnectedChessbotButton = new JButton("Show Chessbot Info");
         playWithChessbotsButton = new JRadioButton("Play with Chessbots");
         playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
         connectToXbeeButton = new JButton("Connect to Xbee");
@@ -100,7 +99,6 @@ public class MainFrame extends JFrame
 
     class MenuItemListener implements ActionListener
     {
-        @Override
         public void actionPerformed(ActionEvent e)
         {
             if (e.getSource() == playWithChessbotsButton) {
@@ -117,16 +115,27 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(true);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
-
-                if (comm.isConnected())
-                    comm.endCommnication();
             }
 
             if (e.getSource() == newGameMenuItem) {
                 if (playWithChessbotsButton.isSelected())
-                    manager = new RobotChessManager();
+                {
+                    if(manager.checkIfAllChessbotsAreConnected())
+                        manager = new RobotChessManager();
+                    else
+                        JOptionPane.showMessageDialog(null, "All Chessbots need to be connected " +
+                            "in order to play a chessgame with them. To check how many are " +
+                            "currently connected, go to Options > Show Chessbot Info",
+                            "Not enough Chessbots connected",
+                            JOptionPane.WARNING_MESSAGE);
+
+                }
                 else
                     manager = new ChessManager();
+
+                //We may run into problems here since we are creating new
+                //managers but want to keep the same xbee object. Look at
+                //Manager class to investigate
 
                 boardPanel.setManager(manager);
                 boardPanel.updateDisplay();
@@ -137,6 +146,8 @@ public class MainFrame extends JFrame
                     boolean state = enableChessAIMenuItem.getState();
                     ((ChessManager) manager).setComputerControlsTeam(state, Team.GREEN);
                 }
+                //Add dialogue later for choosing team for AI as well as
+                //choosing difficulty
             }
 
             if (e.getSource() == newChessDemoMenuItem) {
@@ -159,18 +170,22 @@ public class MainFrame extends JFrame
 
             if (e.getSource() == connectToXbeeButton) {
 
-                if(comm.isConnected())
-                    JOptionPane.showMessageDialog(null, "XBee is connected");
+                boolean xbeeConnected = manager.isXbeeConnected();
+
+                if(manager.isXbeeConnected())
+                    JOptionPane.showMessageDialog(null, "Xbee is connected");
                 else
                 {
-                    comm.SearchForXbeeOnComports();
+                    xbeeConnected = manager.connectToXbee();
 
-                    if(comm.isConnected())
+                    if(xbeeConnected)
                         JOptionPane.showMessageDialog(null, "Successfully connected to Xbee");
                     else
                         JOptionPane.showMessageDialog(null, "Could not connect to Xbee. " +
                                 "Try again after unplugging and plugging in the Xbee. " +
-                                "If this does not work, restart the app.");
+                                "If this does not work, restart the app.",
+                                "Cannot find Xbee",
+                                JOptionPane.WARNING_MESSAGE);
                 }
 
             }
@@ -238,6 +253,7 @@ public class MainFrame extends JFrame
 
     public static void main(String[] args)
     {
+        @SuppressWarnings("unused")
         MainFrame frame = new MainFrame();
     }
 }
