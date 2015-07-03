@@ -1,7 +1,6 @@
 package edu.utdallas.robotchess.robotcommunication;
 
 import edu.utdallas.robotchess.robotcommunication.commands.*;
-import edu.utdallas.robotchess.robotcommunication.responses.*;
 
 import org.apache.log4j.*;
 import com.rapplogic.xbee.api.ApiId;
@@ -19,6 +18,9 @@ import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+//Probably depracated. Will transfer functionality to ChessbotCommunicator and
+//simplify the process by which Chessbots are connected
+@Deprecated
 public class BotFinder extends Thread
 {
     private XBee xbee;
@@ -36,13 +38,13 @@ public class BotFinder extends Thread
 
     private Hashtable<Integer, ArrayList<XBeeAddress64>> unresponsiveNodes = new Hashtable<Integer, ArrayList<XBeeAddress64>>();
 
-	private PacketListener listenForIncomingNodes = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response)
-		{
-			if (response.getApiId() == ApiId.AT_RESPONSE)
+    private PacketListener listenForIncomingNodes = new PacketListener()
+    {
+        public void processResponse(XBeeResponse response)
+        {
+            if (response.getApiId() == ApiId.AT_RESPONSE)
             {
-				NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
+                NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
 
                 if(!nodeAddresses.contains(addr))
@@ -60,15 +62,15 @@ public class BotFinder extends Thread
                         unresponsiveNodes.get(i).remove(addr);
                 }
 
-			}
-		}
-	};
+            }
+        }
+    };
 
-	private PacketListener listenForIncomingBotIDs = new PacketListener()
-	{
-		public void processResponse(XBeeResponse response)
-		{
-			if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
+    private PacketListener listenForIncomingBotIDs = new PacketListener()
+    {
+        public void processResponse(XBeeResponse response)
+        {
+            if (response.getApiId() == ApiId.ZNET_RX_RESPONSE)
             {
                 ZNetRxResponse rx = (ZNetRxResponse) response;
                 XBeeAddress64 addr = rx.getRemoteAddress64();
@@ -81,9 +83,9 @@ public class BotFinder extends Thread
                     log.debug(rx);
                 }
 
-			}
-		}
-	};
+            }
+        }
+    };
 
     public BotFinder(XBee xbee, ChessbotCommunicator comm)
     {
@@ -166,8 +168,6 @@ public class BotFinder extends Thread
         for(int i = 0; i < nodeAddresses.size(); i++)
             if(!botAddresses.contains(nodeAddresses.get(i)))
                 undiscoveredBots.add(nodeAddresses.get(i));
-
-
 
         for(int i = 0; i < undiscoveredBots.size(); i++)
         {
