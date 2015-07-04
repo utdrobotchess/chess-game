@@ -190,55 +190,69 @@ public class ChessbotCommunicator
         discoverChessbotThread.start();
     }
 
-    //I should probably be consistent with how I'm creating threads...
     public void sendCommand(final Command cmd)
     {
-        Thread sendSynchronousThread = new Thread()
-        {
-            public void run() {
-                int[] payload = cmd.generatePayload();
-                XBeeAddress64 addr = new XBeeAddress64();
+        int[] payload = cmd.generatePayload();
+        XBeeAddress64 addr = new XBeeAddress64();
 
-                if(cmd.GetXbeeAddress() != null)
-                    addr = cmd.GetXbeeAddress();
-                else
-                    addr = chessbots.getAddressFromId(cmd.getRobotID());
+        if(cmd.GetXbeeAddress() != null)
+            addr = cmd.GetXbeeAddress();
+        else
+            addr = chessbots.getAddressFromId(cmd.getRobotID());
 
-                if(addr == null) {
-                    log.debug("Cannot send packet. It has a null address");
-                    return;
-                }
+        if(addr == null) {
+            log.debug("Cannot send packet. It has a null address");
+            return;
+        }
 
-                ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
+        ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
 
-                if(cmd.getACK()) {
-                    tx.setFrameId(xbee.getNextFrameId());
-
-                    try {
-                        ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
-                        boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
-                        chessbots.updateMessageSent(addr, tx, deliveryStatus);
-                    } catch(XBeeException e) {
-                        log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
-                        return;
-                    }
-                }
-                else {
-                    tx.setFrameId(0);
-                    try {
-                        xbee.sendAsynchronous(tx);
-                    } catch(XBeeException e) {
-                        log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
-                        return;
-                    }
-                }
-
-                log.debug("Sent Command");
+        if(cmd.getACK()) {
+            SendSynchronousThread t = new SendSynchronousThread(cmd, tx, addr);
+            t.start();
+        }
+        else {
+            tx.setFrameId(0);
+            try {
+                xbee.sendAsynchronous(tx);
+            } catch(XBeeException e) {
+                log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+                return;
             }
-        };
+        }
 
-        sendSynchronousThread.start();
+        log.debug("Sent Command");
     }
+
+    //Should be "implements Runnable". But when I correct it, java is unable to
+    //find the start() method for this class. At this point, I'm not sure what
+    //practical issues I'll run into by extending Thread instead of the correct
+    //way
+    private class SendSynchronousThread extends Thread
+    {
+        private Command cmd;
+        private ZNetTxRequest tx;
+        private XBeeAddress64 addr;
+
+        public SendSynchronousThread(Command cmd, ZNetTxRequest tx, XBeeAddress64 addr) {
+            this.cmd = cmd;
+            this.tx = tx;
+            this.addr = addr;
+        }
+
+        public void run() {
+            tx.setFrameId(xbee.getNextFrameId());
+
+            try {
+                ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
+                boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
+                chessbots.updateMessageSent(addr, tx, deliveryStatus);
+            } catch(XBeeException e) {
+                log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+            }
+        }
+    }
+
 
     public boolean SearchForXbeeOnComports()
     {
