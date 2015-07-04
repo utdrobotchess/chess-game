@@ -31,6 +31,7 @@ public class ChessbotCommunicator
     private static ChessbotCommunicator instance = null;
     private XBee xbee;
     private ChessbotInfoArrayHandler chessbots;
+
     private Thread discoverChessbotThread = new Thread()
     {
         public void run() {
@@ -41,6 +42,7 @@ public class ChessbotCommunicator
                 timeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
             } catch(XBeeException e){
                 log.debug("Couldn't send NT command", e);
+                return;
             }
 
             try {
@@ -49,6 +51,7 @@ public class ChessbotCommunicator
             } catch(XBeeException e) {
                 xbee.removePacketListener(nodeDiscoverResponseListener);
                 log.debug("Couldn't send ND command", e);
+                return;
             }
 
             try {
@@ -66,6 +69,7 @@ public class ChessbotCommunicator
             }
 
             xbee.removePacketListener(nodeDiscoverResponseListener);
+            return;
         }
 
     };
@@ -186,46 +190,54 @@ public class ChessbotCommunicator
         discoverChessbotThread.start();
     }
 
-    public void sendCommand(Command cmd)
+    //I should probably be consistent with how I'm creating threads...
+    public void sendCommand(final Command cmd)
     {
-        int[] payload = cmd.generatePayload();
-        XBeeAddress64 addr = new XBeeAddress64();
-
-        if(cmd.GetXbeeAddress() != null)
-            addr = cmd.GetXbeeAddress();
-        else
-            addr = chessbots.getAddressFromId(cmd.getRobotID());
-
-        if(addr == null)
+        Thread sendSynchronousThread = new Thread()
         {
-            log.debug("Cannot send packet. It has a null address");
-            return;
-        }
+            public void run() {
+                int[] payload = cmd.generatePayload();
+                XBeeAddress64 addr = new XBeeAddress64();
 
-        ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
+                if(cmd.GetXbeeAddress() != null)
+                    addr = cmd.GetXbeeAddress();
+                else
+                    addr = chessbots.getAddressFromId(cmd.getRobotID());
 
-        if(cmd.getACK())
-        {
-            tx.setFrameId(xbee.getNextFrameId());
-            try {
-                ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
-                boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
-                chessbots.updateMessageSent(addr, tx, deliveryStatus);
-            } catch(XBeeException e) {
-                log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+                if(addr == null) {
+                    log.debug("Cannot send packet. It has a null address");
+                    return;
+                }
+
+                ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
+
+                if(cmd.getACK()) {
+                    tx.setFrameId(xbee.getNextFrameId());
+
+                    try {
+                        ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
+                        boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
+                        chessbots.updateMessageSent(addr, tx, deliveryStatus);
+                    } catch(XBeeException e) {
+                        log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+                        return;
+                    }
+                }
+                else {
+                    tx.setFrameId(0);
+                    try {
+                        xbee.sendAsynchronous(tx);
+                    } catch(XBeeException e) {
+                        log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
+                        return;
+                    }
+                }
+
+                log.debug("Sent Command");
             }
+        };
 
-        }
-        else {
-            tx.setFrameId(0);
-            try {
-                xbee.sendAsynchronous(tx);
-            } catch(XBeeException e) {
-               log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
-            }
-        }
-
-        log.debug("Sent Command");
+        sendSynchronousThread.start();
     }
 
     public boolean SearchForXbeeOnComports()

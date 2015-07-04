@@ -121,8 +121,6 @@ public class ChessbotInfoArrayHandler
         return addrArr;
     }
 
-
-
     public boolean allChessbotsConnected() {
         if(chessbotArr.size() == 32) {
             for (ChessbotInfo chessbotInfo : chessbotArr) {
