@@ -131,6 +131,9 @@ public abstract class Manager
 
     public boolean checkIfAllChessbotsAreConnected()
     {
-        return comm.allChessbotsConnected();
+        if(comm != null)
+            return comm.allChessbotsConnected();
+        else
+            return false;
     }
 }
