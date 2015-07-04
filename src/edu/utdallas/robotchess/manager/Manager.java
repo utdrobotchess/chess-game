@@ -75,6 +75,14 @@ public abstract class Manager
         return currentlySelectedPiece;
     }
 
+    public ChessbotCommunicator getComm() {
+        return comm;
+    }
+
+    public void setComm(ChessbotCommunicator comm) {
+        this.comm = comm;
+    }
+
     public int getBoardRowCount()
     {
         return boardRowCount;

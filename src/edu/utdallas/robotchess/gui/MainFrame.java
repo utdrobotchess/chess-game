@@ -97,6 +97,13 @@ public class MainFrame extends JFrame
         setJMenuBar(menuBar);
     }
 
+    private void switchManager(Manager manager) {
+        manager.setComm(this.manager.getComm());
+        this.manager = manager;
+        boardPanel.setManager(this.manager);
+        boardPanel.updateDisplay();
+    }
+
     class MenuItemListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -107,6 +114,7 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(true);
                 showConnectedChessbotButton.setEnabled(true);
                 newChessDemoMenuItem.setEnabled(true);
+                switchManager(new NullManager());
             }
 
             if (e.getSource() == playWithoutChessbotsButton) {
@@ -115,13 +123,14 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(true);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
+                switchManager(new NullManager());
             }
 
             if (e.getSource() == newGameMenuItem) {
                 if (playWithChessbotsButton.isSelected())
                 {
                     if(manager.checkIfAllChessbotsAreConnected())
-                        manager = new RobotChessManager();
+                        switchManager(new RobotChessManager());
                     else
                         JOptionPane.showMessageDialog(null, "All Chessbots need to be connected " +
                             "in order to play a chessgame with them. To check how many are " +
@@ -131,14 +140,13 @@ public class MainFrame extends JFrame
 
                 }
                 else
-                    manager = new ChessManager();
+                    switchManager(new ChessManager());
 
                 //We may run into problems here since we are creating new
                 //managers but want to keep the same xbee object. Look at
                 //Manager class to investigate
 
-                boardPanel.setManager(manager);
-                boardPanel.updateDisplay();
+                switchManager(manager);
             }
 
             if (e.getSource() == enableChessAIMenuItem) {
