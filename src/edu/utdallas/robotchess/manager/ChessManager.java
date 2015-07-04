@@ -104,6 +104,8 @@ public class ChessManager extends Manager
         return false;
     }
 
+    //Should be inherited or implemented in both this class and
+    //RobotChessManager
     public void setComputerControlsTeam(boolean computerControls, Team team)
     {
         if (team == Team.ORANGE)
