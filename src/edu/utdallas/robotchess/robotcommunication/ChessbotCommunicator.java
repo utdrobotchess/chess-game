@@ -1,9 +1,10 @@
 package edu.utdallas.robotchess.robotcommunication;
 
-import edu.utdallas.robotchess.robotcommunication.commands.Command;
-import edu.utdallas.robotchess.robotcommunication.commands.ReadBotIDCommand;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.AtCommand;
@@ -18,19 +19,43 @@ import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
 
+import edu.utdallas.robotchess.robotcommunication.commands.Command;
+import edu.utdallas.robotchess.robotcommunication.commands.ReadBotIDCommand;
 import gnu.io.CommPortIdentifier;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 public class ChessbotCommunicator
 {
     private final static Logger log = Logger.getLogger(ChessbotCommunicator.class);
     private static ChessbotCommunicator instance = null;
     private XBee xbee;
+    private ChessbotInfoArrayHandler chessbots;
 
-    private ArrayList<XBeeAddress64> xbeeAddresses = new ArrayList<XBeeAddress64>();
-    private ArrayList<XBeeAddress64> chessbotAddresses = new ArrayList<XBeeAddress64>();
+    private Thread discoverChessbotThread = new Thread()
+    {
+        public void run(){
+            try {
+                xbee.sendAsynchronous(new AtCommand("ND"));
+            } catch(XBeeException e) {
+                log.debug("Couldn't send ND command", e);
+            }
+
+            xbee.addPacketListener(nodeDiscoverResponseListener);
+
+            try {
+                Thread.sleep(10000); //May need to change this time after testing
+            } catch (InterruptedException e) {
+                log.debug("discoverChessbotThread interrupted", e);
+            }
+
+            ArrayList<XBeeAddress64> undiscoveredBots = chessbots.getAddressesWithNullIds();
+
+            for (XBeeAddress64 addr : undiscoveredBots) {
+                ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
+                sendCommand(cmd); //Don't know whether or not to send synchrnous
+            }
+        }
+
+    };
 
     private PacketListener nodeDiscoverResponseListener = new PacketListener()
     {
@@ -40,12 +65,7 @@ public class ChessbotCommunicator
             {
                 NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
-
-                if(!xbeeAddresses.contains(addr))
-                {
-                    xbeeAddresses.add(addr);
-                    log.debug(nd);
-                }
+                chessbots.add(addr);
             }
         }
     };
@@ -63,7 +83,7 @@ public class ChessbotCommunicator
 
                 switch (payload[0]) {
                     case 2:
-                        chessbotAddresses.set(payload[1], addr);
+                        chessbots.add(addr, (Integer) payload[1]);
                         log.debug(rx);
                         break;
                 }
@@ -83,9 +103,7 @@ public class ChessbotCommunicator
     {
         PropertyConfigurator.configure("log/log4j.properties"); //Should migrate this to all source code for logging
         xbee = new XBee();
-
-        for(int i = 0; i < 32; i++)
-            chessbotAddresses.add(null);
+        chessbots = new ChessbotInfoArrayHandler();
     }
 
     public boolean initializeCommunication()
@@ -104,7 +122,7 @@ public class ChessbotCommunicator
             //I'm more worried about avoiding adding duplicate packetListeners
             //than I am about the aforementioned case. However, if this does
             //happen, there is no way to add the packetListener without
-            //restarting the program.
+            //restarting the program and trying to reconnect.
         }
         return successful;
     }
@@ -117,6 +135,13 @@ public class ChessbotCommunicator
                 xbee.sendSynchronous(new AtCommand("ID"), 500);
                 return true;
             } catch(XBeeException e){
+                //If the serial connection is up, but the xbee is not
+                //connected, we should close the serial connection to allow
+                //reconnection the next time we press the "Connect to Xbee"
+                //button. We should use the method below, however it seems to
+                //crash the program. See issue #2 on our github repo.
+
+                //xbee.close()
                 return false;
             }
         }
@@ -126,34 +151,27 @@ public class ChessbotCommunicator
 
     public void endCommnication()
     {
-        xbee.close(); //There is an issue with this method crashing the program
+        //There is an issue with this method crashing the program. See issue #2
+        //on our github repo
+        xbee.close();
     }
 
-    public int returnNumberofConnectedChessbots()
+    public ChessbotInfoArrayHandler getChessbotInfo()
     {
-        return 0; //still need to implement this
+        //may change this later for cleaner interface between this class and
+        //manager class. Ideally, we want to create a panel that shows all of
+        //the relevant information stored in the chessbots data structure.
+        return chessbots;
     }
 
-    public ArrayList<XBeeAddress64> getChessbotAddresses()
+    public boolean allChessbotsConnected()
     {
-        return chessbotAddresses;
+        return chessbots.allChessbotsConnected();
     }
 
     public void discoverChessbots()
     {
-        ArrayList<XBeeAddress64> undiscoveredBots = new ArrayList<XBeeAddress64>();
-
-        for(int i = 0; i < xbeeAddresses.size(); i++)
-            if(!chessbotAddresses.contains(xbeeAddresses.get(i)))
-                undiscoveredBots.add(xbeeAddresses.get(i));
-
-        for(int i = 0; i < undiscoveredBots.size(); i++)
-        {
-            XBeeAddress64 addr = undiscoveredBots.get(i);
-            ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
-
-            sendCommand(cmd);
-        }
+        discoverChessbotThread.start();
     }
 
     public void sendCommand(Command cmd)
@@ -164,7 +182,7 @@ public class ChessbotCommunicator
         if(cmd.GetXbeeAddress() != null)
             addr = cmd.GetXbeeAddress();
         else
-            addr = chessbotAddresses.get(cmd.getRobotID());
+            addr = chessbots.getAddressFromId(cmd.getRobotID());
 
         if(addr == null)
         {

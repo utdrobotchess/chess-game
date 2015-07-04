@@ -114,6 +114,19 @@ public class ChessbotInfoArrayHandler
         return addrArr;
     }
 
+    public boolean allChessbotsConnected() {
+        if(chessbotArr.size() == 32) {
+            for (ChessbotInfo chessbotInfo : chessbotArr) {
+                if (chessbotInfo.getId() == null)
+                    return false;
+            }
+            return true;
+        }
+        else
+            return false;
+
+    }
+
     public String toString() {
         return ""; //TODO: Implement this
     }

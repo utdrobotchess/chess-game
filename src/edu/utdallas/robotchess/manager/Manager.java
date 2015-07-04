@@ -2,8 +2,11 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.ArrayList;
 
-import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.game.ChessGame;
+import edu.utdallas.robotchess.game.ChessPiece;
+import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
+import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 public abstract class Manager
 {
@@ -113,8 +116,13 @@ public abstract class Manager
             return comm.initializeCommunication();
     }
 
+    public ChessbotInfoArrayHandler getChessbotInfo()
+    {
+        return comm.getChessbotInfo();
+    }
+
     public boolean checkIfAllChessbotsAreConnected()
     {
-        return (comm.returnNumberofConnectedChessbots() == 32);
+        return comm.allChessbotsConnected();
     }
 }
