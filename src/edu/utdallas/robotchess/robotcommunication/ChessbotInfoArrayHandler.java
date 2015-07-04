@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.rapplogic.xbee.api.XBeeAddress64;
+import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
+import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 
 
 //I probably should extend ArrayList of one of its super classes instead of
@@ -70,10 +72,20 @@ public class ChessbotInfoArrayHandler
         return -1;
     }
 
-    public void setLastTimeCommunicated(XBeeAddress64 addr) {
+    public void updateMessageSent(XBeeAddress64 addr, ZNetTxRequest msg,
+                                    boolean deliveryStatus) {
         ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
         int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
         chessbotInfo.setLastTimeCommunicated(new Date());
+        chessbotInfo.setLastMessageSent(msg, deliveryStatus);
+        chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+    }
+
+    public void updateMessageReceived(XBeeAddress64 addr, ZNetRxResponse msg) {
+        ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
+        int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
+        chessbotInfo.setLastTimeCommunicated(new Date());
+        chessbotInfo.setLastMessageReceived(msg);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
     }
 
@@ -114,6 +126,8 @@ public class ChessbotInfoArrayHandler
         return addrArr;
     }
 
+
+
     public boolean allChessbotsConnected() {
         if(chessbotArr.size() == 32) {
             for (ChessbotInfo chessbotInfo : chessbotArr) {
@@ -136,6 +150,9 @@ class ChessbotInfo
     XBeeAddress64 xbeeAddress;
     Integer id;
     Date lastTimeCommunicated;
+    ZNetRxResponse lastMessageReceived; //Last message received from Chessbot
+    ZNetTxRequest lastMessageSent;      //Last message sent to Chessbot
+    boolean lastMessageDeliveryStatus;
 
     public ChessbotInfo(XBeeAddress64 xbeeAddress, Integer id, Date lastTimeCommunicated)
     {
@@ -166,6 +183,28 @@ class ChessbotInfo
 
     public void setLastTimeCommunicated(Date lastTimeCommunicated) {
         this.lastTimeCommunicated = lastTimeCommunicated;
+    }
+
+    public ZNetTxRequest getLastMessageSent() {
+        return lastMessageSent;
+    }
+
+    public void setLastMessageSent(ZNetTxRequest lastMessageSent,
+                                    boolean deliveryStatus) {
+        this.lastMessageSent = lastMessageSent;
+        this.lastMessageDeliveryStatus = deliveryStatus;
+    }
+
+    public ZNetRxResponse getLastMessageReceived() {
+        return lastMessageReceived;
+    }
+
+    public void setLastMessageReceived(ZNetRxResponse lastMessageReceived) {
+        this.lastMessageReceived = lastMessageReceived;
+    }
+
+    public boolean getLastMessageDeliveryStatus() {
+        return lastMessageDeliveryStatus;
     }
 
     public String formatDateString() {
