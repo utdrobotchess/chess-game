@@ -115,7 +115,15 @@ public class MainFrame extends JFrame
         manager.setComm(this.manager.getComm());
         this.manager = manager;
         boardPanel.setManager(this.manager);
+        toggleAIButton(false);
         boardPanel.updateDisplay();
+    }
+
+    private void toggleAIButton(boolean enabled) {
+        if (enabled)
+            enableChessAIMenuItem.setText("Disable Chess AI");
+        else
+            enableChessAIMenuItem.setText("Enable Chess AI");
     }
 
     class MenuItemListener implements ActionListener
@@ -125,7 +133,7 @@ public class MainFrame extends JFrame
             if (e.getSource() == playWithChessbotsButton) {
                 gameMenu.setEnabled(true);
                 connectToXbeeButton.setEnabled(true);
-                enableChessAIMenuItem.setEnabled(true);
+                enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(true);
                 newChessDemoMenuItem.setEnabled(true);
                 switchManager(new NullManager());
@@ -134,17 +142,21 @@ public class MainFrame extends JFrame
             if (e.getSource() == playWithoutChessbotsButton) {
                 gameMenu.setEnabled(true);
                 connectToXbeeButton.setEnabled(false);
-                enableChessAIMenuItem.setEnabled(true);
+                enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
                 switchManager(new NullManager());
             }
 
+            //Still some issues with toggle AI button when starting a new
+            //game...
             if (e.getSource() == newGameMenuItem) {
                 if (playWithChessbotsButton.isSelected())
                 {
-                    if(manager.checkIfAllChessbotsAreConnected())
+                    if(manager.checkIfAllChessbotsAreConnected()) {
                         switchManager(new RobotChessManager());
+                        enableChessAIMenuItem.setEnabled(true);
+                    }
                     else
                         JOptionPane.showMessageDialog(null, "All Chessbots need to be connected " +
                             "in order to play a chessgame with them. To check how many are " +
@@ -153,21 +165,27 @@ public class MainFrame extends JFrame
                             JOptionPane.WARNING_MESSAGE);
 
                 }
-                else
+                else {
                     switchManager(new ChessManager());
-
-                //We may run into problems here since we are creating new
-                //managers but want to keep the same xbee object. Look at
-                //Manager class to investigate
-
-                switchManager(manager);
+                    enableChessAIMenuItem.setEnabled(true);
+                }
             }
 
             if (e.getSource() == enableChessAIMenuItem) {
+                boolean state = enableChessAIMenuItem.getState();
+
+                //Will probably only need to see if instanceof ChessManager or
+                //RobotChessManager, as they should both have the
+                //setComputerControlsTeam() method
                 if (manager instanceof ChessManager) {
-                    boolean state = enableChessAIMenuItem.getState();
                     ((ChessManager) manager).setComputerControlsTeam(state, Team.GREEN);
+                    toggleAIButton(state);
                 }
+                else if (manager instanceof RobotChessManager) {
+                    //TODO: Implement
+                    toggleAIButton(state);
+                }
+
                 //Add dialogue later for choosing team for AI as well as
                 //choosing difficulty
             }
