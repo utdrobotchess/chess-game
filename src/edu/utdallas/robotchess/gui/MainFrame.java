@@ -1,12 +1,26 @@
 package edu.utdallas.robotchess.gui;
 
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 
-import edu.utdallas.robotchess.manager.*;
-import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.game.Team;
+import edu.utdallas.robotchess.manager.ChessManager;
+import edu.utdallas.robotchess.manager.Manager;
+import edu.utdallas.robotchess.manager.NullManager;
+import edu.utdallas.robotchess.manager.RobotChessManager;
+import edu.utdallas.robotchess.manager.RobotDemoManager;
 
 public class MainFrame extends JFrame
 {
