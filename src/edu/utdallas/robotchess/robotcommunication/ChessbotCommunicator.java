@@ -18,9 +18,11 @@ import com.rapplogic.xbee.api.zigbee.NodeDiscover; //originally had wpan.NodeDis
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
+import com.rapplogic.xbee.util.ByteUtils;
 
 import edu.utdallas.robotchess.robotcommunication.commands.Command;
 import edu.utdallas.robotchess.robotcommunication.commands.ReadBotIDCommand;
+
 import gnu.io.CommPortIdentifier;
 
 public class ChessbotCommunicator
@@ -29,20 +31,28 @@ public class ChessbotCommunicator
     private static ChessbotCommunicator instance = null;
     private XBee xbee;
     private ChessbotInfoArrayHandler chessbots;
-
     private Thread discoverChessbotThread = new Thread()
     {
-        public void run(){
+        public void run() {
+            int timeout = 0;
             try {
-                xbee.sendAsynchronous(new AtCommand("ND"));
+                @SuppressWarnings("deprecation")
+                AtCommandResponse nodeTimeout = xbee.sendAtCommand(new AtCommand("ND"));
+                timeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
+            } catch(XBeeException e){
+                log.debug("Couldn't send NT command", e);
+            }
+
+            try {
+                xbee.addPacketListener(nodeDiscoverResponseListener);
+                xbee.sendSynchronous(new AtCommand("NT"), 500);
             } catch(XBeeException e) {
+                xbee.removePacketListener(nodeDiscoverResponseListener);
                 log.debug("Couldn't send ND command", e);
             }
 
-            xbee.addPacketListener(nodeDiscoverResponseListener);
-
             try {
-                Thread.sleep(10000); //May need to change this time after testing
+                Thread.sleep(timeout); //May need to change this time after testing
             } catch (InterruptedException e) {
                 log.debug("discoverChessbotThread interrupted", e);
             }
@@ -51,8 +61,11 @@ public class ChessbotCommunicator
 
             for (XBeeAddress64 addr : undiscoveredBots) {
                 ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
-                sendCommand(cmd); //Don't know whether or not to send synchrnous
+                cmd.setACK(true);
+                sendCommand(cmd);
             }
+
+            xbee.removePacketListener(nodeDiscoverResponseListener);
         }
 
     };
@@ -70,7 +83,7 @@ public class ChessbotCommunicator
         }
     };
 
-    private PacketListener transmitResponseListener = new PacketListener()
+    private PacketListener txResponseListener = new PacketListener()
     {
         public void processResponse(XBeeResponse response)
         {
@@ -87,6 +100,8 @@ public class ChessbotCommunicator
                         log.debug(rx);
                         break;
                 }
+
+                chessbots.updateMessageReceived(addr, rx);
             }
         }
     };
@@ -115,8 +130,8 @@ public class ChessbotCommunicator
 
         if(successful)
         {
-            xbee.addPacketListener(transmitResponseListener);
-            log.debug("Added a transmitResponseListener PacketListener");
+            xbee.addPacketListener(txResponseListener);
+            log.debug("Added a txResponseListener PacketListener");
             //There is a case here where the xbee could be connected, but we
             //fail to add the packetlistener. I haven't seen this happen, so
             //I'm more worried about avoiding adding duplicate packetListeners
@@ -158,9 +173,6 @@ public class ChessbotCommunicator
 
     public ChessbotInfoArrayHandler getChessbotInfo()
     {
-        //may change this later for cleaner interface between this class and
-        //manager class. Ideally, we want to create a panel that shows all of
-        //the relevant information stored in the chessbots data structure.
         return chessbots;
     }
 
@@ -192,30 +204,19 @@ public class ChessbotCommunicator
 
         ZNetTxRequest tx = new ZNetTxRequest(addr, payload);
 
-        //I'm going to change how (below) is done. Probably, I will not use
-        //retries and instead create a thread for each command that requires an
-        //ACK. I'm only worried about how the Xbee class will internal handle
-        //multiple threads writing at a time... I know that sendSynchronous()
-        //is thread safe, but I don't know if threads will just end up exiting
-        //without sending their information if another thread is currently
-        //writing to the serial port.
-        if(cmd.RequiresACK())
+        if(cmd.getACK())
         {
-            for(int i = 0; i < cmd.getRetries(); i++)
-            {
-                try {
-                    ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
-
-                    if(ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS)
-                        break;
-                } catch(XBeeException e) {
-                    log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
-                }
+            tx.setFrameId(xbee.getNextFrameId());
+            try {
+                ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
+                boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
+                chessbots.updateMessageSent(addr, tx, deliveryStatus);
+            } catch(XBeeException e) {
+                log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
             }
 
         }
-        else
-        {
+        else {
             tx.setFrameId(0);
             try {
                 xbee.sendAsynchronous(tx);
@@ -270,5 +271,14 @@ public class ChessbotCommunicator
             return false;
         else
             return true;
+    }
+
+    public long getBaudrate() {
+        //TODO: Implement
+        return 0;
+    }
+
+    public void setBaudrate(long baudrate) {
+        //TODO: Implement
     }
 }
