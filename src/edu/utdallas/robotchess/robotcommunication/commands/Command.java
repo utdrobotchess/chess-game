@@ -32,9 +32,14 @@ public abstract class Command
         return robotID;
     }
 
-    public boolean RequiresACK()
+    public boolean getACK()
     {
         return requiresACK;
+    }
+
+    public void setACK(boolean ack)
+    {
+        requiresACK = ack;
     }
 
     public int getTimeout()
