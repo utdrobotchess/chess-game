@@ -9,11 +9,6 @@ import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
 import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 
-
-//I probably should extend ArrayList of one of its super classes instead of
-//creating a class that wraps an ArrayList. This, however seemed to be the
-//quickest way for me to implement what I wanted, given my knowledge at the
-//time.
 public class ChessbotInfoArrayHandler
 {
     private ArrayList<ChessbotInfo> chessbotArr = new ArrayList<ChessbotInfo>();
