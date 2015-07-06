@@ -145,6 +145,7 @@ public class BoardPanel extends JPanel
         }
     }
 
+    //Should probably be handled by the Manager
     class EngineRunner implements Runnable
     {
         @Override
