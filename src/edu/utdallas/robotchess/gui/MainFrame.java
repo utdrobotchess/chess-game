@@ -190,6 +190,8 @@ public class MainFrame extends JFrame
                 //choosing difficulty
             }
 
+            //Will change this so that the available robots are queried and
+            //shown here.
             if (e.getSource() == newChessDemoMenuItem) {
                 int[] robotsPresent = determineRobotsPresent();
                 int[] initialLocations = generateInitialLocations(robotsPresent);

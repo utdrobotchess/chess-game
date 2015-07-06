@@ -190,7 +190,7 @@ public class ChessbotCommunicator
         discoverChessbotThread.start();
     }
 
-    public void sendCommand(final Command cmd)
+    public void sendCommand(Command cmd)
     {
         int[] payload = cmd.generatePayload();
         XBeeAddress64 addr = new XBeeAddress64();
