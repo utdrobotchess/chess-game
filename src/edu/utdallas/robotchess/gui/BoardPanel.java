@@ -31,6 +31,8 @@ public class BoardPanel extends JPanel
     private SquarePanel squares[];
     private Map<String, ImageIcon> imageMap;
 
+    private static final long serialVersionUID = 2;
+
     protected BoardPanel(Manager manager)
     {
         this.manager = manager;
