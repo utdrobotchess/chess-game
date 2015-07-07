@@ -101,11 +101,11 @@ public class ChessbotCommunicator
                 switch (payload[0]) {
                     case 2:
                         chessbots.add(addr, (Integer) payload[1]);
-                        log.debug(rx);
                         break;
                 }
 
                 chessbots.updateMessageReceived(addr, rx);
+                log.debug(chessbots); //temp
             }
         }
     };

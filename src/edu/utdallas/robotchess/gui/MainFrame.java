@@ -56,7 +56,7 @@ public class MainFrame extends JFrame
         boardPanel = new BoardPanel(new NullManager());
         manager = new NullManager();
         chessbotInfoPanel = new ChessbotInfoPanel();
-        chessbotInfoPanelFrame = new JFrame();
+        chessbotInfoPanelFrame = new JFrame("Previously Connected Chessbots");
 
         chessbotInfoPanel.setOpaque(true);
         chessbotInfoPanelFrame.setContentPane(chessbotInfoPanel);
@@ -221,11 +221,15 @@ public class MainFrame extends JFrame
                 setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
 
-            if (e.getSource() == showConnectedChessbotButton)
+            if (e.getSource() == showConnectedChessbotButton) {
+                //This next line should be temporary. Ideally, another thread
+                //will poll from ChessbotCommunicator to update the
+                //chessbotInfoPanel
+                chessbotInfoPanel.updateChessbotInfo(manager.getChessbotInfo());
                 chessbotInfoPanelFrame.setVisible(true);
+            }
 
             if (e.getSource() == connectToXbeeButton) {
-
                 boolean xbeeConnected = manager.isXbeeConnected();
 
                 if(manager.isXbeeConnected())

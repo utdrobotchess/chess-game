@@ -6,7 +6,6 @@ import edu.utdallas.robotchess.game.ChessGame;
 import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
-import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 public abstract class Manager
 {
@@ -103,6 +102,9 @@ public abstract class Manager
         this.boardColumnCount = boardColumnCount;
     }
 
+    //Checking for comm == null is getting a bit messy. We may want to see if
+    //we can reimplement the way we're using comm to clean this up.
+
     public boolean isXbeeConnected()
     {
         if(comm == null)
@@ -124,16 +126,19 @@ public abstract class Manager
             return comm.initializeCommunication();
     }
 
-    public ChessbotInfoArrayHandler getChessbotInfo()
+    public Object[][] getChessbotInfo()
     {
-        return comm.getChessbotInfo();
+        if(comm == null)
+            return new Object[][] {{null,null,null,null,null}};
+        else
+            return comm.getChessbotInfo().toObjectArray();
     }
 
     public boolean checkIfAllChessbotsAreConnected()
     {
-        if(comm != null)
-            return comm.allChessbotsConnected();
-        else
+        if(comm == null)
             return false;
+        else
+            return comm.allChessbotsConnected();
     }
 }

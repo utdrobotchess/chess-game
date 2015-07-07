@@ -1,5 +1,6 @@
 package edu.utdallas.robotchess.gui;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -9,38 +10,38 @@ import javax.swing.JTable;
 public class ChessbotInfoPanel extends JPanel
 {
     private static final long serialVersionUID = 1;
+    private JTable table;
+    private String[] columnNames;
 
     public ChessbotInfoPanel() {
         super(new GridLayout(1,0));
 
-        String[] columnNames = {"First Name",
-            "Last Name",
-            "Sport",
-            "# of Years",
-            "Vegetarian"};
+        columnNames = new String[] {"Chessbot #",
+            "XBeeAddress",
+            "Last Communication Time",
+            "Last Message Sent To",
+            "Last Message Recieved From"};
 
-        Object[][] data = {
-            {"Kathy", "Smith",
-                "Snowboarding", new Integer(5), new Boolean(false)},
-            {"John", "Doe",
-                "Rowing", new Integer(3), new Boolean(true)},
-            {"Sue", "Black",
-                "Knitting", new Integer(2), new Boolean(false)},
-            {"Jane", "White",
-                "Speed reading", new Integer(20), new Boolean(true)},
-            {"Joe", "Brown",
-                "Pool", new Integer(10), new Boolean(false)}
-        };
-
-        final JTable table = new JTable(data, columnNames);
-        //table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-        table.setFillsViewportHeight(true);
-
-        //Create the scroll pane and add the table to it.
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        //Add the scroll pane to this panel.
-        add(scrollPane);
+        Object[][] data = {{null, null, null, null, null}};
+        updateChessbotInfo(data);
     }
 
+    public void updateChessbotInfo(Object[][] data) {
+        //Should check size to ensure that properly update the table
+
+        //Also, there might be a cleaner way of updating the table. Using
+        //a method to replace the data, for example, instead of just creating
+        //a new one.
+        System.out.print("Making new table");
+        table = new JTable(data, columnNames);
+
+        table.setShowGrid(false);
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setFillsViewportHeight(true);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        removeAll();
+        add(scrollPane);
+
+    }
 }

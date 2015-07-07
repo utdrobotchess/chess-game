@@ -134,10 +134,33 @@ public class ChessbotInfoArrayHandler
 
     }
 
+    public int size() {
+        return chessbotArr.size();
+    }
+
+    public Object[][] toObjectArray() {
+        int numOfChessbots = chessbotArr.size();
+        int i = 0;
+        Object[][] data = new Object[numOfChessbots][5];
+
+        for (ChessbotInfo chessbotInfo : chessbotArr) {
+            data[i] = chessbotInfo.toObjectArray();
+            i++;
+        }
+
+        return data;
+    }
+
     public String toString() {
-        return ""; //TODO: Implement this
+        String string = "";
+
+        for (ChessbotInfo chessbotInfo : chessbotArr)
+            string += chessbotInfo.toString() + "\n";
+
+        return string;
     }
 }
+
 class ChessbotInfo
 {
     XBeeAddress64 xbeeAddress;
@@ -200,13 +223,29 @@ class ChessbotInfo
         return lastMessageDeliveryStatus;
     }
 
-    public String formatDateString() {
+    public String formatDateToString() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         return dateFormat.format(lastTimeCommunicated);
     }
 
+    public Object[] toObjectArray() {
+        Object[] data = new Object[] {
+        id,
+        xbeeAddress,
+        formatDateToString(),
+        lastMessageSent,
+        lastMessageReceived};
+
+        return data;
+    }
+
+    //This is fuckin' messy, mate!
     public String toString() {
-        return ""; //TODO: Implement this
+        String string = String.format(id + " " + xbeeAddress +
+                " " + formatDateToString() + " " + lastMessageSent +
+                " " + lastMessageReceived);
+
+        return string;
     }
 
     @Override
