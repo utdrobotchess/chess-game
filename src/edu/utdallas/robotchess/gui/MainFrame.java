@@ -7,13 +7,13 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 
 import edu.utdallas.robotchess.game.Team;
 import edu.utdallas.robotchess.manager.ChessManager;
@@ -25,10 +25,12 @@ import edu.utdallas.robotchess.manager.RobotDemoManager;
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
-    private static final long serialVersionUID = 3;
+    private static final long serialVersionUID = 0;
 
     Manager manager;
     BoardPanel boardPanel;
+    ChessbotInfoPanel chessbotInfoPanel;
+    JFrame chessbotInfoPanelFrame;
 
     JMenuBar menuBar;
 
@@ -43,9 +45,9 @@ public class MainFrame extends JFrame
 
     ButtonGroup chessbotButtonGroup;
 
+    JToggleButton enableChessAIMenuItem;
     JButton showConnectedChessbotButton;
     JButton connectToXbeeButton;
-    JCheckBoxMenuItem enableChessAIMenuItem;
 
     MenuItemListener menuListener;
 
@@ -53,14 +55,23 @@ public class MainFrame extends JFrame
     {
         boardPanel = new BoardPanel(new NullManager());
         manager = new NullManager();
+        chessbotInfoPanel = new ChessbotInfoPanel();
+        chessbotInfoPanelFrame = new JFrame();
+
+        chessbotInfoPanel.setOpaque(true);
+        chessbotInfoPanelFrame.setContentPane(chessbotInfoPanel);
+
+        chessbotInfoPanelFrame.pack();
 
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
         setLocationRelativeTo(null);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setupMenuBar();
         add(boardPanel);
+
         setVisible(true);
     }
 
@@ -77,7 +88,7 @@ public class MainFrame extends JFrame
         playWithChessbotsButton = new JRadioButton("Play with Chessbots");
         playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
         connectToXbeeButton = new JButton("Connect to Xbee");
-        enableChessAIMenuItem = new JCheckBoxMenuItem("Enable Chess AI");
+        enableChessAIMenuItem = new JToggleButton("Enable Chess AI");
 
         chessbotButtonGroup = new ButtonGroup();
         chessbotButtonGroup.add(playWithChessbotsButton);
@@ -115,15 +126,23 @@ public class MainFrame extends JFrame
         manager.setComm(this.manager.getComm());
         this.manager = manager;
         boardPanel.setManager(this.manager);
-        toggleAIButton(false);
+        toggleAI(false);
         boardPanel.updateDisplay();
     }
 
-    private void toggleAIButton(boolean enabled) {
+    private void toggleAI(boolean enabled) {
         if (enabled)
             enableChessAIMenuItem.setText("Disable Chess AI");
         else
             enableChessAIMenuItem.setText("Enable Chess AI");
+
+        if (manager instanceof ChessManager)
+            ((ChessManager) manager).setComputerControlsTeam(enabled, Team.GREEN);
+        else if (manager instanceof RobotChessManager) {
+            //TODO: Implement
+        }
+
+        enableChessAIMenuItem.setSelected(enabled);
     }
 
     class MenuItemListener implements ActionListener
@@ -145,11 +164,10 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
+                chessbotInfoPanelFrame.setVisible(false);
                 switchManager(new NullManager());
             }
 
-            //Still some issues with toggle AI button when starting a new
-            //game...
             if (e.getSource() == newGameMenuItem) {
                 if (playWithChessbotsButton.isSelected())
                 {
@@ -172,19 +190,12 @@ public class MainFrame extends JFrame
             }
 
             if (e.getSource() == enableChessAIMenuItem) {
-                boolean state = enableChessAIMenuItem.getState();
+                boolean state = enableChessAIMenuItem.isSelected();
+                toggleAI(state);
 
                 //Will probably only need to see if instanceof ChessManager or
                 //RobotChessManager, as they should both have the
                 //setComputerControlsTeam() method
-                if (manager instanceof ChessManager) {
-                    ((ChessManager) manager).setComputerControlsTeam(state, Team.GREEN);
-                    toggleAIButton(state);
-                }
-                else if (manager instanceof RobotChessManager) {
-                    //TODO: Implement
-                    toggleAIButton(state);
-                }
 
                 //Add dialogue later for choosing team for AI as well as
                 //choosing difficulty
@@ -209,6 +220,9 @@ public class MainFrame extends JFrame
                 boardPanel.updateDisplay();
                 setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
+
+            if (e.getSource() == showConnectedChessbotButton)
+                chessbotInfoPanelFrame.setVisible(true);
 
             if (e.getSource() == connectToXbeeButton) {
 
