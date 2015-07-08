@@ -150,4 +150,20 @@ public abstract class Manager
             return comm.checkIfChessbotUpdate();
     }
 
+    public void discoverChessbots()
+    {
+        if(comm == null)
+            return;
+
+        comm.discoverChessbots();
+    }
+
+    public boolean isDiscoveringChessbots()
+    {
+        if(comm == null)
+            return false;
+
+        return comm.isDiscoveringChessbots();
+    }
+
 }

@@ -29,10 +29,7 @@ public class MainFrame extends JFrame
 
     Manager manager;
     BoardPanel boardPanel;
-    ChessbotInfoPanel chessbotInfoPanel;
-    JFrame chessbotInfoPanelFrame;
-
-    ChessbotInfoThread chessbotInfoThread;
+    ChessbotInfoFrame chessbotInfoFrame;
 
     JMenuBar menuBar;
 
@@ -50,23 +47,15 @@ public class MainFrame extends JFrame
     JToggleButton enableChessAIMenuItem;
     JButton showConnectedChessbotButton;
     JButton connectToXbeeButton;
+    JButton discoverChessbotsButton;
 
     MenuItemListener menuListener;
 
     public MainFrame()
     {
-        boardPanel = new BoardPanel(new NullManager());
         manager = new NullManager();
-        chessbotInfoPanel = new ChessbotInfoPanel();
-        chessbotInfoPanelFrame = new JFrame("Previously Connected Chessbots");
-        chessbotInfoThread = new ChessbotInfoThread();
-
-        chessbotInfoThread.start();
-
-        chessbotInfoPanel.setOpaque(true);
-        chessbotInfoPanelFrame.setContentPane(chessbotInfoPanel);
-
-        chessbotInfoPanelFrame.pack();
+        boardPanel = new BoardPanel(manager);
+        chessbotInfoFrame = new ChessbotInfoFrame(manager);
 
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
@@ -94,6 +83,7 @@ public class MainFrame extends JFrame
         playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
         connectToXbeeButton = new JButton("Connect to Xbee");
         enableChessAIMenuItem = new JToggleButton("Enable Chess AI");
+        discoverChessbotsButton = new JButton("Discover Chessbots");
 
         chessbotButtonGroup = new ButtonGroup();
         chessbotButtonGroup.add(playWithChessbotsButton);
@@ -105,11 +95,13 @@ public class MainFrame extends JFrame
         chessbotMenu.add(playWithoutChessbotsButton);
         chessbotMenu.add(showConnectedChessbotButton);
         optionsMenu.add(enableChessAIMenuItem);
+        optionsMenu.add(discoverChessbotsButton);
 
         gameMenu.setEnabled(false);
         showConnectedChessbotButton.setEnabled(false);
         connectToXbeeButton.setEnabled(false);
         enableChessAIMenuItem.setEnabled(false);
+        discoverChessbotsButton.setEnabled(false);
 
         newGameMenuItem.addActionListener(menuListener);
         newChessDemoMenuItem.addActionListener(menuListener);
@@ -118,6 +110,7 @@ public class MainFrame extends JFrame
         playWithoutChessbotsButton.addActionListener(menuListener);
         connectToXbeeButton.addActionListener(menuListener);
         enableChessAIMenuItem.addActionListener(menuListener);
+        discoverChessbotsButton.addActionListener(menuListener);
 
         menuBar.add(gameMenu);
         menuBar.add(chessbotMenu);
@@ -129,8 +122,11 @@ public class MainFrame extends JFrame
 
     private void switchManager(Manager manager) {
         manager.setComm(this.manager.getComm());
+
         this.manager = manager;
         boardPanel.setManager(this.manager);
+        chessbotInfoFrame.setManager(this.manager);
+
         toggleAI(false);
         boardPanel.updateDisplay();
     }
@@ -157,31 +153,6 @@ public class MainFrame extends JFrame
         enableChessAIMenuItem.setSelected(enabled);
     }
 
-    //As of now, this thread is updating the table every second when the panel
-    //is showing. I haven't implemented
-    //ChessbotCommunicator.checkIfChessbotUpdate(), so it always returns true.
-    //Also, I should implement Runnable instead of extending Thread, but
-    //I don't know how to properly do so at the moment.
-    class ChessbotInfoThread extends Thread {
-
-        public ChessbotInfoThread() { }
-
-        @Override
-        public void run() {
-
-            while(true) {
-                if(manager.checkIfChessbotUpdate() && chessbotInfoPanelFrame.isShowing())
-                    chessbotInfoPanel.updateChessbotInfo(manager.getChessbotInfo());
-
-                try {
-                    Thread.sleep(1000);
-                } catch(InterruptedException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     class MenuItemListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -192,6 +163,7 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(true);
                 newChessDemoMenuItem.setEnabled(true);
+                discoverChessbotsButton.setEnabled(true);
                 switchManager(new NullManager());
             }
 
@@ -201,7 +173,8 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
-                chessbotInfoPanelFrame.setVisible(false);
+                chessbotInfoFrame.setVisible(false);
+                discoverChessbotsButton.setEnabled(false);
                 switchManager(new NullManager());
             }
 
@@ -252,7 +225,7 @@ public class MainFrame extends JFrame
             }
 
             if (e.getSource() == showConnectedChessbotButton)
-                chessbotInfoPanelFrame.setVisible(true);
+                chessbotInfoFrame.setVisible(true);
 
             if (e.getSource() == connectToXbeeButton) {
                 boolean xbeeConnected = manager.isXbeeConnected();
@@ -273,6 +246,26 @@ public class MainFrame extends JFrame
                                 JOptionPane.WARNING_MESSAGE);
                 }
 
+            }
+
+            if (e.getSource() == discoverChessbotsButton) {
+
+                if (manager.isXbeeConnected()) {
+                    if(manager.isDiscoveringChessbots()) {
+                        JOptionPane.showMessageDialog(null, "Currently Discovering Chessbots",
+                                "Chessbot Discovery Underway",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
+                    else
+                        manager.discoverChessbots();
+
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Could not connect to Xbee. " +
+                            "Try again after unplugging and plugging in the Xbee. " +
+                            "If this does not work, restart the app.",
+                            "Cannot find Xbee",
+                            JOptionPane.WARNING_MESSAGE);
             }
         }
 

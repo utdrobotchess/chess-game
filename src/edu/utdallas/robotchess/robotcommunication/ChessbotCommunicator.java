@@ -31,48 +31,8 @@ public class ChessbotCommunicator
     private static ChessbotCommunicator instance = null;
     private XBee xbee;
     private ChessbotInfoArrayHandler chessbots;
-
-    private Thread discoverChessbotThread = new Thread()
-    {
-        public void run() {
-            int timeout = 0;
-            try {
-                @SuppressWarnings("deprecation")
-                AtCommandResponse nodeTimeout = xbee.sendAtCommand(new AtCommand("ND"));
-                timeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
-            } catch(XBeeException e){
-                log.debug("Couldn't send NT command", e);
-                return;
-            }
-
-            try {
-                xbee.addPacketListener(nodeDiscoverResponseListener);
-                xbee.sendSynchronous(new AtCommand("NT"), 500);
-            } catch(XBeeException e) {
-                xbee.removePacketListener(nodeDiscoverResponseListener);
-                log.debug("Couldn't send ND command", e);
-                return;
-            }
-
-            try {
-                Thread.sleep(timeout); //May need to change this time after testing
-            } catch (InterruptedException e) {
-                log.debug("discoverChessbotThread interrupted", e);
-            }
-
-            ArrayList<XBeeAddress64> undiscoveredBots = chessbots.getAddressesWithNullIds();
-
-            for (XBeeAddress64 addr : undiscoveredBots) {
-                ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
-                cmd.setACK(true);
-                sendCommand(cmd);
-            }
-
-            xbee.removePacketListener(nodeDiscoverResponseListener);
-            return;
-        }
-
-    };
+    //I don't like using this flag, but it seemed necessary at the time
+    private boolean discoveringChessbots = false;
 
     private PacketListener nodeDiscoverResponseListener = new PacketListener()
     {
@@ -190,10 +150,70 @@ public class ChessbotCommunicator
         return chessbots.allChessbotsConnected();
     }
 
+    public boolean isDiscoveringChessbots()
+    {
+        return discoveringChessbots;
+    }
+
     public void discoverChessbots()
     {
+        if(discoveringChessbots)
+            return;
+
+        DiscoverChessbotThread discoverChessbotThread = new DiscoverChessbotThread();
         discoverChessbotThread.start();
     }
+
+    class DiscoverChessbotThread extends Thread {
+
+        private void kill() {
+            discoveringChessbots = false;
+            return;
+        }
+
+        @Override
+        public void run() {
+            int timeout = 0;
+            discoveringChessbots = true;
+
+            try {
+                @SuppressWarnings("deprecation")
+                AtCommandResponse nodeTimeout = xbee.sendAtCommand(new AtCommand("ND"));
+                timeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
+            } catch(XBeeException e){
+                log.debug("Couldn't send NT command", e);
+                kill();
+            }
+
+            try {
+                xbee.addPacketListener(nodeDiscoverResponseListener);
+                xbee.sendSynchronous(new AtCommand("NT"), 500);
+            } catch(XBeeException e) {
+                xbee.removePacketListener(nodeDiscoverResponseListener);
+                log.debug("Couldn't send ND command", e);
+                kill();
+            }
+
+            try {
+                Thread.sleep(timeout); //May need to change this time after testing
+            } catch (InterruptedException e) {
+                log.debug("discoverChessbotThread interrupted", e);
+            }
+
+            ArrayList<XBeeAddress64> undiscoveredBots = chessbots.getAddressesWithNullIds();
+
+            for (XBeeAddress64 addr : undiscoveredBots) {
+                ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
+                cmd.setACK(true);
+                sendCommand(cmd);
+            }
+
+            xbee.removePacketListener(nodeDiscoverResponseListener);
+            kill();
+        }
+
+    };
+
 
     public void sendCommand(Command cmd)
     {
