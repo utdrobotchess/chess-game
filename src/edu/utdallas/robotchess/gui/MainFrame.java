@@ -32,6 +32,8 @@ public class MainFrame extends JFrame
     ChessbotInfoPanel chessbotInfoPanel;
     JFrame chessbotInfoPanelFrame;
 
+    ChessbotInfoThread chessbotInfoThread;
+
     JMenuBar menuBar;
 
     JMenu gameMenu;
@@ -57,6 +59,9 @@ public class MainFrame extends JFrame
         manager = new NullManager();
         chessbotInfoPanel = new ChessbotInfoPanel();
         chessbotInfoPanelFrame = new JFrame("Previously Connected Chessbots");
+        chessbotInfoThread = new ChessbotInfoThread();
+
+        chessbotInfoThread.start();
 
         chessbotInfoPanel.setOpaque(true);
         chessbotInfoPanelFrame.setContentPane(chessbotInfoPanel);
@@ -136,6 +141,13 @@ public class MainFrame extends JFrame
         else
             enableChessAIMenuItem.setText("Enable Chess AI");
 
+        //Will probably only need to see if instanceof ChessManager or
+        //RobotChessManager, as they should both have the
+        //setComputerControlsTeam() method
+
+        //Add dialogue later for choosing team for AI as well as
+        //choosing difficulty
+
         if (manager instanceof ChessManager)
             ((ChessManager) manager).setComputerControlsTeam(enabled, Team.GREEN);
         else if (manager instanceof RobotChessManager) {
@@ -143,6 +155,31 @@ public class MainFrame extends JFrame
         }
 
         enableChessAIMenuItem.setSelected(enabled);
+    }
+
+    //As of now, this thread is updating the table every second when the panel
+    //is showing. I haven't implemented
+    //ChessbotCommunicator.checkIfChessbotUpdate(), so it always returns true.
+    //Also, I should implement Runnable instead of extending Thread, but
+    //I don't know how to properly do so at the moment.
+    class ChessbotInfoThread extends Thread {
+
+        public ChessbotInfoThread() { }
+
+        @Override
+        public void run() {
+
+            while(true) {
+                if(manager.checkIfChessbotUpdate() && chessbotInfoPanelFrame.isShowing())
+                    chessbotInfoPanel.updateChessbotInfo(manager.getChessbotInfo());
+
+                try {
+                    Thread.sleep(1000);
+                } catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     class MenuItemListener implements ActionListener
@@ -192,13 +229,6 @@ public class MainFrame extends JFrame
             if (e.getSource() == enableChessAIMenuItem) {
                 boolean state = enableChessAIMenuItem.isSelected();
                 toggleAI(state);
-
-                //Will probably only need to see if instanceof ChessManager or
-                //RobotChessManager, as they should both have the
-                //setComputerControlsTeam() method
-
-                //Add dialogue later for choosing team for AI as well as
-                //choosing difficulty
             }
 
             //Will change this so that the available robots are queried and
@@ -221,13 +251,8 @@ public class MainFrame extends JFrame
                 setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
             }
 
-            if (e.getSource() == showConnectedChessbotButton) {
-                //This next line should be temporary. Ideally, another thread
-                //will poll from ChessbotCommunicator to update the
-                //chessbotInfoPanel
-                chessbotInfoPanel.updateChessbotInfo(manager.getChessbotInfo());
+            if (e.getSource() == showConnectedChessbotButton)
                 chessbotInfoPanelFrame.setVisible(true);
-            }
 
             if (e.getSource() == connectToXbeeButton) {
                 boolean xbeeConnected = manager.isXbeeConnected();

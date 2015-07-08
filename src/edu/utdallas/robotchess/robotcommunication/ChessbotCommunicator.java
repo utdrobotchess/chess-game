@@ -180,6 +180,11 @@ public class ChessbotCommunicator
         return chessbots;
     }
 
+    public boolean checkIfChessbotUpdate()
+    {
+        return true; //TODO:Implement
+    }
+
     public boolean allChessbotsConnected()
     {
         return chessbots.allChessbotsConnected();
