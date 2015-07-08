@@ -55,7 +55,7 @@ public class MainFrame extends JFrame
     {
         manager = new NullManager();
         boardPanel = new BoardPanel(manager);
-        chessbotInfoFrame = new ChessbotInfoFrame(manager);
+        chessbotInfoFrame = new ChessbotInfoFrame();
 
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
@@ -125,7 +125,6 @@ public class MainFrame extends JFrame
 
         this.manager = manager;
         boardPanel.setManager(this.manager);
-        chessbotInfoFrame.setManager(this.manager);
 
         toggleAI(false);
         boardPanel.updateDisplay();
@@ -236,8 +235,10 @@ public class MainFrame extends JFrame
                 {
                     xbeeConnected = manager.connectToXbee();
 
-                    if(xbeeConnected)
+                    if(xbeeConnected) {
+                        chessbotInfoFrame.setChessbotInfoArrayHandler(manager.getChessbotInfo());
                         JOptionPane.showMessageDialog(null, "Successfully connected to Xbee");
+                    }
                     else
                         JOptionPane.showMessageDialog(null, "Could not connect to Xbee. " +
                                 "Try again after unplugging and plugging in the Xbee. " +

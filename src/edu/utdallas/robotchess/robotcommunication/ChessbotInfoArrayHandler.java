@@ -13,6 +13,10 @@ public class ChessbotInfoArrayHandler
 {
     private ArrayList<ChessbotInfo> chessbotArr = new ArrayList<ChessbotInfo>();
 
+    //I don't like having a flag here just for the purpose of a thread. There
+    //might be a cleaner way of updating ChessbotInfoFrame
+    private boolean updated;
+
     public void add(XBeeAddress64 addr) {
         if(indexOf(addr) > -1)
             return;
@@ -74,6 +78,7 @@ public class ChessbotInfoArrayHandler
         chessbotInfo.setLastTimeCommunicated(new Date());
         chessbotInfo.setLastMessageSent(msg, deliveryStatus);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+        updated = true;
     }
 
     public void updateMessageReceived(XBeeAddress64 addr, ZNetRxResponse msg) {
@@ -82,6 +87,7 @@ public class ChessbotInfoArrayHandler
         chessbotInfo.setLastTimeCommunicated(new Date());
         chessbotInfo.setLastMessageReceived(msg);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+        updated = true;
     }
 
     public ChessbotInfo getChessbotInfoFromAddress(XBeeAddress64 addr) {
@@ -98,6 +104,10 @@ public class ChessbotInfoArrayHandler
             return chessbotArr.get(chessbotInfoIndex);
         else
             return null;
+    }
+
+    public ChessbotInfo getChessbotInfoFromIndex(int index) {
+        return chessbotArr.get(index);
     }
 
     public Integer getIdFromAddress(XBeeAddress64 addr) {
@@ -151,6 +161,14 @@ public class ChessbotInfoArrayHandler
         return data;
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public void setUpdatedFlag(boolean updated) {
+        this.updated = updated;
+    }
+
     public String toString() {
         String string = "";
 
@@ -158,6 +176,27 @@ public class ChessbotInfoArrayHandler
             string += chessbotInfo.toString() + "\n";
 
         return string;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+
+        if (o == null || !(o instanceof ChessbotInfoArrayHandler))
+            return false;
+
+        ChessbotInfoArrayHandler that = (ChessbotInfoArrayHandler) o;
+
+        if (this.size() != that.size())
+            return false;
+
+        for (int i = 0; i < this.size(); i++) {
+            if(!this.getChessbotInfoFromIndex(i).equals(that.getChessbotInfoFromIndex(i)))
+                return false;
+        }
+
+        return true;
     }
 }
 

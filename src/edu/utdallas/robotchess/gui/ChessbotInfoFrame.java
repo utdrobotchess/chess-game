@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import edu.utdallas.robotchess.manager.Manager;
+import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 //Ideally, we would add another panel to the right of the Board Panel on
 //MainFrame. However, I'm creating a new frame because it seems easier than
@@ -19,15 +19,14 @@ public class ChessbotInfoFrame extends JFrame
 
     private ChessbotInfoPanel chessbotInfoPanel;
 
-    private Manager manager;
+    private ChessbotInfoArrayHandler chessbots;
 
     private ChessbotInfoThread chessbotInfoThread;
 
-    public ChessbotInfoFrame(Manager manager) {
+    public ChessbotInfoFrame() {
         chessbotInfoPanel = new ChessbotInfoPanel();
         chessbotInfoThread = new ChessbotInfoThread();
-
-        this.manager = manager;
+        chessbots = new ChessbotInfoArrayHandler();
 
         chessbotInfoThread.start();
 
@@ -38,8 +37,8 @@ public class ChessbotInfoFrame extends JFrame
         pack();
     }
 
-    public void setManager(Manager manager){
-        this.manager = manager;
+    public void setChessbotInfoArrayHandler(ChessbotInfoArrayHandler h) {
+        this.chessbots = h;
     }
 
     //As of now, this thread is updating the table every second when the panel
@@ -53,8 +52,11 @@ public class ChessbotInfoFrame extends JFrame
         public void run() {
 
             while(true) {
-                if(manager.checkIfChessbotUpdate() && isShowing())
-                    chessbotInfoPanel.updateChessbotInfo(manager.getChessbotInfo());
+                if(chessbots != null && chessbots.isUpdated()) {
+                    chessbotInfoPanel.updateChessbotInfo();
+                    chessbots.setUpdatedFlag(false);
+                    System.out.println("Updating"); //temp
+                }
 
                 try {
                     Thread.sleep(1000);
@@ -80,16 +82,22 @@ public class ChessbotInfoFrame extends JFrame
                 "Last Message Sent To",
                 "Last Message Recieved From"};
 
-            Object[][] data = {{null, null, null, null, null}};
-            updateChessbotInfo(data);
+            updateChessbotInfo();
         }
 
-        public void updateChessbotInfo(Object[][] data) {
+        public void updateChessbotInfo() {
             //Should check size to ensure that properly update the table
 
             //Also, there might be a cleaner way of updating the table. Using
             //a method to replace the data, for example, instead of just creating
             //a new one.
+            Object[][] data;
+
+            if (chessbots == null)
+                data = new Object[][] {{null, null, null, null, null}};
+            else
+                data = chessbots.toObjectArray();
+
             table = new JTable(data, columnNames);
 
             table.setShowGrid(false);

@@ -6,6 +6,7 @@ import edu.utdallas.robotchess.game.ChessGame;
 import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
+import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 public abstract class Manager
 {
@@ -126,12 +127,12 @@ public abstract class Manager
             return comm.initializeCommunication();
     }
 
-    public Object[][] getChessbotInfo()
+    public ChessbotInfoArrayHandler getChessbotInfo()
     {
         if(comm == null)
-            return new Object[][] {{null,null,null,null,null}};
+            return null;
         else
-            return comm.getChessbotInfo().toObjectArray();
+            return comm.getChessbotInfo();
     }
 
     public boolean checkIfAllChessbotsAreConnected()
@@ -140,14 +141,6 @@ public abstract class Manager
             return false;
         else
             return comm.allChessbotsConnected();
-    }
-
-    public boolean checkIfChessbotUpdate()
-    {
-        if(comm == null)
-            return false;
-        else
-            return comm.checkIfChessbotUpdate();
     }
 
     public void discoverChessbots()
