@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 //Ideally, we would add another panel to the right of the Board Panel on
@@ -16,6 +19,7 @@ import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 public class ChessbotInfoFrame extends JFrame
 {
     private static final long serialVersionUID = 4;
+    private final static Logger log = Logger.getLogger(ChessbotInfoFrame.class);
 
     private ChessbotInfoPanel chessbotInfoPanel;
 
@@ -24,6 +28,7 @@ public class ChessbotInfoFrame extends JFrame
     private ChessbotInfoThread chessbotInfoThread;
 
     public ChessbotInfoFrame() {
+        PropertyConfigurator.configure("log/log4j.properties");
         chessbotInfoPanel = new ChessbotInfoPanel();
         chessbotInfoThread = new ChessbotInfoThread();
         chessbots = new ChessbotInfoArrayHandler();
@@ -55,13 +60,13 @@ public class ChessbotInfoFrame extends JFrame
                 if(chessbots != null && chessbots.isUpdated()) {
                     chessbotInfoPanel.updateChessbotInfo();
                     chessbots.setUpdatedFlag(false);
-                    System.out.println("Updating"); //temp
+                    log.debug("Updating Frame");
                 }
 
                 try {
                     Thread.sleep(1000);
                 } catch(InterruptedException e){
-                    e.printStackTrace();
+                    log.debug("Thread Interrupted", e);
                 }
             }
         }

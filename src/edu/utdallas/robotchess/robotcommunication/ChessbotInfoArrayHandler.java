@@ -64,7 +64,7 @@ public class ChessbotInfoArrayHandler
     public int indexOf(Integer id) {
         for (ChessbotInfo chessbotInfo : chessbotArr) {
             Integer thisId = chessbotInfo.getId();
-            if(thisId.equals(id))
+            if(thisId != null && thisId.equals(id))
                 return chessbotArr.indexOf(chessbotInfo);
         }
 

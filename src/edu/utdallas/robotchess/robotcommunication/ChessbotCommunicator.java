@@ -42,6 +42,7 @@ public class ChessbotCommunicator
             {
                 NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
+                log.debug("Found Address: " + addr);//temp
                 chessbots.add(addr);
             }
         }
@@ -60,6 +61,7 @@ public class ChessbotCommunicator
 
                 switch (payload[0]) {
                     case 2:
+                        log.debug("Adding ID: " + payload[1] + " to address " + addr);//temp
                         chessbots.add(addr, (Integer) payload[1]);
                         break;
                 }
@@ -161,41 +163,40 @@ public class ChessbotCommunicator
 
     class DiscoverChessbotThread extends Thread {
 
-        private void kill() {
-            discoveringChessbots = false;
-            return;
-        }
-
         @Override
         public void run() {
             int timeout = 0;
             discoveringChessbots = true;
 
+            log.debug("Discovering..."); //temp
+
             try {
                 @SuppressWarnings("deprecation")
-                AtCommandResponse nodeTimeout = xbee.sendAtCommand(new AtCommand("ND"));
+                AtCommandResponse nodeTimeout = xbee.sendAtCommand(new AtCommand("NT"));
                 timeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
             } catch(XBeeException e){
                 log.debug("Couldn't send NT command", e);
-                kill();
             }
+
+            log.debug("NT command successful. Timeout: " + (float)timeout/(float)1000 + " seconds"); //temp
 
             try {
                 xbee.addPacketListener(nodeDiscoverResponseListener);
-                xbee.sendSynchronous(new AtCommand("NT"), 500);
+                xbee.sendSynchronous(new AtCommand("ND"), 5000);
             } catch(XBeeException e) {
-                xbee.removePacketListener(nodeDiscoverResponseListener);
                 log.debug("Couldn't send ND command", e);
-                kill();
             }
 
+            log.debug("ND command successful. Listening for responses..."); //temp
+
             try {
-                Thread.sleep(timeout); //May need to change this time after testing
+                Thread.sleep(timeout);
             } catch (InterruptedException e) {
                 log.debug("discoverChessbotThread interrupted", e);
             }
 
             ArrayList<XBeeAddress64> undiscoveredBots = chessbots.getAddressesWithNullIds();
+            log.debug("Undiscovered bots: " + undiscoveredBots); //temp
 
             for (XBeeAddress64 addr : undiscoveredBots) {
                 ReadBotIDCommand cmd = new ReadBotIDCommand(addr);
@@ -203,8 +204,8 @@ public class ChessbotCommunicator
                 sendCommand(cmd);
             }
 
-            xbee.removePacketListener(nodeDiscoverResponseListener);
-            kill();
+            xbee.removePacketListener(nodeDiscoverResponseListener); //This should be called any time the
+                                                                     //thread stops (even if it is interrupted)
         }
 
     };
@@ -241,7 +242,7 @@ public class ChessbotCommunicator
             }
         }
 
-        log.debug("Sent Command");
+        log.debug("Sent Command"); //temp
     }
 
     //Should be "implements Runnable". But when I correct it, java is unable to
@@ -266,6 +267,7 @@ public class ChessbotCommunicator
             try {
                 ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
                 boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
+                log.debug("Got ACK. Delivery Status: " + deliveryStatus); //temp
                 chessbots.updateMessageSent(addr, tx, deliveryStatus);
             } catch(XBeeException e) {
                 log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
