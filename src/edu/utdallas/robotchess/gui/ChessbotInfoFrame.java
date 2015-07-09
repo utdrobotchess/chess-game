@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -81,8 +82,9 @@ public class ChessbotInfoFrame extends JFrame
         public ChessbotInfoPanel() {
             super(new GridLayout(1,0));
 
-            columnNames = new String[] {"Chessbot #",
-                "XBeeAddress",
+            columnNames = new String[] {"ID #",
+                "XBee Address",
+                "Last DeliveryStatus",
                 "Last Communication Time",
                 "Last Message Sent To",
                 "Last Message Recieved From"};
@@ -99,17 +101,40 @@ public class ChessbotInfoFrame extends JFrame
             Object[][] data;
 
             if (chessbots == null)
-                data = new Object[][] {{null, null, null, null, null}};
+                data = new Object[][] {{null, null, null, null, null, null}};
             else
                 data = chessbots.toObjectArray();
 
             table = new JTable(data, columnNames);
 
+            TableColumn column = null;
+
+            column = table.getColumnModel().getColumn(0);
+            column.setMaxWidth(41);
+            column.setMinWidth(40);
+            column = table.getColumnModel().getColumn(1);
+            column.setMaxWidth(301);
+            column.setMinWidth(300);
+            column = table.getColumnModel().getColumn(2);
+            column.setMaxWidth(121);
+            column.setMinWidth(120);
+            column = table.getColumnModel().getColumn(3);
+            column.setMaxWidth(171);
+            column.setMinWidth(170);
+            column = table.getColumnModel().getColumn(4);
+            column.setMaxWidth(1201);
+            column.setMinWidth(1200);
+            column = table.getColumnModel().getColumn(5);
+            column.setMaxWidth(1201);
+            column.setMinWidth(1200);
+
             table.setShowGrid(false);
-            table.setPreferredScrollableViewportSize(new Dimension(400, 800));
+            table.setPreferredScrollableViewportSize(new Dimension(500, 300));
             table.setFillsViewportHeight(true);
 
-            JScrollPane scrollPane = new JScrollPane(table);
+            JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
             removeAll();
             add(scrollPane);
 

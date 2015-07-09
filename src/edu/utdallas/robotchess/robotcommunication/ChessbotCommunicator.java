@@ -184,7 +184,7 @@ public class ChessbotCommunicator
                 xbee.addPacketListener(nodeDiscoverResponseListener);
                 xbee.sendSynchronous(new AtCommand("ND"), 5000);
             } catch(XBeeException e) {
-                log.debug("Couldn't send ND command", e);
+                log.debug("Couldn't send ND command", e); //For some reason, "ND" works even when the exception is called
             }
 
             log.debug("ND command successful. Listening for responses..."); //temp

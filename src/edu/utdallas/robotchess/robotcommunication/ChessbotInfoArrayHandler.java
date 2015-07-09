@@ -148,10 +148,18 @@ public class ChessbotInfoArrayHandler
         return chessbotArr.size();
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public void setUpdatedFlag(boolean updated) {
+        this.updated = updated;
+    }
+
     public Object[][] toObjectArray() {
         int numOfChessbots = chessbotArr.size();
         int i = 0;
-        Object[][] data = new Object[numOfChessbots][5];
+        Object[][] data = new Object[numOfChessbots][6];
 
         for (ChessbotInfo chessbotInfo : chessbotArr) {
             data[i] = chessbotInfo.toObjectArray();
@@ -161,13 +169,6 @@ public class ChessbotInfoArrayHandler
         return data;
     }
 
-    public boolean isUpdated() {
-        return updated;
-    }
-
-    public void setUpdatedFlag(boolean updated) {
-        this.updated = updated;
-    }
 
     public String toString() {
         String string = "";
@@ -271,6 +272,7 @@ class ChessbotInfo
         Object[] data = new Object[] {
         id,
         xbeeAddress,
+        lastMessageDeliveryStatus,
         formatDateToString(),
         lastMessageSent,
         lastMessageReceived};
