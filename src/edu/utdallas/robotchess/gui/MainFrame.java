@@ -1,5 +1,6 @@
 package edu.utdallas.robotchess.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,16 +21,17 @@ import edu.utdallas.robotchess.manager.ChessManager;
 import edu.utdallas.robotchess.manager.Manager;
 import edu.utdallas.robotchess.manager.NullManager;
 import edu.utdallas.robotchess.manager.RobotChessManager;
-import edu.utdallas.robotchess.manager.RobotDemoManager;
 
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
+    public final static int CHESSBOT_INFO_PANEL_WIDTH = 300;
+    public final static int CHESSBOT_INFO_PANEL_HEIGHT = 300;
     private static final long serialVersionUID = 0;
 
     Manager manager;
     BoardPanel boardPanel;
-    ChessbotInfoFrame chessbotInfoFrame;
+    ChessbotInfoPanel chessbotInfoPanel;
 
     JMenuBar menuBar;
 
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame
     ButtonGroup chessbotButtonGroup;
 
     JToggleButton enableChessAIMenuItem;
-    JButton showConnectedChessbotButton;
+    JToggleButton showConnectedChessbotButton;
     JButton connectToXbeeButton;
     JButton discoverChessbotsButton;
 
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame
     {
         manager = new NullManager();
         boardPanel = new BoardPanel(manager);
-        chessbotInfoFrame = new ChessbotInfoFrame();
+        chessbotInfoPanel = new ChessbotInfoPanel();
 
         setTitle("Robot Chess");
         setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
@@ -64,8 +66,10 @@ public class MainFrame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setupMenuBar();
-        add(boardPanel);
+        add(boardPanel, BorderLayout.CENTER);
+        add(chessbotInfoPanel, BorderLayout.EAST);
 
+        chessbotInfoPanel.setVisible(false);
         setVisible(true);
     }
 
@@ -78,12 +82,15 @@ public class MainFrame extends JFrame
         optionsMenu = new JMenu("Options");
         newGameMenuItem = new JMenuItem("New Chessgame");
         newChessDemoMenuItem = new JMenuItem("New Chessbot Demo");
-        showConnectedChessbotButton = new JButton("Show Chessbot Info");
+        showConnectedChessbotButton = new JToggleButton("Show Chessbot Info");
         playWithChessbotsButton = new JRadioButton("Play with Chessbots");
         playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
         connectToXbeeButton = new JButton("Connect to Xbee");
         enableChessAIMenuItem = new JToggleButton("Enable Chess AI");
         discoverChessbotsButton = new JButton("Discover Chessbots");
+
+        // Figure out how to do keyboard shortcuts
+        // gameMenu.setMnemonic(KeyEvent.VK_G);
 
         chessbotButtonGroup = new ButtonGroup();
         chessbotButtonGroup.add(playWithChessbotsButton);
@@ -130,6 +137,21 @@ public class MainFrame extends JFrame
         boardPanel.updateDisplay();
     }
 
+    private void toggleChessbotInfo(boolean enabled) {
+        if (enabled) {
+            showConnectedChessbotButton.setText("Hide Chessbot Info");
+            setSize(getWidth() + CHESSBOT_INFO_PANEL_WIDTH, getHeight());
+        }
+        else {
+            showConnectedChessbotButton.setText("Show Chessbot Info");
+            if (chessbotInfoPanel.isShowing())
+                setSize(getWidth() - CHESSBOT_INFO_PANEL_WIDTH, getHeight());
+        }
+
+        chessbotInfoPanel.setVisible(enabled);
+        showConnectedChessbotButton.setSelected(enabled);
+    }
+
     private void toggleAI(boolean enabled) {
         if (enabled)
             enableChessAIMenuItem.setText("Disable Chess AI");
@@ -152,6 +174,12 @@ public class MainFrame extends JFrame
         enableChessAIMenuItem.setSelected(enabled);
     }
 
+    private static void createAndShowGUI()
+    {
+        @SuppressWarnings("unused")
+        MainFrame frame = new MainFrame();
+    }
+
     class MenuItemListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -172,7 +200,7 @@ public class MainFrame extends JFrame
                 enableChessAIMenuItem.setEnabled(false);
                 showConnectedChessbotButton.setEnabled(false);
                 newChessDemoMenuItem.setEnabled(false);
-                chessbotInfoFrame.setVisible(false);
+                toggleChessbotInfo(false);
                 discoverChessbotsButton.setEnabled(false);
                 switchManager(new NullManager());
             }
@@ -203,28 +231,8 @@ public class MainFrame extends JFrame
                 toggleAI(state);
             }
 
-            //Will change this so that the available robots are queried and
-            //shown here.
-            if (e.getSource() == newChessDemoMenuItem) {
-                int[] robotsPresent = determineRobotsPresent();
-                int[] initialLocations = generateInitialLocations(robotsPresent);
-                manager = new RobotDemoManager(initialLocations);
-
-                int boardRows = determineBoardRows();
-                int boardColumns = determineBoardColumns();
-
-                manager.setBoardRowCount(boardRows);
-                manager.setBoardColumnCount(boardColumns);
-
-                remove(boardPanel);
-                boardPanel = new BoardPanel(manager);
-                add(boardPanel);
-                boardPanel.updateDisplay();
-                setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
-            }
-
             if (e.getSource() == showConnectedChessbotButton)
-                chessbotInfoFrame.setVisible(true);
+                toggleChessbotInfo(showConnectedChessbotButton.isSelected());
 
             if (e.getSource() == connectToXbeeButton) {
                 boolean xbeeConnected = manager.isXbeeConnected();
@@ -236,7 +244,7 @@ public class MainFrame extends JFrame
                     xbeeConnected = manager.connectToXbee();
 
                     if(xbeeConnected) {
-                        chessbotInfoFrame.setChessbotInfoArrayHandler(manager.getChessbotInfo());
+                        chessbotInfoPanel.setChessbotInfoArrayHandler(manager.getChessbotInfo());
                         JOptionPane.showMessageDialog(null, "Successfully connected to Xbee");
                     }
                     else
@@ -268,21 +276,44 @@ public class MainFrame extends JFrame
                             "Cannot find Xbee",
                             JOptionPane.WARNING_MESSAGE);
             }
+
+            //TODO: Will change this so that the available robots are queried and
+            //shown here.
+            // if (e.getSource() == newChessDemoMenuItem) {
+            //     Integer[] robotsPresent = manager.determineRobotsPresent();
+
+            //     int[] initialLocations = generateInitialLocations(robotsPresent);
+            //     manager = new RobotDemoManager(initialLocations);
+
+            //     int boardRows = determineBoardRows();
+            //     int boardColumns = determineBoardColumns();
+
+            //     manager.setBoardRowCount(boardRows);
+            //     manager.setBoardColumnCount(boardColumns);
+
+            //     remove(boardPanel);
+            //     boardPanel = new BoardPanel(manager);
+            //     add(boardPanel);
+            //     boardPanel.updateDisplay();
+            //     setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
+            // }
+
         }
 
-        private int[] determineRobotsPresent()
-        {
-            String robotsPresentStr = (String) JOptionPane.showInputDialog(
-                "Please enter space-separated list of robots present",
-                "e.g. 1 2 4 6");
-            String[] robotsPresentStrArr = robotsPresentStr.split(" ");
+        // TODO: Need to change the way this method works
+        // private int[] offerUserRobotSelection()
+        // {
+        //     String robotsPresentStr = (String) JOptionPane.showInputDialog(
+        //         "Please enter space-separated list of robots present",
+        //         "e.g. 1 2 4 6");
+        //     String[] robotsPresentStrArr = robotsPresentStr.split(" ");
 
-            int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
-            for (int i = 0; i < robotsPresentIntArr.length; i++)
-                robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
+        //     int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
+        //     for (int i = 0; i < robotsPresentIntArr.length; i++)
+        //         robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
 
-            return robotsPresentIntArr;
-        }
+        //     return robotsPresentIntArr;
+        // }
 
         private int[] generateInitialLocations(int[] robotsPresent)
         {
@@ -332,7 +363,12 @@ public class MainFrame extends JFrame
 
     public static void main(String[] args)
     {
-        @SuppressWarnings("unused")
-        MainFrame frame = new MainFrame();
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
     }
 }

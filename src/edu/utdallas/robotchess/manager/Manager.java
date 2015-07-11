@@ -143,6 +143,14 @@ public abstract class Manager
             return comm.allChessbotsConnected();
     }
 
+    public Integer[] determineRobotsPresent()
+    {
+        if(comm == null)
+            return null;
+
+        return comm.getChessbotInfo().getRobotsPresent();
+    }
+
     public void discoverChessbots()
     {
         if(comm == null)
