@@ -300,7 +300,7 @@ public class MainFrame extends JFrame
                                                                     boardColumns);
                     int[] initialLocations = generateInitialLocations(userSelection);
 
-                    manager = new RobotDemoManager(initialLocations);
+                    switchManager(new RobotDemoManager(initialLocations));
 
                     manager.setBoardRowCount(boardRows);
                     manager.setBoardColumnCount(boardColumns);
