@@ -8,13 +8,10 @@ import edu.utdallas.robotchess.robotcommunication.commands.*;
 
 public class RobotDemoManager extends Manager
 {
-    private ChessbotCommunicator comm;
-
     public RobotDemoManager(int[] initialPieceLocations)
     {
         super();
         game.initializePieces(initialPieceLocations);
-        comm = ChessbotCommunicator.create();
     }
 
     public void handleSquareClick(int index)

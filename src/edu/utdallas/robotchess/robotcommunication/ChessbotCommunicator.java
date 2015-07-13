@@ -206,6 +206,7 @@ public class ChessbotCommunicator
 
             xbee.removePacketListener(nodeDiscoverResponseListener); //This should be called any time the
                                                                      //thread stops (even if it is interrupted)
+            discoveringChessbots = false;
         }
 
     };
