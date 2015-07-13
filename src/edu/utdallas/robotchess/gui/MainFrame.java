@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -21,6 +23,7 @@ import edu.utdallas.robotchess.manager.ChessManager;
 import edu.utdallas.robotchess.manager.Manager;
 import edu.utdallas.robotchess.manager.NullManager;
 import edu.utdallas.robotchess.manager.RobotChessManager;
+import edu.utdallas.robotchess.manager.RobotDemoManager;
 
 public class MainFrame extends JFrame
 {
@@ -213,9 +216,10 @@ public class MainFrame extends JFrame
                         enableChessAIMenuItem.setEnabled(true);
                     }
                     else
-                        JOptionPane.showMessageDialog(null, "All Chessbots need to be connected " +
-                            "in order to play a chessgame with them. To check how many are " +
-                            "currently connected, go to Options > Show Chessbot Info",
+                        JOptionPane.showMessageDialog(null, "All Chessbots need to "
+                            + "be connected in order to play a chessgame with them."
+                            + " To check how many are currently connected, go to "
+                            + "Options > Show Chessbot Info",
                             "Not enough Chessbots connected",
                             JOptionPane.WARNING_MESSAGE);
 
@@ -277,43 +281,81 @@ public class MainFrame extends JFrame
                             JOptionPane.WARNING_MESSAGE);
             }
 
-            //TODO: Will change this so that the available robots are queried and
-            //shown here.
-            // if (e.getSource() == newChessDemoMenuItem) {
-            //     Integer[] robotsPresent = manager.determineRobotsPresent();
+            if (e.getSource() == newChessDemoMenuItem) {
+                if (manager.isXbeeConnected() == false) {
+                    JOptionPane.showMessageDialog(null, "Xbee must be connected in order to " +
+                        "choose this game type.",
+                        "Xbee not Connected",
+                        JOptionPane.WARNING_MESSAGE);
 
-            //     int[] initialLocations = generateInitialLocations(robotsPresent);
-            //     manager = new RobotDemoManager(initialLocations);
+                }
+                else {
+                    // ArrayList<String> robotsPresent = manager.getChessbotInfo().getRobotsPresent();
+                    ArrayList<String> robotsPresent = new ArrayList<String>(); //temp
+                    for (int i = 0; i < 32; i++)
+                        robotsPresent.add(Integer.toString(i));
 
-            //     int boardRows = determineBoardRows();
-            //     int boardColumns = determineBoardColumns();
+                    int boardRows = determineBoardRows();
+                    int boardColumns = determineBoardColumns();
 
-            //     manager.setBoardRowCount(boardRows);
-            //     manager.setBoardColumnCount(boardColumns);
+                    int[] userSelection = offerUserRobotSelection(robotsPresent,
+                                                                    boardRows,
+                                                                    boardColumns);
+                    int[] initialLocations = generateInitialLocations(userSelection);
 
-            //     remove(boardPanel);
-            //     boardPanel = new BoardPanel(manager);
-            //     add(boardPanel);
-            //     boardPanel.updateDisplay();
-            //     setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
-            // }
+                    manager = new RobotDemoManager(initialLocations);
+
+                    manager.setBoardRowCount(boardRows);
+                    manager.setBoardColumnCount(boardColumns);
+
+                    remove(boardPanel);
+                    boardPanel = new BoardPanel(manager);
+                    add(boardPanel);
+                    boardPanel.updateDisplay();
+                    setSize(boardColumns * SQUARE_SIZE, boardRows * SQUARE_SIZE);
+                }
+            }
 
         }
 
-        // TODO: Need to change the way this method works
-        // private int[] offerUserRobotSelection()
-        // {
-        //     String robotsPresentStr = (String) JOptionPane.showInputDialog(
-        //         "Please enter space-separated list of robots present",
-        //         "e.g. 1 2 4 6");
-        //     String[] robotsPresentStrArr = robotsPresentStr.split(" ");
+        private int[] offerUserRobotSelection(ArrayList<String> robotsPresent,
+                                                int boardRows,
+                                                int boardColumns)
+        {
+            ArrayList<String> impossibleRobotStartingLocations = new ArrayList<String>(boardRows * boardColumns);
 
-        //     int[] robotsPresentIntArr = new int[robotsPresentStrArr.length];
-        //     for (int i = 0; i < robotsPresentIntArr.length; i++)
-        //         robotsPresentIntArr[i] = Integer.parseInt(robotsPresentStrArr[i]);
+            for (int i = 0; i < 64; i++)
+                if (i >= 8 * boardRows || (i % 8) >= boardColumns)
+                    impossibleRobotStartingLocations.add(Integer.toString(i));
 
-        //     return robotsPresentIntArr;
-        // }
+            for (int i = 0; i < robotsPresent.size(); i++) {
+                int tempBotId = Integer.parseInt(robotsPresent.get(i));
+                if (tempBotId > 16)
+                    robotsPresent.set(i, Integer.toString(tempBotId + 32));
+            }
+
+            robotsPresent.removeAll(impossibleRobotStartingLocations);
+
+            for (int i = 0; i < robotsPresent.size(); i++) {
+                int tempBotId = Integer.parseInt(robotsPresent.get(i));
+                if (tempBotId > 16)
+                    robotsPresent.set(i, Integer.toString(tempBotId - 32));
+            }
+
+            JList<Object> list = new JList<Object>(robotsPresent.toArray());
+
+            JOptionPane.showMessageDialog(null, list, "Choose Available Chessbots",
+                    JOptionPane.PLAIN_MESSAGE);
+
+            int[] selectedIndices = list.getSelectedIndices();
+            int[] userSelection = new int[selectedIndices.length];
+            int index = 0;
+
+            for (int i : selectedIndices)
+                userSelection[index++] = Integer.parseInt(robotsPresent.get(i));
+
+            return userSelection;
+        }
 
         private int[] generateInitialLocations(int[] robotsPresent)
         {
@@ -322,8 +364,13 @@ public class MainFrame extends JFrame
             for (int i = 0; i < locations.length; i++)
                 locations[i] = -1;
 
-            for (int i = 0; i < robotsPresent.length; i++)
-                locations[robotsPresent[i]] = robotsPresent[i];
+            for (int i = 0; i < robotsPresent.length; i++) {
+                if (robotsPresent[i] > 15)
+                    locations[robotsPresent[i]] = robotsPresent[i] + 32;
+                else
+                    locations[robotsPresent[i]] = robotsPresent[i];
+
+            }
 
             return locations;
         }

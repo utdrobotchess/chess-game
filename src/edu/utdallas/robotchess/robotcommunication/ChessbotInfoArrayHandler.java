@@ -144,17 +144,16 @@ public class ChessbotInfoArrayHandler
 
     }
 
-    public Integer[] getRobotsPresent() {
-        //Might not be the best way of doing this...
-        ArrayList<Integer> botIdArr = new ArrayList<Integer>();
+    public ArrayList<String> getRobotsPresent() {
+        ArrayList<String> botIdArr = new ArrayList<String>();
 
         for (ChessbotInfo ch : chessbotArr) {
             Integer id = ch.getId();
             if (id != null)
-                botIdArr.add(id);
+                botIdArr.add(id.toString());
         }
 
-        return (Integer[])botIdArr.toArray();
+        return botIdArr;
     }
 
     public int size() {

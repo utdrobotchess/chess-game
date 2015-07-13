@@ -48,9 +48,9 @@ public class ChessbotInfoPanel extends JPanel
     }
 
     public void updateChessbotInfo() {
-        //Should check size to ensure that properly update the table
+        //TODO: Should check size to ensure that properly update the table
 
-        //Also, there might be a cleaner way of updating the table. Using
+        //TODO: There might be a cleaner way of updating the table. Using
         //a method to replace the data, for example, instead of just creating
         //a new one.
         Object[][] data;
