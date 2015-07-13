@@ -290,10 +290,7 @@ public class MainFrame extends JFrame
 
                 }
                 else {
-                    // ArrayList<String> robotsPresent = manager.getChessbotInfo().getRobotsPresent();
-                    ArrayList<String> robotsPresent = new ArrayList<String>(); //temp
-                    for (int i = 0; i < 32; i++)
-                        robotsPresent.add(Integer.toString(i));
+                    ArrayList<String> robotsPresent = manager.getChessbotInfo().getRobotsPresent();
 
                     int boardRows = determineBoardRows();
                     int boardColumns = determineBoardColumns();
