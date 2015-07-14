@@ -61,6 +61,7 @@ public class Path
         return new MoveToSquareCommand(robotID, payloadArr);
     }
 
+    @Override
     public String toString()
     {
         String str = new String();
