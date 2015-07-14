@@ -1,8 +1,9 @@
 package edu.utdallas.robotchess.pathplanning;
 
-import edu.utdallas.robotchess.robotcommunication.commands.*;
+import java.util.ArrayList;
 
-import java.util.*;
+import edu.utdallas.robotchess.robotcommunication.commands.Command;
+import edu.utdallas.robotchess.robotcommunication.commands.MoveToSquareCommand;
 
 public class Path
 {
@@ -20,6 +21,11 @@ public class Path
     protected void add(int location)
     {
         path.add(location);
+    }
+
+    public void setPath(ArrayList<Integer> path)
+    {
+        this.path = path;
     }
 
     public ArrayList<Integer> getPath()
@@ -53,5 +59,17 @@ public class Path
             payloadArr[i] = payload.get(i);
 
         return new MoveToSquareCommand(robotID, payloadArr);
+    }
+
+    public String toString()
+    {
+        String str = new String();
+        str = String.format("<%2d> (%2d) [", robotID, origin);
+
+        for (Integer i : path)
+            str += String.format("%3d", i);
+
+        str += String.format("]");
+        return str;
     }
  }
