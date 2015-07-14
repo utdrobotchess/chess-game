@@ -1,14 +1,26 @@
 package edu.utdallas.robotchess.gui;
 
-import java.util.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import edu.utdallas.robotchess.manager.*;
-import edu.utdallas.robotchess.game.*;
-import edu.utdallas.robotchess.engine.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
+import edu.utdallas.robotchess.engine.AlphaBetaSearch;
+import edu.utdallas.robotchess.engine.Move;
+import edu.utdallas.robotchess.game.ChessGame;
+import edu.utdallas.robotchess.game.ChessPiece;
+import edu.utdallas.robotchess.manager.ChessManager;
+import edu.utdallas.robotchess.manager.Manager;
 
 public class BoardPanel extends JPanel
 {
