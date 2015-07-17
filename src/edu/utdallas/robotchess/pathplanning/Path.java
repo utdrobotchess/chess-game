@@ -9,28 +9,28 @@ public class Path
 {
     private int robotID;
     private int origin;
-    private ArrayList<Integer> path;
+    private ArrayList<Integer> squareSequence;
 
     public Path(int robotID, int origin)
     {
         this.robotID = robotID;
         this.origin = origin;
-        path = new ArrayList<>();
+        squareSequence = new ArrayList<>();
     }
 
     protected void add(int location)
     {
-        path.add(location);
+        squareSequence.add(location);
     }
 
-    public void setPath(ArrayList<Integer> path)
+    public void setSquareSequence(ArrayList<Integer> squareSequence)
     {
-        this.path = path;
+        this.squareSequence = squareSequence;
     }
 
     public ArrayList<Integer> getPath()
     {
-        return path;
+        return squareSequence;
     }
 
     public int getRobotID()
@@ -40,19 +40,22 @@ public class Path
 
     public Command generateCommand()
     {
+        if (squareSequence.size() == 0)
+            return null;
+
         ArrayList<Integer> payload = new ArrayList<>();
 
-        int previousDirection = path.get(0) - origin;
+        int previousDirection = squareSequence.get(0) - origin;
 
-        for(int i = 1; i < path.size(); i++) {
-            int newDirection = path.get(i) - path.get(i-1);
+        for(int i = 1; i < squareSequence.size(); i++) {
+            int newDirection = squareSequence.get(i) - squareSequence.get(i - 1);
             if (newDirection != previousDirection) {
-                payload.add(path.get(i - 1));
+                payload.add(squareSequence.get(i - 1));
                 previousDirection = newDirection;
             }
         }
 
-        payload.add(path.get(path.size() - 1));
+        payload.add(squareSequence.get(squareSequence.size() - 1));
 
         int[] payloadArr = new int[payload.size()];
         for (int i = 0; i < payloadArr.length; i++)
@@ -65,10 +68,10 @@ public class Path
     public String toString()
     {
         String str = new String();
-        str = String.format("<%2d> (%2d) [", robotID, origin);
+        str = String.format("<%d> (%d) [", robotID, origin);
 
-        for (Integer i : path)
-            str += String.format("%3d", i);
+        for (Integer i : squareSequence)
+            str += String.format("%d ", i);
 
         str += String.format("]");
         return str;
