@@ -2,6 +2,9 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import edu.utdallas.robotchess.game.ChessGame;
 import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
@@ -13,12 +16,14 @@ public abstract class Manager
     private int boardRowCount;
     private int boardColumnCount;
 
+    protected final static Logger log = Logger.getLogger(Manager.class);
     protected ChessGame game;
     protected ChessPiece currentlySelectedPiece;
     protected ChessbotCommunicator comm;
 
     protected Manager()
     {
+        PropertyConfigurator.configure("log/log4j.properties");
         boardRowCount = 8;
         boardColumnCount = 8;
 
