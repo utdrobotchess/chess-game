@@ -1,10 +1,11 @@
 package edu.utdallas.robotchess.engine;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
-import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.game.ChessGame;
 
 public class AlphaBetaSearchTest
 {
@@ -14,7 +15,7 @@ public class AlphaBetaSearchTest
         ChessGame game = new ChessGame();
         AlphaBetaSearch abs = new AlphaBetaSearch();
         ArrayList<Move> moves = abs.generateMoves(game);
-        
+
         Assert.assertEquals(20, moves.size());
     }
 }
