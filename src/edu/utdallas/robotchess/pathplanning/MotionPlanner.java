@@ -1,6 +1,14 @@
 package edu.utdallas.robotchess.pathplanning;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import edu.utdallas.robotchess.engine.Move;
 
 public class MotionPlanner
 {
@@ -8,12 +16,14 @@ public class MotionPlanner
     final int REGULAR_SQUARE_COUNT = 64;
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
+    private final static Logger log = Logger.getLogger(MotionPlanner.class);
 
     int boardRows;
     int boardColumns;
 
     public MotionPlanner(int boardRows, int boardColumns)
     {
+        PropertyConfigurator.configure("log/log4j.properties");
         this.boardRows = boardRows;
         this.boardColumns = boardColumns;
     }
@@ -28,17 +38,14 @@ public class MotionPlanner
         if (movesNeeded.size() > 1)
             return plan;
 
-        for (int i = 0; i < movesNeeded.size(); i++) {
-            Move thisMove = movesNeeded.get(i);
-            Path path = new Path(thisMove.pieceID, thisMove.origin);
+        for (Move move : movesNeeded) {
+            Path path = new Path(move.pieceID, move.origin);
 
             ArrayList<Integer> squareSequence = dijkstra(occupancyGrid,
-                                                         thisMove.origin,
-                                                         thisMove.destination);
+                                                         move.origin,
+                                                         move.destination);
 
-            for (int j = 0; j < squareSequence.size(); j++)
-                path.add(squareSequence.get(j));
-
+            path.setSquareSequence(squareSequence);
             plan.add(path);
         }
 
@@ -161,8 +168,7 @@ public class MotionPlanner
 
             ArrayList<Edge> edges = computeEdges(occupancyGrid, u.id);
 
-            for (int i = 0; i < edges.size(); i++) {
-                Edge e = edges.get(i);
+            for (Edge e : edges) {
                 Vertex v = vertices[e.destination];
 
                 if (v.distance > u.distance + e.weight) {
@@ -171,6 +177,7 @@ public class MotionPlanner
                     v.predecessor = u;
                     queue.add(v);
                 }
+
             }
         }
     }
@@ -209,6 +216,14 @@ class Vertex
         this.id = id;
         predecessor = null;
     }
+
+    @Override
+    public String toString()
+    {
+        String str = new String();
+        str = String.format("Vertex ID: %d. Distance: %d.", id, distance);
+        return str;
+    }
 }
 
 class Edge
@@ -237,25 +252,5 @@ class VertexComparator implements Comparator<Vertex>
             return 1;
 
         return 0;
-    }
-}
-
-class Move
-{
-    int pieceID;
-    int origin;
-    int destination;
-
-    Move(int pieceID, int origin, int destination)
-    {
-        this.pieceID = pieceID;
-        this.origin = origin;
-        this.destination = destination;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Move piece " + pieceID + " from " + origin + " to " + destination;
     }
 }
