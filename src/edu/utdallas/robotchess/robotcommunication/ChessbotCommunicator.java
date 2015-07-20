@@ -82,7 +82,7 @@ public class ChessbotCommunicator
 
     private ChessbotCommunicator()
     {
-        PropertyConfigurator.configure("log/log4j.properties"); //Should migrate this to all source code for logging
+        PropertyConfigurator.configure("log/log4j.properties");
         xbee = new XBee();
         chessbots = new ChessbotInfoArrayHandler();
     }
@@ -140,11 +140,6 @@ public class ChessbotCommunicator
     public ChessbotInfoArrayHandler getChessbotInfo()
     {
         return chessbots;
-    }
-
-    public boolean allChessbotsConnected()
-    {
-        return chessbots.allChessbotsConnected();
     }
 
     public boolean isDiscoveringChessbots()
@@ -210,7 +205,6 @@ public class ChessbotCommunicator
         }
 
     };
-
 
     public void sendCommand(Command cmd)
     {
