@@ -11,6 +11,7 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import edu.utdallas.robotchess.robotcommunication.ChessbotInfo;
 import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 
 public class ChessbotInfoPanel extends JPanel
@@ -18,7 +19,6 @@ public class ChessbotInfoPanel extends JPanel
     private final static Logger log = Logger.getLogger(ChessbotInfoPanel.class);
     private static final long serialVersionUID = 1;
     private JTable table;
-    private String[] columnNames;
 
     private ChessbotInfoArrayHandler chessbots;
     private ChessbotInfoThread chessbotInfoThread;
@@ -34,13 +34,6 @@ public class ChessbotInfoPanel extends JPanel
 
         chessbotInfoThread.start();
 
-        columnNames = new String[] {"ID #",
-            "XBee Address",
-            "Last DeliveryStatus",
-            "Last Communication Time",
-            "Last Message Sent To",
-            "Last Message Recieved From"};
-
         setOpaque(true);
         setSize(MainFrame.CHESSBOT_INFO_PANEL_WIDTH, MainFrame.CHESSBOT_INFO_PANEL_HEIGHT);
 
@@ -54,6 +47,7 @@ public class ChessbotInfoPanel extends JPanel
         //a method to replace the data, for example, instead of just creating
         //a new one.
         Object[][] data;
+        String[] columnNames = ChessbotInfo.getColumnsForTable();
 
         if (chessbots == null)
             data = new Object[][] {{null, null, null, null, null, null}};
@@ -64,6 +58,7 @@ public class ChessbotInfoPanel extends JPanel
 
         TableColumn column = null;
 
+        //This should be cleaned up
         column = table.getColumnModel().getColumn(0);
         column.setMaxWidth(41);
         column.setMinWidth(40);
@@ -71,15 +66,18 @@ public class ChessbotInfoPanel extends JPanel
         column.setMaxWidth(301);
         column.setMinWidth(300);
         column = table.getColumnModel().getColumn(2);
+        column.setMaxWidth(301);
+        column.setMinWidth(300);
+        column = table.getColumnModel().getColumn(3);
         column.setMaxWidth(121);
         column.setMinWidth(120);
-        column = table.getColumnModel().getColumn(3);
+        column = table.getColumnModel().getColumn(4);
         column.setMaxWidth(171);
         column.setMinWidth(170);
-        column = table.getColumnModel().getColumn(4);
+        column = table.getColumnModel().getColumn(5);
         column.setMaxWidth(1201);
         column.setMinWidth(1200);
-        column = table.getColumnModel().getColumn(5);
+        column = table.getColumnModel().getColumn(6);
         column.setMaxWidth(1201);
         column.setMinWidth(1200);
 
@@ -115,7 +113,6 @@ public class ChessbotInfoPanel extends JPanel
                 if(chessbots != null && chessbots.isUpdated()) {
                     updateChessbotInfo();
                     chessbots.setUpdatedFlag(false);
-                    log.debug("Updating Frame");
                 }
 
                 try {
@@ -126,7 +123,6 @@ public class ChessbotInfoPanel extends JPanel
             }
         }
     }
-
 
 }
 
