@@ -1,8 +1,8 @@
 package edu.utdallas.robotchess.robotcommunication;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -48,6 +48,10 @@ public class ChessbotInfoArrayHandler
                 chessbotInfo.setId(id);
                 chessbotArr.set(chessbotInfoIndex, chessbotInfo);
             }
+
+            //I sort upon insertion. May not be the most elegant way of
+            //handling this
+            Collections.sort(chessbotArr, new ChessbotInfoComparator());
         }
     }
 
@@ -131,19 +135,6 @@ public class ChessbotInfoArrayHandler
         return addrArr;
     }
 
-    public boolean allChessbotsConnected() {
-        if(chessbotArr.size() == 32) {
-            for (ChessbotInfo chessbotInfo : chessbotArr) {
-                if (chessbotInfo.getId() == null)
-                    return false;
-            }
-            return true;
-        }
-        else
-            return false;
-
-    }
-
     public ArrayList<String> getRobotsPresent() {
         ArrayList<String> botIdArr = new ArrayList<String>();
 
@@ -212,107 +203,32 @@ public class ChessbotInfoArrayHandler
     }
 }
 
-class ChessbotInfo
+class ChessbotInfoComparator implements Comparator<ChessbotInfo>
 {
-    XBeeAddress64 xbeeAddress;
-    Integer id;
-    Date lastTimeCommunicated;
-    ZNetRxResponse lastMessageReceived; //Last message received from Chessbot
-    ZNetTxRequest lastMessageSent;      //Last message sent to Chessbot
-    boolean lastMessageDeliveryStatus;
-
-    public ChessbotInfo(XBeeAddress64 xbeeAddress, Integer id, Date lastTimeCommunicated)
-    {
-        this.xbeeAddress = xbeeAddress;
-        this.id = id;
-        this.lastTimeCommunicated = lastTimeCommunicated;
-    }
-
-    public XBeeAddress64 getXbeeAddress() {
-        return xbeeAddress;
-    }
-
-    public void setXbeeAddress(XBeeAddress64 xbeeAddress) {
-        this.xbeeAddress = xbeeAddress;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Date getLastTimeCommunicated() {
-        return lastTimeCommunicated;
-    }
-
-    public void setLastTimeCommunicated(Date lastTimeCommunicated) {
-        this.lastTimeCommunicated = lastTimeCommunicated;
-    }
-
-    public ZNetTxRequest getLastMessageSent() {
-        return lastMessageSent;
-    }
-
-    public void setLastMessageSent(ZNetTxRequest lastMessageSent,
-                                    boolean deliveryStatus) {
-        this.lastMessageSent = lastMessageSent;
-        this.lastMessageDeliveryStatus = deliveryStatus;
-    }
-
-    public ZNetRxResponse getLastMessageReceived() {
-        return lastMessageReceived;
-    }
-
-    public void setLastMessageReceived(ZNetRxResponse lastMessageReceived) {
-        this.lastMessageReceived = lastMessageReceived;
-    }
-
-    public boolean getLastMessageDeliveryStatus() {
-        return lastMessageDeliveryStatus;
-    }
-
-    public String formatDateToString() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        return dateFormat.format(lastTimeCommunicated);
-    }
-
-    public Object[] toObjectArray() {
-        Object[] data = new Object[] {
-        id,
-        xbeeAddress,
-        lastMessageDeliveryStatus,
-        formatDateToString(),
-        lastMessageSent,
-        lastMessageReceived};
-
-        return data;
-    }
-
-    //This is fuckin' messy, mate!
-    public String toString() {
-        String string = String.format(id + " " + xbeeAddress +
-                " " + formatDateToString() + " " + lastMessageSent +
-                " " + lastMessageReceived);
-
-        return string;
-    }
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
+    public int compare(ChessbotInfo x, ChessbotInfo y)
+    {
+        Integer xId = x.getId();
+        Integer yId = y.getId();
 
-        if (o == null || !(o instanceof ChessbotInfo))
-            return false;
+        if (xId == null && yId != null)
+            return -1;
 
-        ChessbotInfo that = (ChessbotInfo) o;
+        if (xId != null && yId == null)
+            return 1;
 
-        return this.getXbeeAddress().equals(that.getXbeeAddress()) &&
-                this.getId().equals(that.getId()) &&
-                this.getLastTimeCommunicated().equals(that.getLastTimeCommunicated());
+        if (xId == null && yId == null)
+            return 0;
+
+        int xIdint = xId.intValue();
+        int yIdint = yId.intValue();
+
+        if (xIdint < yIdint)
+            return -1;
+
+        if (xIdint > yIdint)
+            return 1;
+
+        return 0;
     }
-
 }
