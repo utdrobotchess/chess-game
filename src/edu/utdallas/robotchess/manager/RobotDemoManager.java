@@ -1,10 +1,12 @@
 package edu.utdallas.robotchess.manager;
 
-import java.util.*;
-import edu.utdallas.robotchess.game.*;
-import edu.utdallas.robotchess.robotcommunication.*;
-import edu.utdallas.robotchess.pathplanning.*;
-import edu.utdallas.robotchess.robotcommunication.commands.*;
+import java.util.ArrayList;
+
+import edu.utdallas.robotchess.game.Square;
+import edu.utdallas.robotchess.pathplanning.MotionPlanner;
+import edu.utdallas.robotchess.pathplanning.Path;
+import edu.utdallas.robotchess.robotcommunication.commands.Command;
+import edu.utdallas.robotchess.robotcommunication.commands.SmartCenterCommand;
 
 public class RobotDemoManager extends Manager
 {
@@ -31,10 +33,14 @@ public class RobotDemoManager extends Manager
                                                   getBoardColumnCount());
         ArrayList<Path> plan = planner.plan(currentLocations, desiredLocations);
 
-        for (int i = 0; i < plan.size(); i++) {
-            Path path = plan.get(i);
+        for (Path path : plan) {
+            log.debug(path); //temp
             Command command = path.generateCommand();
-            comm.sendCommand(command);
+
+            if (command == null)
+                log.debug("Command is null. The pathplanner could not find a solution.");
+            else
+                comm.sendCommand(command);
         }
     }
 
@@ -59,7 +65,9 @@ public class RobotDemoManager extends Manager
 
     protected void makeUpdatesFromValidMoveSelection(int selectionIndex)
     {
-        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
-        currentlySelectedPiece = null;
+        if (currentlySelectedPiece != null) {
+            currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
+            currentlySelectedPiece = null;
+        }
     }
 }
