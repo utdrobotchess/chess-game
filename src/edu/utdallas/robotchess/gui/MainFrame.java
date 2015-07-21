@@ -18,6 +18,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import edu.utdallas.robotchess.game.ChessBoard;
 import edu.utdallas.robotchess.game.Team;
 import edu.utdallas.robotchess.manager.ChessManager;
 import edu.utdallas.robotchess.manager.Manager;
@@ -31,6 +35,7 @@ public class MainFrame extends JFrame
     public final static int CHESSBOT_INFO_PANEL_WIDTH = 300;
     public final static int CHESSBOT_INFO_PANEL_HEIGHT = 300;
     private static final long serialVersionUID = 0;
+    protected final static Logger log = Logger.getLogger(MainFrame.class);
 
     Manager manager;
     BoardPanel boardPanel;
@@ -58,6 +63,8 @@ public class MainFrame extends JFrame
 
     public MainFrame()
     {
+        PropertyConfigurator.configure("log/log4j.properties");
+
         manager = new NullManager();
         boardPanel = new BoardPanel(manager);
         chessbotInfoPanel = new ChessbotInfoPanel();
@@ -208,28 +215,6 @@ public class MainFrame extends JFrame
                 switchManager(new NullManager());
             }
 
-            if (e.getSource() == newGameMenuItem) {
-                if (playWithChessbotsButton.isSelected())
-                {
-                    if(manager.checkIfAllChessbotsAreConnected()) {
-                        switchManager(new RobotChessManager());
-                        enableChessAIMenuItem.setEnabled(true);
-                    }
-                    else
-                        JOptionPane.showMessageDialog(null, "All Chessbots need to "
-                            + "be connected in order to play a chessgame with them."
-                            + " To check how many are currently connected, go to "
-                            + "Options > Show Chessbot Info",
-                            "Not enough Chessbots connected",
-                            JOptionPane.WARNING_MESSAGE);
-
-                }
-                else {
-                    switchManager(new ChessManager());
-                    enableChessAIMenuItem.setEnabled(true);
-                }
-            }
-
             if (e.getSource() == enableChessAIMenuItem) {
                 boolean state = enableChessAIMenuItem.isSelected();
                 toggleAI(state);
@@ -281,6 +266,59 @@ public class MainFrame extends JFrame
                             JOptionPane.WARNING_MESSAGE);
             }
 
+            if (e.getSource() == newGameMenuItem) {
+                ArrayList<String> robotsPresent = new ArrayList<>();
+                Manager newManager;
+
+                //Lots of code duplication in this if else statement
+                if (playWithChessbotsButton.isSelected()) {
+                    if (manager.isXbeeConnected()) {
+                        newManager = new RobotChessManager();
+                        robotsPresent = manager.getChessbotInfo().getRobotsPresent();
+
+                        //TODO: Need to ensure that both Kings are chosen
+                        int[] pieceSelection = offerUserRobotSelection(robotsPresent);
+                        int[] pieceLocations = offerUserBoardConfiguration(pieceSelection, ChessBoard.NUM_ROWS, ChessBoard.NUM_COLUMNS);
+
+                        if (newManager.setInitialPieceLocations(pieceLocations)) {
+                            switchManager(newManager);
+                            enableChessAIMenuItem.setEnabled(true);
+                        }
+                        else
+                            JOptionPane.showMessageDialog(null, "Your initial board configuration"
+                                + " is in checkmate. Please choose another board configuration.",
+                                "Invalid Initial Board Configuration",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null, "Xbee must be connected in order to " +
+                            "choose this game type.",
+                            "Xbee not Connected",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                else {
+                    newManager = new ChessManager();
+
+                    for (int i = 0; i < 32; i++)
+                        robotsPresent.add(Integer.toString(i));
+
+                    //TODO: Need to ensure that both Kings are chosen
+                    int[] pieceSelection = offerUserRobotSelection(robotsPresent);
+                    int[] pieceLocations = offerUserBoardConfiguration(pieceSelection, ChessBoard.NUM_ROWS, ChessBoard.NUM_COLUMNS);
+
+                    if (newManager.setInitialPieceLocations(pieceLocations)) {
+                        switchManager(newManager);
+                        enableChessAIMenuItem.setEnabled(true);
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null, "Your initial board configuration"
+                            + " is in checkmate. Please choose another board configuration.",
+                            "Invalid Initial Board Configuration",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+
+            }
+
             if (e.getSource() == newChessDemoMenuItem) {
                 if (manager.isXbeeConnected() == false) {
                     JOptionPane.showMessageDialog(null, "Xbee must be connected in order to " +
@@ -292,15 +330,13 @@ public class MainFrame extends JFrame
                 else {
                     ArrayList<String> robotsPresent = manager.getChessbotInfo().getRobotsPresent();
 
-                    int boardRows = determineBoardRows();
-                    int boardColumns = determineBoardColumns();
+                    int boardRows = determineBoardRows(robotsPresent.size(), ChessBoard.NUM_COLUMNS);
+                    int boardColumns = determineBoardColumns(robotsPresent.size(), boardRows);
 
-                    int[] userSelection = offerUserRobotSelection(robotsPresent,
-                                                                    boardRows,
-                                                                    boardColumns);
-                    int[] initialLocations = generateInitialLocations(userSelection);
+                    int[] pieceSelection = offerUserRobotSelection(robotsPresent);
+                    int[] pieceLocations = offerUserBoardConfiguration(pieceSelection, boardRows, boardColumns);
 
-                    switchManager(new RobotDemoManager(initialLocations));
+                    switchManager(new RobotDemoManager(pieceLocations));
 
                     manager.setBoardRowCount(boardRows);
                     manager.setBoardColumnCount(boardColumns);
@@ -315,46 +351,141 @@ public class MainFrame extends JFrame
 
         }
 
-        private int[] offerUserRobotSelection(ArrayList<String> robotsPresent,
-                                                int boardRows,
-                                                int boardColumns)
+        private int[] offerUserRobotSelection(ArrayList<String> robotsPresent)
         {
-            ArrayList<String> impossibleRobotStartingLocations = new ArrayList<String>(boardRows * boardColumns);
-
-            for (int i = 0; i < 64; i++)
-                if (i >= 8 * boardRows || (i % 8) >= boardColumns)
-                    impossibleRobotStartingLocations.add(Integer.toString(i));
-
             for (int i = 0; i < robotsPresent.size(); i++) {
-                int tempBotId = Integer.parseInt(robotsPresent.get(i));
-                if (tempBotId > 16)
-                    robotsPresent.set(i, Integer.toString(tempBotId + 32));
-            }
+                String robotId = robotsPresent.get(i);
+                int id = Integer.parseInt(robotId);
 
-            robotsPresent.removeAll(impossibleRobotStartingLocations);
+                String pieceName = getPieceName(id);
 
-            for (int i = 0; i < robotsPresent.size(); i++) {
-                int tempBotId = Integer.parseInt(robotsPresent.get(i));
-                if (tempBotId > 16)
-                    robotsPresent.set(i, Integer.toString(tempBotId - 32));
+                robotsPresent.set(i, robotId + pieceName);
             }
 
             JList<Object> list = new JList<Object>(robotsPresent.toArray());
 
-            JOptionPane.showMessageDialog(null, list, "Choose Available Chessbots",
+            //TODO: Need a better graphicial interface for choosing pieces.
+            JOptionPane.showMessageDialog(null, list, "Choose Available Chess Pieces",
                     JOptionPane.PLAIN_MESSAGE);
 
             int[] selectedIndices = list.getSelectedIndices();
-            int[] userSelection = new int[selectedIndices.length];
+            int[] pieceSelection = new int[selectedIndices.length];
+
             int index = 0;
 
-            for (int i : selectedIndices)
-                userSelection[index++] = Integer.parseInt(robotsPresent.get(i));
+            for (int i : selectedIndices) {
+                String str = robotsPresent.get(i);
+                str = str.substring(0, str.indexOf(' '));
+                pieceSelection[index++] = Integer.parseInt(str);
+            }
 
-            return userSelection;
+            return pieceSelection;
         }
 
-        private int[] generateInitialLocations(int[] robotsPresent)
+        private String getPieceName(int pieceId)
+        {
+            String str = new String();
+
+            if (pieceId < 16)
+                str = " : Green";
+            else
+                str = " : Orange";
+
+            switch (pieceId) {
+                case 0:
+                case 7:
+                case 24:
+                case 31:
+                    str += " Rook";
+                    break;
+
+                case 1:
+                case 6:
+                case 25:
+                case 30:
+                    str += " Knight";
+                    break;
+
+                case 2:
+                case 5:
+                case 26:
+                case 29:
+                    str += " Bishop";
+                    break;
+
+                case 3:
+                case 27:
+                    str += " Queen";
+                    break;
+
+                case 4:
+                case 28:
+                    str += " King";
+                    break;
+
+                default:
+                    str += " Pawn";
+            }
+
+            return str;
+        }
+
+        private int[] offerUserBoardConfiguration(int[] pieceSelection,
+                                                    int boardRows,
+                                                    int boardColumns)
+        {
+            int[] pieceLocations = new int[32];
+            ArrayList<String> possibleStartingLocations = new ArrayList<String>(boardRows * boardColumns);
+
+            for (int i = 0; i < ChessBoard.NUM_SQUARES; i++)
+                if (i <= ChessBoard.NUM_ROWS * boardRows || (i % ChessBoard.NUM_COLUMNS) <= boardColumns)
+                    possibleStartingLocations.add(Integer.toString(i));
+
+            Object[] options = {"Chess Configuration",
+                                "Custom Configuration"};
+
+            //TODO: Need to check before here if the default locations of the selected pieces are possibleStartingLocations
+            int userChoice = JOptionPane.showOptionDialog(null,
+                    "Choose the starting locations of your chess pieces",
+                    "Initial Chessboard Configuration",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (userChoice == 0)
+                pieceLocations = generateDefaultLocations(pieceSelection);
+            else {
+                for (int i = 0; i < pieceLocations.length; i++)
+                    pieceLocations[i] = -1;
+
+                for (int piece : pieceSelection) {
+
+                    String prompt = "Choose an available board location for "
+                        + "Piece "
+                        + piece
+                        + getPieceName(piece);
+
+                    //TODO: Clean this up and have a better graphical interface
+                    //for the user to choose piece locations
+                    String selectedLocation = JOptionPane.showInputDialog(null,
+                                                prompt,
+                                                "Available Board Locations",
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null,
+                                                possibleStartingLocations.toArray(),
+                                                possibleStartingLocations.get(0)).toString();
+
+                    pieceLocations[piece] = Integer.parseInt(selectedLocation);
+                    possibleStartingLocations.remove(selectedLocation);
+                }
+            }
+
+            return pieceLocations;
+        }
+
+        private int[] generateDefaultLocations(int[] robotsPresent)
         {
             int[] locations = new int[32];
 
@@ -372,9 +503,23 @@ public class MainFrame extends JFrame
             return locations;
         }
 
-        private int determineBoardRows()
+        private int determineBoardRows(int numOfPieces, int numOfColumns)
         {
-            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            int leastNumberOfRows = numOfPieces / numOfColumns;
+
+            if (leastNumberOfRows > ChessBoard.NUM_ROWS)
+                return 0;
+
+            if (leastNumberOfRows < 2)
+                leastNumberOfRows = 2;
+
+            int possibleDimensionsLength = ChessBoard.NUM_ROWS - leastNumberOfRows + 1;
+
+            Object[] possibleDimensions = new Object[possibleDimensionsLength];
+
+            for (int i = 0; i < possibleDimensionsLength; i++)
+                possibleDimensions[i] = Integer.toString(leastNumberOfRows++);
+
             String boardRows = (String) JOptionPane.showInputDialog(
                 (Component) null,
                 "Please enter the number of board rows",
@@ -382,15 +527,30 @@ public class MainFrame extends JFrame
                 JOptionPane.PLAIN_MESSAGE,
                 (Icon) null,
                 possibleDimensions,
-                "8");
+                Integer.toString(ChessBoard.NUM_ROWS));
+
             int boardRowCount = Integer.parseInt(boardRows);
 
             return boardRowCount;
          }
 
-        private int determineBoardColumns()
+        private int determineBoardColumns(int numOfPieces, int numOfRows)
         {
-            Object[] possibleDimensions = {"2", "3", "4", "5", "6", "7", "8"};
+            int leastNumberOfColumns = numOfPieces / numOfRows;
+
+            if (leastNumberOfColumns > ChessBoard.NUM_COLUMNS)
+                return 0;
+
+            if (leastNumberOfColumns < 2)
+                leastNumberOfColumns = 2;
+
+            int possibleDimensionsLength = ChessBoard.NUM_COLUMNS - leastNumberOfColumns + 1;
+
+            Object[] possibleDimensions = new Object[possibleDimensionsLength];
+
+            for (int i = 0; i < possibleDimensionsLength; i++)
+                possibleDimensions[i] = Integer.toString(leastNumberOfColumns++);
+
             String boardColumns = (String) JOptionPane.showInputDialog(
                 (Component) null,
                 "Please enter the number of board columns",
@@ -398,7 +558,8 @@ public class MainFrame extends JFrame
                 JOptionPane.PLAIN_MESSAGE,
                 (Icon) null,
                 possibleDimensions,
-                "8");
+                Integer.toString(ChessBoard.NUM_COLUMNS));
+
             int boardColumnCount = Integer.parseInt(boardColumns);
 
             return boardColumnCount;

@@ -31,6 +31,19 @@ public abstract class Manager
         currentlySelectedPiece = null;
     }
 
+    public boolean setInitialPieceLocations(int[] pieceLocations)
+    {
+        ChessGame g = new ChessGame();
+        g.initializePieces(pieceLocations);
+        if (g.isInCheckmate())
+            return false;
+        else
+            this.game.initializePieces(pieceLocations);
+
+        return true;
+    }
+
+
     public void handleSquareClick(int index)
     {
         if (isValidInitialPieceSelection(index))
@@ -138,14 +151,6 @@ public abstract class Manager
             return null;
         else
             return comm.getChessbotInfo();
-    }
-
-    public boolean checkIfAllChessbotsAreConnected()
-    {
-        if(comm == null)
-            return false;
-        else
-            return comm.allChessbotsConnected();
     }
 
     public void discoverChessbots()

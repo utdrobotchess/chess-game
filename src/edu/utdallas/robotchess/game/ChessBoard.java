@@ -2,9 +2,9 @@ package edu.utdallas.robotchess.game;
 
 public class ChessBoard
 {
-    private final int NUM_SQUARES = 64;
-    private final int NUM_COLUMNS = 8;
-    private final int NUM_ROWS = 8;
+    public final static int NUM_COLUMNS = 8;
+    public final static int NUM_ROWS = 8;
+    public final static int NUM_SQUARES = NUM_ROWS * NUM_COLUMNS;
 
     private final int NORTH = 0;
     private final int NORTHEAST = 1;
