@@ -1,8 +1,12 @@
 package edu.utdallas.robotchess.manager;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import edu.utdallas.robotchess.game.*;
+import edu.utdallas.robotchess.game.ChessGame;
+import edu.utdallas.robotchess.game.ChessPiece;
+import edu.utdallas.robotchess.game.King;
+import edu.utdallas.robotchess.game.Square;
+import edu.utdallas.robotchess.game.Team;
 
 public class ChessManager extends Manager
 {
