@@ -16,6 +16,7 @@ public class MotionPlanner
     final int REGULAR_SQUARE_COUNT = 64;
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
+    @SuppressWarnings("unused")
     private final static Logger log = Logger.getLogger(MotionPlanner.class);
 
     int boardRows;
