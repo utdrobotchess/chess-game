@@ -2,7 +2,6 @@ package edu.utdallas.robotchess.manager;
 
 import java.util.ArrayList;
 
-import edu.utdallas.robotchess.game.ChessGame;
 import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.King;
 import edu.utdallas.robotchess.game.Square;
