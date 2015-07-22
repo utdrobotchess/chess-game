@@ -16,6 +16,7 @@ public class RobotDemoManager extends Manager
         game.initializePieces(initialPieceLocations);
     }
 
+    @Override
     public void handleSquareClick(int index)
     {
         if (currentlySelectedPiece != null &&
