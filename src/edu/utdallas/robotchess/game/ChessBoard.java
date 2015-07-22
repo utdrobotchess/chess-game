@@ -6,14 +6,14 @@ public class ChessBoard
     public final static int NUM_ROWS = 8;
     public final static int NUM_SQUARES = NUM_ROWS * NUM_COLUMNS;
 
-    private final int NORTH = 0;
-    private final int NORTHEAST = 1;
-    private final int EAST = 2;
-    private final int SOUTHEAST = 3;
-    private final int SOUTH = 4;
-    private final int SOUTHWEST = 5;
-    private final int WEST = 6;
-    private final int NORTHWEST = 7;
+    public final static int NORTH = 0;
+    public final static int NORTHEAST = 1;
+    public final static int EAST = 2;
+    public final static int SOUTHEAST = 3;
+    public final static int SOUTH = 4;
+    public final static int SOUTHWEST = 5;
+    public final static int WEST = 6;
+    public final static int NORTHWEST = 7;
 
 
     Square squares[] = new Square[NUM_SQUARES];

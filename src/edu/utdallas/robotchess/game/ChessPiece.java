@@ -2,6 +2,8 @@ package edu.utdallas.robotchess.game;
 
 import java.util.ArrayList;
 
+import edu.utdallas.robotchess.pathplanning.Path;
+
 public abstract class ChessPiece
 {
     private Square location;
@@ -66,6 +68,7 @@ public abstract class ChessPiece
     }
 
     protected abstract ArrayList<Square> generateMoveLocations();
+    protected abstract Path[] generatePaths(int destination);
     protected abstract ChessPiece copyPiece();
     public abstract String getName();
 

@@ -3,6 +3,8 @@ package edu.utdallas.robotchess.game;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.utdallas.robotchess.pathplanning.Path;
+
 public class Knight extends ChessPiece
 {
     public Knight(Square location, int id)
@@ -67,5 +69,75 @@ public class Knight extends ChessPiece
         Collections.sort(moveList);
 
         return moveList;
+    }
+
+    public Path[] generatePaths(int destination)
+    {
+        ArrayList<Square> moveList = generateMoveLocations();
+
+        //Knight will have two available paths for any move it makes
+        Path[] paths = new Path[2];
+
+        boolean isDestinationPossibleMove = false;
+        int id = getID();
+        int currentLocation = getLocation().toInt();
+
+        for (Square moveLocationSquare : moveList) {
+            if (destination == moveLocationSquare.toInt()) {
+                isDestinationPossibleMove = true;
+                break;
+            }
+        }
+
+        for (Path path : paths)
+            path = new Path(id, currentLocation);
+
+        if (isDestinationPossibleMove) {
+            int[][] possibleDirectionSequences;
+
+            //A bit messy, but hopefully understandable
+            if (destination > currentLocation &&
+                destination % ChessBoard.NUM_COLUMNS > currentLocation % ChessBoard.NUM_COLUMNS)
+                possibleDirectionSequences = new int[][] {
+                    {ChessBoard.EAST, ChessBoard.SOUTH, ChessBoard.SOUTH},
+                    {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.EAST}
+                };
+
+            else if (destination > currentLocation &&
+                destination % ChessBoard.NUM_COLUMNS < currentLocation % ChessBoard.NUM_COLUMNS)
+                possibleDirectionSequences = new int[][] {
+                    {ChessBoard.WEST, ChessBoard.SOUTH, ChessBoard.SOUTH},
+                    {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.WEST}
+                };
+
+            else if (destination < currentLocation &&
+                destination % ChessBoard.NUM_COLUMNS > currentLocation % ChessBoard.NUM_COLUMNS)
+                possibleDirectionSequences = new int[][] {
+                    {ChessBoard.EAST, ChessBoard.NORTH, ChessBoard.NORTH},
+                    {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.EAST}
+                };
+
+            else
+                possibleDirectionSequences = new int[][] {
+                    {ChessBoard.WEST, ChessBoard.NORTH, ChessBoard.NORTH},
+                    {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.WEST}
+                };
+
+            Square neighbor = getLocation();
+            int index = 0;
+
+            for (int[] directionSequence : possibleDirectionSequences) {
+
+                for (int direction : directionSequence) {
+                    neighbor = neighbor.getNeighbor(direction);
+                    paths[index].add(neighbor.toInt());
+                }
+
+                //Should ensure that index doesn't go out of bounds for paths[]
+                index++;
+            }
+
+        }
+        return paths;
     }
 }

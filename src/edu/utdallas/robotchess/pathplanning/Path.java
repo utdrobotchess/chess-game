@@ -18,11 +18,15 @@ public class Path
         squareSequence = new ArrayList<>();
     }
 
-    protected void add(int location)
+    //TODO: enforce adding neighbors only, since none of this works if
+    //you do not sequentially add neighor squares until the destination
+    public void add(int location)
     {
         squareSequence.add(location);
     }
 
+    //TODO: enforce adding neighbors only, since none of this works if
+    //you do not sequentially add neighor squares until the destination
     public void setSquareSequence(ArrayList<Integer> squareSequence)
     {
         this.squareSequence = squareSequence;

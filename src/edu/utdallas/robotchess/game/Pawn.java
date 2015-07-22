@@ -3,6 +3,8 @@ package edu.utdallas.robotchess.game;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.utdallas.robotchess.pathplanning.Path;
+
 public class Pawn extends ChessPiece
 {
     public Pawn(Square location, int id)
@@ -74,5 +76,50 @@ public class Pawn extends ChessPiece
         Collections.sort(moveList);
 
         return moveList;
+    }
+
+    public Path[] generatePaths(int destination)
+    {
+        ArrayList<Square> moveList = generateMoveLocations();
+
+        //Pawn will only have one path to take for any move
+        Path[] paths = new Path[1];
+
+        boolean isDestinationPossibleMove = false;
+        int id = getID();
+        int currentLocation = getLocation().toInt();
+
+        for (Square moveLocationSquare : moveList) {
+            if (destination == moveLocationSquare.toInt()) {
+                isDestinationPossibleMove = true;
+                break;
+            }
+        }
+
+        Path path = new Path(id, currentLocation);
+
+        if (isDestinationPossibleMove) {
+            int direction = -1;
+
+            if (destination == currentLocation - 16)
+                direction = ChessBoard.NORTH;
+            else if (destination == currentLocation + 16)
+                direction = ChessBoard.SOUTH;
+
+            if (direction == -1)
+                path.add(destination);
+            else {
+                Square firstSquare = getLocation().getNeighbor(direction);
+                Square secondSquare = firstSquare.getNeighbor(direction);
+
+                path.add(firstSquare.toInt());
+                path.add(secondSquare.toInt());
+            }
+
+        }
+
+        paths[0] = path;
+
+        return paths;
     }
 }
