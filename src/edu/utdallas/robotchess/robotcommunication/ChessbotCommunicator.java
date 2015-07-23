@@ -237,7 +237,7 @@ public class ChessbotCommunicator
             }
         }
 
-        log.debug("Sent Command"); //temp
+        log.debug("Sent " + cmd);
     }
 
     //Should be "implements Runnable". But when I correct it, java is unable to
