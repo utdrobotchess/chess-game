@@ -262,8 +262,11 @@ public class ChessbotCommunicator
             try {
                 ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
                 boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
+
                 log.debug("Got ACK. Delivery Status: " + deliveryStatus); //temp
-                chessbots.updateMessageSent(addr, tx, deliveryStatus);
+
+                chessbots.updateMessageSent(addr, cmd, deliveryStatus);
+
             } catch(XBeeException e) {
                 log.debug("Couldn't send packet to Coordinator XBee. Make sure it is connected");
             }
