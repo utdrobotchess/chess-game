@@ -92,41 +92,59 @@ public class Knight extends ChessPiece
         for (Path path : paths)
             path = new Path(id, currentLocation);
 
+        //This is a bit verbose, but instructive I think.
         if (isDestinationPossibleMove) {
-            int[][] possibleDirectionSequences;
+            int[][] possibleDirectionSequences = new int[][] {
+                {ChessBoard.EAST, ChessBoard.SOUTH, ChessBoard.SOUTH},
+                {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.EAST},
 
-            //A bit messy, but hopefully understandable
-            if (destination > currentLocation &&
-                destination % ChessBoard.NUM_COLUMNS > currentLocation % ChessBoard.NUM_COLUMNS)
-                possibleDirectionSequences = new int[][] {
-                    {ChessBoard.EAST, ChessBoard.SOUTH, ChessBoard.SOUTH},
-                    {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.EAST}
-                };
+                {ChessBoard.WEST, ChessBoard.SOUTH, ChessBoard.SOUTH},
+                {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.WEST},
 
-            else if (destination > currentLocation &&
-                destination % ChessBoard.NUM_COLUMNS < currentLocation % ChessBoard.NUM_COLUMNS)
-                possibleDirectionSequences = new int[][] {
-                    {ChessBoard.WEST, ChessBoard.SOUTH, ChessBoard.SOUTH},
-                    {ChessBoard.SOUTH, ChessBoard.SOUTH, ChessBoard.WEST}
-                };
+                {ChessBoard.EAST, ChessBoard.NORTH, ChessBoard.NORTH},
+                {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.EAST},
 
-            else if (destination < currentLocation &&
-                destination % ChessBoard.NUM_COLUMNS > currentLocation % ChessBoard.NUM_COLUMNS)
-                possibleDirectionSequences = new int[][] {
-                    {ChessBoard.EAST, ChessBoard.NORTH, ChessBoard.NORTH},
-                    {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.EAST}
-                };
+                {ChessBoard.WEST, ChessBoard.NORTH, ChessBoard.NORTH},
+                {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.WEST},
 
-            else
-                possibleDirectionSequences = new int[][] {
-                    {ChessBoard.WEST, ChessBoard.NORTH, ChessBoard.NORTH},
-                    {ChessBoard.NORTH, ChessBoard.NORTH, ChessBoard.WEST}
-                };
+                {ChessBoard.EAST, ChessBoard.EAST, ChessBoard.NORTH},
+                {ChessBoard.NORTH, ChessBoard.EAST, ChessBoard.EAST},
 
-            Square neighbor = getLocation();
+                {ChessBoard.EAST, ChessBoard.EAST, ChessBoard.SOUTH},
+                {ChessBoard.SOUTH, ChessBoard.EAST, ChessBoard.EAST},
+
+                {ChessBoard.WEST, ChessBoard.WEST, ChessBoard.SOUTH},
+                {ChessBoard.SOUTH, ChessBoard.WEST, ChessBoard.WEST},
+
+                {ChessBoard.WEST, ChessBoard.WEST, ChessBoard.NORTH},
+                {ChessBoard.NORTH, ChessBoard.WEST, ChessBoard.WEST}
+            };
+
+            //Might be an elegant way to do this without hardcoding...
+            int[] possibleBoardDisplacements = new int[] {17, 15, -15, -17,
+                                                            -6, 10, 6, -10};
             int index = 0;
 
+            for (int boardDisplacement : possibleBoardDisplacements) {
+                if (destination == currentLocation + boardDisplacement) {
+                    possibleDirectionSequences = new int[][] {
+                        possibleDirectionSequences[index],
+                        possibleDirectionSequences[index + 1]
+                    };
+
+                    break;
+                }
+
+                index += 2;
+            }
+
+            if (possibleDirectionSequences.length > 2)
+                possibleDirectionSequences = new int[][] {{},{}};
+
+            index = 0;
+
             for (int[] directionSequence : possibleDirectionSequences) {
+                Square neighbor = getLocation();
 
                 for (int direction : directionSequence) {
                     neighbor = neighbor.getNeighbor(direction);

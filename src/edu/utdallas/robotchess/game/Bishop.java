@@ -41,7 +41,6 @@ public class Bishop extends ChessPiece
         return moveList;
     }
 
-    //TODO: Decide whether these methods actually belong in these classes
     public Path[] generatePaths(int destination)
     {
         ArrayList<Square> moveList = generateMoveLocations();

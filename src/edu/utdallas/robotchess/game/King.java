@@ -74,7 +74,13 @@ public class King extends ChessPiece
 
             Square thisSquare = getLocation();
             for (int direction : directions) {
-                int neighborLocation = thisSquare.getNeighbor(direction).toInt();
+                Square neighbor = thisSquare.getNeighbor(direction);
+
+                if (neighbor == null)
+                    continue;
+
+                int neighborLocation = neighbor.toInt();
+
                 if (neighborLocation == destination) {
                     path.add(neighborLocation);
                     break;

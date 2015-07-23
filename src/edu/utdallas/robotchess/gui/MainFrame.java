@@ -29,11 +29,11 @@ import edu.utdallas.robotchess.manager.NullManager;
 import edu.utdallas.robotchess.manager.RobotChessManager;
 import edu.utdallas.robotchess.manager.RobotDemoManager;
 
+//TODO: Clean up this class. Perhaps subdivide into more classes. It's
+//starting to get messy, especially for the MenuItemListener nested class
 public class MainFrame extends JFrame
 {
     public final static int SQUARE_SIZE = 100;
-    public final static int CHESSBOT_INFO_PANEL_WIDTH = 300;
-    public final static int CHESSBOT_INFO_PANEL_HEIGHT = 300;
     private static final long serialVersionUID = 0;
     protected final static Logger log = Logger.getLogger(MainFrame.class);
 
@@ -70,7 +70,7 @@ public class MainFrame extends JFrame
         chessbotInfoPanel = new ChessbotInfoPanel();
 
         setTitle("Robot Chess");
-        setSize(8 * SQUARE_SIZE, 8 * SQUARE_SIZE);
+        setSize(ChessBoard.NUM_ROWS * SQUARE_SIZE, ChessBoard.NUM_ROWS * SQUARE_SIZE);
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,12 +150,12 @@ public class MainFrame extends JFrame
     private void toggleChessbotInfo(boolean enabled) {
         if (enabled) {
             showConnectedChessbotButton.setText("Hide Chessbot Info");
-            setSize(getWidth() + CHESSBOT_INFO_PANEL_WIDTH, getHeight());
+            setSize(getWidth() + ChessbotInfoPanel.CHESSBOT_INFO_PANEL_WIDTH, getHeight());
         }
         else {
             showConnectedChessbotButton.setText("Show Chessbot Info");
             if (chessbotInfoPanel.isShowing())
-                setSize(getWidth() - CHESSBOT_INFO_PANEL_WIDTH, getHeight());
+                setSize(getWidth() - ChessbotInfoPanel.CHESSBOT_INFO_PANEL_WIDTH, getHeight());
         }
 
         chessbotInfoPanel.setVisible(enabled);
@@ -167,10 +167,6 @@ public class MainFrame extends JFrame
             enableChessAIMenuItem.setText("Disable Chess AI");
         else
             enableChessAIMenuItem.setText("Enable Chess AI");
-
-        //Will probably only need to see if instanceof ChessManager or
-        //RobotChessManager, as they should both have the
-        //setComputerControlsTeam() method
 
         //Add dialogue later for choosing team for AI as well as
         //choosing difficulty
@@ -270,7 +266,8 @@ public class MainFrame extends JFrame
                 ArrayList<String> robotsPresent = new ArrayList<>();
                 Manager newManager;
 
-                //Lots of code duplication in this if else statement
+                //TODO: Fix so that there isn't so much code duplication in
+                //this if-else statement
                 if (playWithChessbotsButton.isSelected()) {
                     if (manager.isXbeeConnected()) {
                         newManager = new RobotChessManager();
@@ -282,6 +279,7 @@ public class MainFrame extends JFrame
 
                         if (newManager.setInitialPieceLocations(pieceLocations)) {
                             switchManager(newManager);
+                            manager.notifyRobotsOfTheirLocations();
                             enableChessAIMenuItem.setEnabled(true);
                         }
                         else
@@ -568,8 +566,6 @@ public class MainFrame extends JFrame
 
     public static void main(String[] args)
     {
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

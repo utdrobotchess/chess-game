@@ -68,8 +68,8 @@ public abstract class ChessPiece
     }
 
     protected abstract ArrayList<Square> generateMoveLocations();
-    protected abstract Path[] generatePaths(int destination);
     protected abstract ChessPiece copyPiece();
+    public abstract Path[] generatePaths(int destination);
     public abstract String getName();
 
     public int getID()

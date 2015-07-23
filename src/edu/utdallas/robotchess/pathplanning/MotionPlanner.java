@@ -29,6 +29,44 @@ public class MotionPlanner
         this.boardColumns = boardColumns;
     }
 
+    //TODO: Should return an array of clear paths
+    public Path checkIfPathsClear(int currentLocations[], Path paths[])
+    {
+        Path clearPath = null;
+        boolean occupancyGrid[] = fillOccupancyGrid(currentLocations);
+
+        for (Path path : paths) {
+            ArrayList<Integer> squareSequence = path.getPath();
+            boolean isPathClear = true;
+
+            for (Integer square : squareSequence) {
+                int squareLocation = square.intValue();
+                isPathClear = occupancyGrid[squareLocation];
+
+                if (!isPathClear)
+                    break;
+            }
+
+            if (isPathClear) {
+                clearPath = path;
+                break;
+            }
+        }
+        return clearPath;
+    }
+
+    public ArrayList<Path> plan(int currentLocations[], int desiredLocations[], Path desiredPaths[])
+    {
+        ArrayList<Path> plan = new ArrayList<>();
+        Path clearPath = checkIfPathsClear(currentLocations, desiredPaths);
+
+        //May want to modify plan() so that it clears the desired path
+        if (clearPath == null)
+            plan = plan(currentLocations, desiredLocations);
+
+        return plan;
+    }
+
     public ArrayList<Path> plan(int currentLocations[], int desiredLocations[])
     {
         ArrayList<Path> plan = new ArrayList<>();

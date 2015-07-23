@@ -98,6 +98,7 @@ public class Pawn extends ChessPiece
 
         Path path = new Path(id, currentLocation);
 
+        //May not need to check this...
         if (isDestinationPossibleMove) {
             int direction = -1;
 

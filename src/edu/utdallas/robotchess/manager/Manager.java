@@ -10,6 +10,8 @@ import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
 import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
+import edu.utdallas.robotchess.robotcommunication.commands.MoveToSquareCommand;
+import edu.utdallas.robotchess.robotcommunication.commands.SetLocationCommand;
 
 public abstract class Manager
 {
@@ -168,5 +170,21 @@ public abstract class Manager
 
         return comm.isDiscoveringChessbots();
     }
+
+    public void notifyRobotsOfTheirLocations()
+    {
+        int[] pieceLocations = game.getPieceLocations();
+        byte botId = 0;
+
+        //TODO: Update this so that it also checks if the botId exists within
+        //the chessbots object of the ChessbotCommunicator class
+        for (int pieceLocation : pieceLocations) {
+            if (pieceLocation > -1)
+                comm.sendCommand(new SetLocationCommand(botId, pieceLocation));
+
+            botId++;
+        }
+    }
+
 
 }

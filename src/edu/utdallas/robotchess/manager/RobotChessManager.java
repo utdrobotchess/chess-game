@@ -16,6 +16,7 @@ public class RobotChessManager extends ChessManager
 {
     private boolean computerControlsOrange = false;
     private boolean computerControlsGreen = false;
+    private Path[] currentPiecePaths = null;
 
     public RobotChessManager()
     {
@@ -36,19 +37,31 @@ public class RobotChessManager extends ChessManager
         super.handleSquareClick(index);
         int[] desiredLocations = game.getPieceLocations();
 
-        MotionPlanner planner = new MotionPlanner(getBoardRowCount(),
-                                                  getBoardColumnCount());
-        ArrayList<Path> plan = planner.plan(currentLocations, desiredLocations);
+        handleRobotMovement(currentLocations, desiredLocations);
+    }
 
-        for (Path path : plan) {
-            log.debug(path); //temp
-            Command command = path.generateCommand();
+    private void handleRobotMovement(int[] currentLocations, int[] desiredLocations)
+    {
+        ArrayList<Path> plan = new ArrayList<>();
 
-            if (command == null)
-                log.debug("Command is null. The pathplanner could not find a solution.");
-            else
-                comm.sendCommand(command);
+        if (currentPiecePaths != null) {
+            MotionPlanner planner = new MotionPlanner(getBoardRowCount(),
+                                                    getBoardColumnCount());
+
+            plan = planner.plan(currentLocations, desiredLocations, currentPiecePaths);
+
+            for (Path path : plan) {
+                log.debug(path); //temp
+                Command command = path.generateCommand();
+                log.debug(command); //temp
+
+                if (command == null)
+                    log.debug("Command is null. The pathplanner could not find a solution.");
+                else
+                    comm.sendCommand(command);
+            }
         }
+
     }
 
     protected boolean isValidInitialPieceSelection(int selectionIndex)
@@ -90,9 +103,11 @@ public class RobotChessManager extends ChessManager
         if (isCastlingMove(selectionIndex))
             moveCastlingPiece(selectionIndex);
 
-        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
+        currentPiecePaths = currentlySelectedPiece.generatePaths(selectionIndex);
 
+        currentlySelectedPiece.moveTo(game.getBoardSquareAt(selectionIndex));
         currentlySelectedPiece = null;
+
         toggleActiveTeam();
     }
 
