@@ -7,7 +7,8 @@ import java.util.Date;
 
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
+
+import edu.utdallas.robotchess.robotcommunication.commands.Command;
 
 public class ChessbotInfoArrayHandler
 {
@@ -75,12 +76,12 @@ public class ChessbotInfoArrayHandler
         return -1;
     }
 
-    public void updateMessageSent(XBeeAddress64 addr, ZNetTxRequest msg,
+    public void updateMessageSent(XBeeAddress64 addr, Command cmd,
                                     boolean deliveryStatus) {
         ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
         int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
         chessbotInfo.setLastTimeCommunicated(new Date());
-        chessbotInfo.setLastMessageSent(msg, deliveryStatus);
+        chessbotInfo.setLastCommandSent(cmd, deliveryStatus);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
         updated = true;
     }
