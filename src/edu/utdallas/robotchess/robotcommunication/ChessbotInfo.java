@@ -6,7 +6,8 @@ import java.util.Date;
 
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.zigbee.ZNetRxResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
+
+import edu.utdallas.robotchess.robotcommunication.commands.Command;
 
 public class ChessbotInfo
 {
@@ -15,7 +16,7 @@ public class ChessbotInfo
     String pieceType;
     Date lastTimeCommunicated;
     ZNetRxResponse lastMessageReceived; //Last message received from Chessbot
-    ZNetTxRequest lastMessageSent;      //Last message sent to Chessbot
+    Command lastCommandSent;            //Last message sent to Chessbot
     boolean lastMessageDeliveryStatus;
 
     final int ROOK_IDS[] = {0, 7, 24, 31};
@@ -25,6 +26,16 @@ public class ChessbotInfo
     final int KING_IDS[] = {4, 28};
     final int PAWN_IDS[] = {8, 9, 10, 11, 12, 13, 14, 15,
                             16, 17, 18, 19, 20, 21, 22, 23};
+
+    public static final String[] CHESSBOT_INFO_COLUMNS = new String[] {
+                                                    "ID #",
+                                                    "Piece Type",
+                                                    "XBee Address",
+                                                    "Last DeliveryStatus",
+                                                    "Last Communication Time",
+                                                    "Last Command Sent To",
+                                                    "Last Response Received From"};
+
 
     public ChessbotInfo(XBeeAddress64 xbeeAddress, Integer id, Date lastTimeCommunicated)
     {
@@ -109,13 +120,13 @@ public class ChessbotInfo
         this.lastTimeCommunicated = lastTimeCommunicated;
     }
 
-    public ZNetTxRequest getLastMessageSent() {
-        return lastMessageSent;
+    public Command getLastCommandSent() {
+        return lastCommandSent;
     }
 
-    public void setLastMessageSent(ZNetTxRequest lastMessageSent,
+    public void setLastCommandSent(Command lastCommandSent,
                                     boolean deliveryStatus) {
-        this.lastMessageSent = lastMessageSent;
+        this.lastCommandSent = lastCommandSent;
         this.lastMessageDeliveryStatus = deliveryStatus;
     }
 
@@ -136,16 +147,6 @@ public class ChessbotInfo
         return dateFormat.format(lastTimeCommunicated);
     }
 
-    public static String[] getColumnsForTable() {
-        return new String[] {"ID #",
-                            "Piece Type",
-                            "XBee Address",
-                            "Last DeliveryStatus",
-                            "Last Communication Time",
-                            "Last Message Sent To",
-                            "Last Message Recieved From"};
-    }
-
     public Object[] toObjectArray() {
         Object[] data = new Object[] {
         id,
@@ -153,7 +154,7 @@ public class ChessbotInfo
         xbeeAddress,
         lastMessageDeliveryStatus,
         formatDateToString(),
-        lastMessageSent,
+        lastCommandSent,
         lastMessageReceived};
 
         return data;
@@ -162,7 +163,7 @@ public class ChessbotInfo
     //This is messy
     public String toString() {
         String string = String.format(id + " " + xbeeAddress +
-                " " + formatDateToString() + " " + lastMessageSent +
+                " " + formatDateToString() + " " + lastCommandSent +
                 " " + lastMessageReceived);
 
         return string;
