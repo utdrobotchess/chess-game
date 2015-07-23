@@ -150,7 +150,6 @@ public class BoardPanel extends JPanel
 
             updateDisplay();
 
-            //Make sure that these threads die at some point
             if (manager instanceof ChessManager &&
                 ((ChessManager) manager).isActiveTeamComputerControlled()) {
                 (new Thread(new EngineRunner())).start();
