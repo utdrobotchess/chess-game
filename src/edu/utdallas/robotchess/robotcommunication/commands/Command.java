@@ -61,4 +61,7 @@ public abstract class Command
     {
         this.retries = retries;
     }
+
+    @Override
+    public abstract String toString();
 }

@@ -34,11 +34,14 @@ public class MoveToSquareCommand extends Command
     @Override
     public String toString()
     {
-        String output = "Move to ";
+        String str = String.format("Move To Square Command: (Robot ID %d) (Command ID %d) [", 
+                robotID, commandID);
 
         for (int i = 0; i < destinations.length; i++)
-            output += destinations[i] + " ";
+            str += destinations[i] + " ";
 
-        return output;
+        str += "]";
+
+        return str;
     }
 }

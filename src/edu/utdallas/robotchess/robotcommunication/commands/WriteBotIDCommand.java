@@ -27,4 +27,11 @@ public class WriteBotIDCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Write Bot ID Command: (Robot ID %d) (Command ID %d) %d",
+                robotID, commandID, newRobotID);
+    }
 }

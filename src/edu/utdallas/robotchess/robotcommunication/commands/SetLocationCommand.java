@@ -27,4 +27,11 @@ public class SetLocationCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Set Location Command: (Robot ID %d) (Command ID %d) %d", 
+                robotID, commandID, location);
+    }
 }

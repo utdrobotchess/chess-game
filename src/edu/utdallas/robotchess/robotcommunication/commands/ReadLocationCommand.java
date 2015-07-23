@@ -18,4 +18,11 @@ public class ReadLocationCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Read Location Command: (Robot ID %d) (Command ID %d)",
+                robotID, commandID);
+    }
 }

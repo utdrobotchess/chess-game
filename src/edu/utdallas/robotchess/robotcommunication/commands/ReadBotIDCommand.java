@@ -28,4 +28,11 @@ public class ReadBotIDCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Read Bot ID Command: (Robot ID %d) (Command ID %d)",
+                robotID, commandID);
+    }
 }

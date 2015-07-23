@@ -18,4 +18,11 @@ public class SmartCenterCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Smart Center Command: (Robot ID %d) (Command ID %d)",
+                robotID, commandID);
+    }
 }

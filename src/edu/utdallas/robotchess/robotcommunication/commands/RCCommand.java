@@ -26,4 +26,14 @@ public class RCCommand extends Command
 
         return payload;
     }
+
+    @Override
+    public String toString()
+    {
+        if (velocities.length != 4)
+            return "Incorrect Array Length for Velocities";
+
+        return String.format("RC Command: (Robot ID %d) (Command ID %d) [%3d %3d %3d %3d]",
+                robotID, commandID ,velocities[0], velocities[1], velocities[2], velocities[3]);
+    }
 }
