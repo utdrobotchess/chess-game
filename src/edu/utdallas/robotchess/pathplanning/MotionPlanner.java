@@ -16,7 +16,6 @@ public class MotionPlanner
     final int REGULAR_SQUARE_COUNT = 64;
     final int REGULAR_ROW_SIZE = 8;
     final int REGULAR_COLUMN_SIZE = 8;
-    @SuppressWarnings("unused")
     private final static Logger log = Logger.getLogger(MotionPlanner.class);
 
     int boardRows;
@@ -35,16 +34,22 @@ public class MotionPlanner
         Path clearPath = null;
         boolean occupancyGrid[] = fillOccupancyGrid(currentLocations);
 
+        log.info("Checking " + paths.length + " paths");
+
         for (Path path : paths) {
             ArrayList<Integer> squareSequence = path.getPath();
+            log.info("Checking if path clear: " + path);
             boolean isPathClear = true;
 
             for (Integer square : squareSequence) {
                 int squareLocation = square.intValue();
-                isPathClear = occupancyGrid[squareLocation];
+                isPathClear = !occupancyGrid[squareLocation];
+                log.info("Square " + squareLocation + " unoccupied: " + isPathClear);
 
-                if (!isPathClear)
+                if (!isPathClear) {
+                    log.info("Path is not clear: " + path);
                     break;
+                }
             }
 
             if (isPathClear) {
@@ -60,9 +65,13 @@ public class MotionPlanner
         ArrayList<Path> plan = new ArrayList<>();
         Path clearPath = checkIfPathsClear(currentLocations, desiredPaths);
 
+        log.info("Path in MotionPlanner: " + clearPath);
+
         //May want to modify plan() so that it clears the desired path
         if (clearPath == null)
             plan = plan(currentLocations, desiredLocations);
+        else
+            plan.add(clearPath);
 
         return plan;
     }
