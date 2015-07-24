@@ -10,7 +10,7 @@ import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
 import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
-import edu.utdallas.robotchess.robotcommunication.commands.MoveToSquareCommand;
+import edu.utdallas.robotchess.robotcommunication.RemoteController;
 import edu.utdallas.robotchess.robotcommunication.commands.SetLocationCommand;
 
 public abstract class Manager
@@ -22,6 +22,7 @@ public abstract class Manager
     protected ChessGame game;
     protected ChessPiece currentlySelectedPiece;
     protected ChessbotCommunicator comm;
+    protected RemoteController remoteController;
 
     protected Manager()
     {
@@ -186,5 +187,14 @@ public abstract class Manager
         }
     }
 
+    public void createControllerThread(int botID)
+    {
+        remoteController = new RemoteController(comm, botID);
+        remoteController.start();
+    }
 
+    public void destroyControllerThread()
+    {
+        remoteController.terminate();
+    }
 }

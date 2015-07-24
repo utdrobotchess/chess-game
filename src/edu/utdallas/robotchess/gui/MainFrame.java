@@ -49,15 +49,18 @@ public class MainFrame extends JFrame
 
     JMenuItem newGameMenuItem;
     JMenuItem newChessDemoMenuItem;
+
     JRadioButton playWithChessbotsButton;
     JRadioButton playWithoutChessbotsButton;
+    JRadioButton enableChessAIMenuItem;
+    JRadioButton showConnectedChessbotButton;
 
     ButtonGroup chessbotButtonGroup;
 
-    JToggleButton enableChessAIMenuItem;
-    JToggleButton showConnectedChessbotButton;
     JButton connectToXbeeButton;
     JButton discoverChessbotsButton;
+
+    JToggleButton controlChessbotButton;
 
     MenuItemListener menuListener;
 
@@ -92,12 +95,13 @@ public class MainFrame extends JFrame
         optionsMenu = new JMenu("Options");
         newGameMenuItem = new JMenuItem("New Chessgame");
         newChessDemoMenuItem = new JMenuItem("New Chessbot Demo");
-        showConnectedChessbotButton = new JToggleButton("Show Chessbot Info");
+        showConnectedChessbotButton = new JRadioButton("Show Chessbot Info");
         playWithChessbotsButton = new JRadioButton("Play with Chessbots");
         playWithoutChessbotsButton = new JRadioButton("Play without Chessbots");
         connectToXbeeButton = new JButton("Connect to Xbee");
-        enableChessAIMenuItem = new JToggleButton("Enable Chess AI");
+        enableChessAIMenuItem = new JRadioButton("Enable Chess AI");
         discoverChessbotsButton = new JButton("Discover Chessbots");
+        controlChessbotButton = new JToggleButton("Control Chessbot");
 
         // Figure out how to do keyboard shortcuts
         // gameMenu.setMnemonic(KeyEvent.VK_G);
@@ -108,17 +112,21 @@ public class MainFrame extends JFrame
 
         gameMenu.add(newGameMenuItem);
         gameMenu.add(newChessDemoMenuItem);
+
         chessbotMenu.add(playWithChessbotsButton);
         chessbotMenu.add(playWithoutChessbotsButton);
         chessbotMenu.add(showConnectedChessbotButton);
+
         optionsMenu.add(enableChessAIMenuItem);
         optionsMenu.add(discoverChessbotsButton);
+        optionsMenu.add(controlChessbotButton);
 
         gameMenu.setEnabled(false);
         showConnectedChessbotButton.setEnabled(false);
         connectToXbeeButton.setEnabled(false);
         enableChessAIMenuItem.setEnabled(false);
         discoverChessbotsButton.setEnabled(false);
+        controlChessbotButton.setEnabled(false);
 
         newGameMenuItem.addActionListener(menuListener);
         newChessDemoMenuItem.addActionListener(menuListener);
@@ -128,6 +136,7 @@ public class MainFrame extends JFrame
         connectToXbeeButton.addActionListener(menuListener);
         enableChessAIMenuItem.addActionListener(menuListener);
         discoverChessbotsButton.addActionListener(menuListener);
+        controlChessbotButton.addActionListener(menuListener);
 
         menuBar.add(gameMenu);
         menuBar.add(chessbotMenu);
@@ -197,6 +206,7 @@ public class MainFrame extends JFrame
                 showConnectedChessbotButton.setEnabled(true);
                 newChessDemoMenuItem.setEnabled(true);
                 discoverChessbotsButton.setEnabled(true);
+                controlChessbotButton.setEnabled(true);
                 switchManager(new NullManager());
             }
 
@@ -208,6 +218,7 @@ public class MainFrame extends JFrame
                 newChessDemoMenuItem.setEnabled(false);
                 toggleChessbotInfo(false);
                 discoverChessbotsButton.setEnabled(false);
+                controlChessbotButton.setEnabled(false);
                 switchManager(new NullManager());
             }
 
@@ -260,6 +271,36 @@ public class MainFrame extends JFrame
                             "If this does not work, restart the app.",
                             "Cannot find Xbee",
                             JOptionPane.WARNING_MESSAGE);
+            }
+
+
+            if (e.getSource() == controlChessbotButton) {
+
+                if (controlChessbotButton.isSelected()) {
+                    ArrayList<String> robotsPresent = manager.getChessbotInfo().getRobotsPresent();
+                    int[] pieceSelection = new int[] {};
+
+                    //TODO: Make this method so that one can choose whether to give
+                    //the user a prompt with only one possible selection, or
+                    //multiple selections.
+                    pieceSelection = offerUserRobotSelection(robotsPresent);
+
+                    System.out.println(pieceSelection.length);
+
+                    if (pieceSelection.length != 1)
+                        JOptionPane.showMessageDialog(null, "You must pick exactly 1 robot to control",
+                                "Invalid Robot Selection",
+                                JOptionPane.WARNING_MESSAGE);
+                    else {
+                        manager.createControllerThread(pieceSelection[0]);
+                        controlChessbotButton.setText("Stop Controlling Chessbot");
+                    }
+                }
+                else {
+                    manager.destroyControllerThread();
+                    controlChessbotButton.setText("Control Chessbot");
+                }
+
             }
 
             if (e.getSource() == newGameMenuItem) {
@@ -439,6 +480,7 @@ public class MainFrame extends JFrame
                 if (i <= ChessBoard.NUM_ROWS * boardRows || (i % ChessBoard.NUM_COLUMNS) <= boardColumns)
                     possibleStartingLocations.add(Integer.toString(i));
 
+            //TODO: Make another option to get Robot Current Locations
             Object[] options = {"Chess Configuration",
                                 "Custom Configuration"};
 
