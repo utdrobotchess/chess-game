@@ -59,7 +59,8 @@ public class ChessbotInfoPanel extends JPanel
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setAutoCreateRowSorter(true);
+        // TODO: Create a sorter for the table to allow the user to sort by column
+        // table.setAutoCreateRowSorter(true);
         add(scrollPane);
 
         updateDisplay();
@@ -68,12 +69,12 @@ public class ChessbotInfoPanel extends JPanel
     private void updateDisplay()
     {
         chessbotInfoTableModel.setData(chessbots.toObjectArray());
+        chessbotInfoTableModel.fireTableDataChanged();
 
         adjustJTableRowSizes(table);
 
-        for (int i = 0; i < table.getColumnCount(); i++) {
+        for (int i = 0; i < table.getColumnCount(); i++)
             adjustColumnSizes(table, i, 2);
-        }
     }
 
     private void adjustJTableRowSizes(JTable jTable) {
@@ -123,6 +124,8 @@ public class ChessbotInfoPanel extends JPanel
         this.chessbots = chessbots;
     }
 
+    // TODO: Highlight Red the rows in which the last command delivery status
+    // was false
     class ChessbotInfoTableModel extends AbstractTableModel {
 
         private String[] columnNames = ChessbotInfo.CHESSBOT_INFO_COLUMNS;
