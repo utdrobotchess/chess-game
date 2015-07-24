@@ -89,8 +89,8 @@ public class Knight extends ChessPiece
             }
         }
 
-        for (Path path : paths)
-            path = new Path(id, currentLocation);
+        for (int i = 0; i < paths.length; i++)
+            paths[i] = new Path(id, currentLocation);
 
         //This is a bit verbose, but instructive I think.
         if (isDestinationPossibleMove) {
