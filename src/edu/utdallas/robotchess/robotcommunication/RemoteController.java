@@ -8,15 +8,18 @@ import org.lwjgl.input.Controllers;
 
 import edu.utdallas.robotchess.robotcommunication.commands.Command;
 import edu.utdallas.robotchess.robotcommunication.commands.RCCommand;
+import edu.utdallas.robotchess.robotcommunication.commands.SmartCenterCommand;
 
-//TODO: Copy over T-shirt Cannon Remote Controller and LWJGL libs. It is
-//written in a much cleaner way and already has each button mapped. Just
-//make it a thread.
-public class RemoteController extends Thread
+public class RemoteController implements Runnable
 {
-    public static Controller controller;
-    private ChessbotCommunicator comm;
-    protected final static Logger log = Logger.getLogger(RemoteController.class);
+    static Controller controller;
+    Mapping buttonMap;
+    ChessbotCommunicator comm;
+    long smartCenterTime = System.currentTimeMillis();
+    final static Logger log = Logger.getLogger(RemoteController.class);
+
+    final long SMART_CENTER_TIMEOUT = 5000;
+
     boolean keepAlive = true;
     int botID;
 
@@ -38,31 +41,10 @@ public class RemoteController extends Thread
         if (Controllers.getControllerCount() != 0) {
             controller = Controllers.getController(0);
             log.info("Found controller");
+            buttonMap = new Mapping(controller);
         }
         else
             log.info("Could not find any controllers");
-    }
-
-    //TODO: Check if botID exists before starting thread
-    public void run()
-    {
-        if(controller == null) {
-            log.info("Cannot start RemoteController Thread since no Remote Controller found");
-            return;
-        }
-
-        ZeroJoyStick();
-
-        while (keepAlive) {
-            Command cmd = new RCCommand(botID, ComputeWheelVelocities());
-            comm.sendCommand(cmd);
-
-            try { Thread.sleep(100); }
-            catch (InterruptedException ex){}
-        }
-
-        comm.sendCommand(new RCCommand(botID, new int[] {0, 0, 0, 0}));
-            log.info("Terminating RemoteController Thread");
     }
 
     public void terminate()
@@ -70,46 +52,178 @@ public class RemoteController extends Thread
         keepAlive = false;
     }
 
+    //TODO: Check if botID exists before starting thread
+    @Override
+    public void run()
+    {
+        if(controller == null) {
+            log.info("Cannot start RemoteController Thread since no Remote Controller found");
+            return;
+        }
+
+        calibrate();
+        Command cmd;
+
+        while (keepAlive) {
+            controller.poll();
+
+            handleButtonPress();
+
+            cmd = new RCCommand(botID, ComputeWheelVelocities());
+            comm.sendCommand(cmd);
+
+            try { Thread.sleep(100); }
+            catch (InterruptedException ex){}
+        }
+
+        comm.sendCommand(new RCCommand(botID, new int[] {0, 0, 0, 0}));
+        log.info("Terminating RemoteController Thread");
+    }
+
+    public void checkButtons()
+    {
+        for (int i = 0; i < controller.getButtonCount(); i++)
+            if (controller.isButtonPressed(i))
+                System.out.println("Button " + i + " is pressed");
+    }
+
+    private void handleButtonPress()
+    {
+        Command cmd;
+
+        if (buttonMap.isButtonAPressed()) {
+            if (System.currentTimeMillis() - smartCenterTime > SMART_CENTER_TIMEOUT) {
+                smartCenterTime = System.currentTimeMillis();
+                cmd = new SmartCenterCommand(botID);
+                comm.sendCommand(cmd);
+            }
+        }
+    }
+
     public int[] ComputeWheelVelocities()
     {
         int[] wheelVelPayload = new int[4];
         int direction, rotation, forwardVel, rotationVel;
 
-        controller.poll();
+        forwardVel = (int)(controller.getYAxisValue() * 255);
+        rotationVel = (int)(controller.getRXAxisValue() * 255);
 
-        if(controller.getAxisValue(1) < 0)
+        if(forwardVel < 0)
             direction = 0x01; //forward
         else
             direction = 0x00; //backward
 
-        if(controller.getAxisValue(2) < 0)
+        if(rotationVel < 0)
             rotation = 0x01; //left
         else
             rotation = 0x00; //right
 
-        forwardVel = (char)Math.abs(controller.getAxisValue(1) * 255);
-        rotationVel = (char)Math.abs(controller.getAxisValue(2) * 255);
+        forwardVel = (char)Math.abs(forwardVel);
+        rotationVel = (char)Math.abs(rotationVel);
 
-        if(controller.isButtonPressed(4))
+        if(buttonMap.isLeftBumperPressed())
             forwardVel *= .5;
 
-        if(controller.isButtonPressed(5))
+        if(buttonMap.isRightBumperPressed())
             rotationVel *= .5;
 
         wheelVelPayload = new int[] {direction, forwardVel, rotation, rotationVel};
 
         log.info(String.format("%x, %x, %x, %x\n", wheelVelPayload[0], wheelVelPayload[1], wheelVelPayload[2], wheelVelPayload[3]));
+
         return wheelVelPayload;
     }
 
-    public static void ZeroJoyStick()
+    private void calibrate()
     {
-        while(controller.getAxisValue(0) != 0.0 && controller.getAxisValue(1) != 0.0 && controller.getAxisValue(2) != 0.0 && controller.getAxisValue(3) != 0.0)
-        {
-            controller.poll();
+        for (int i = 1; i < controller.getAxisCount(); i++)
+            controller.setDeadZone(i, 0.2f);
+    }
 
-            for(int i = 0; i < controller.getAxisCount(); i++)
-                controller.setDeadZone(i, (float)0.3);
+    class Mapping
+    {
+        ////////////////////////////////////////
+        //   Buttons
+        // 0) A
+        // 1) B
+        // 2) X
+        // 3) Y
+        // 4) left bumper
+        // 5) right bumper
+        // 6) start
+        // 7) back
+        // 8) left stick (press)
+        // 9) right stick (press)
+
+        int[] buttons = new int[10];
+        Controller controller;
+        boolean foundMapping = false;
+
+        public Mapping(Controller controller)
+        {
+            this.controller = controller;
+            createMapping();
+        }
+
+        private void createMapping()
+        {
+            String osName = System.getProperty("os.name");
+            foundMapping = true;
+
+            if (osName.equalsIgnoreCase("Mac OS X")) {
+                buttons = new int[] {11, 12, 13, 14, 8, 9, 4, 5, 7, 6};
+            }
+
+            else if (osName.equalsIgnoreCase("Linux")) {
+                buttons = new int[] {0, 1, 2, 3, 4, 5, -1, 8, 10, 11};
+            }
+
+            else if (osName.equalsIgnoreCase("windows"))
+            {}
+
+            else
+                foundMapping = false;
+        }
+
+        public boolean isMappingFound()
+        {
+            return foundMapping;
+        }
+
+        public boolean isButtonAPressed()
+        {
+            return controller.isButtonPressed(buttons[0]);
+        }
+
+        public boolean isButtonBPressed()
+        {
+            return controller.isButtonPressed(buttons[1]);
+        }
+
+        public boolean isButtonXPressed()
+        {
+            return controller.isButtonPressed(buttons[2]);
+        }
+
+        public boolean isButtonYPressed()
+        {
+            return controller.isButtonPressed(buttons[3]);
+        }
+
+        public boolean isRightStickPressed()
+        {
+            return controller.isButtonPressed(buttons[8]);
+        }
+
+        public boolean isLeftBumperPressed()
+        {
+            return controller.isButtonPressed(buttons[4]);
+        }
+
+        public boolean isRightBumperPressed()
+        {
+            return controller.isButtonPressed(buttons[5]);
         }
     }
+
 }
