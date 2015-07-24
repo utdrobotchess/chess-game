@@ -77,6 +77,7 @@ public class Path
         for (Integer i : squareSequence)
             str += String.format("%d ", i);
 
+        str = str.trim();
         str += String.format("]");
         return str;
     }
