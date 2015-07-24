@@ -42,7 +42,7 @@ public class ChessbotCommunicator
             {
                 NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
-                log.debug("Found Address: " + addr);//temp
+                log.debug("Found Address: " + addr);
                 chessbots.add(addr);
             }
         }
@@ -61,13 +61,12 @@ public class ChessbotCommunicator
 
                 switch (payload[0]) {
                     case 2:
-                        log.debug("Adding ID: " + payload[1] + " to address " + addr);//temp
+                        log.debug("Adding ID: " + payload[1] + " to address " + addr);
                         chessbots.add(addr, (Integer) payload[1]);
                         break;
                 }
 
                 chessbots.updateMessageReceived(addr, rx);
-                log.debug(chessbots); //temp
             }
         }
     };
@@ -209,11 +208,9 @@ public class ChessbotCommunicator
     public void sendCommand(Command cmd)
     {
         int[] payload = cmd.generatePayload();
-        XBeeAddress64 addr = new XBeeAddress64();
+        XBeeAddress64 addr = cmd.GetXbeeAddress();
 
-        if(cmd.GetXbeeAddress() != null)
-            addr = cmd.GetXbeeAddress();
-        else
+        if(addr == null)
             addr = chessbots.getAddressFromId(cmd.getRobotID());
 
         if(addr == null) {

@@ -31,8 +31,8 @@ public class ChessbotInfo
                                                     "ID #",
                                                     "Piece Type",
                                                     "XBee Address",
-                                                    "Last DeliveryStatus",
-                                                    "Last Communication Time",
+                                                    "DeliveryStatus",
+                                                    "Most Recent Communication",
                                                     "Last Command Sent To",
                                                     "Last Response Received From"};
 
@@ -143,19 +143,46 @@ public class ChessbotInfo
     }
 
     public String formatDateToString() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss a");
         return dateFormat.format(lastTimeCommunicated);
+    }
+
+    //TODO: Should fix this in XbeeAddress64.java and re-jar the lib. This is
+    //much less efficient, but temporarily more convenient
+    public String simplifyXbeeAddressFormat() {
+        String str = xbeeAddress.toString();
+        String[] strArr = str.split(",");
+
+        str = new String();
+        for (String s : strArr) {
+            s = s.substring(2);
+            str += s + " ";
+        }
+
+        return str.trim();
+    }
+
+    public String simplifyMessageLastReceived() {
+
+        String str = new String();
+        if (lastMessageReceived != null) {
+            str = lastMessageReceived.toString();
+            str = str.substring(str.indexOf("data="));
+        }
+
+        return str;
     }
 
     public Object[] toObjectArray() {
         Object[] data = new Object[] {
         id,
         pieceType,
-        xbeeAddress,
+        simplifyXbeeAddressFormat(),
         lastMessageDeliveryStatus,
         formatDateToString(),
         lastCommandSent,
-        lastMessageReceived};
+        simplifyMessageLastReceived()
+        };
 
         return data;
     }
