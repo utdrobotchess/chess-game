@@ -40,6 +40,7 @@ public class RobotChessManager extends ChessManager
         handleRobotMovement(currentLocations, desiredLocations);
     }
 
+    //TODO: need to simplify how I'm using currentPiecePaths
     private void handleRobotMovement(int[] currentLocations, int[] desiredLocations)
     {
         ArrayList<Path> plan = new ArrayList<>();
@@ -51,15 +52,15 @@ public class RobotChessManager extends ChessManager
             plan = planner.plan(currentLocations, desiredLocations, currentPiecePaths);
 
             for (Path path : plan) {
-                log.debug(path); //temp
                 Command command = path.generateCommand();
-                log.debug(command); //temp
 
                 if (command == null)
                     log.debug("Command is null. The pathplanner could not find a solution.");
                 else
                     comm.sendCommand(command);
             }
+
+            currentPiecePaths = null;
         }
 
     }
@@ -156,13 +157,12 @@ public class RobotChessManager extends ChessManager
         return false;
     }
 
-    //TODO: Need to implement this so that AI's moves are sent to the chessbots
     public void setComputerControlsTeam(boolean computerControls, Team team)
     {
-        // if (team == Team.ORANGE)
-        //     computerControlsOrange = computerControls;
-        // else
-        //     computerControlsGreen = computerControls;
+        if (team == Team.ORANGE)
+            computerControlsOrange = computerControls;
+        else
+            computerControlsGreen = computerControls;
     }
 
     private void toggleActiveTeam()
