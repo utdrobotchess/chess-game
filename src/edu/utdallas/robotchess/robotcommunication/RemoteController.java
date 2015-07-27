@@ -20,7 +20,7 @@ public class RemoteController extends Thread
     long smartCenterTime = System.currentTimeMillis();
     final static Logger log = Logger.getLogger(RemoteController.class);
 
-    final long SMART_CENTER_TIMEOUT = 5000;
+    final long SMART_CENTER_TIMEOUT = 8000;
 
     boolean keepAlive = true;
     int botID;
@@ -74,8 +74,12 @@ public class RemoteController extends Thread
             cmd = new RCCommand(botID, ComputeWheelVelocities());
             comm.sendCommand(cmd);
 
-            try { Thread.sleep(100); }
-            catch (InterruptedException ex){}
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                log.debug("Thread Interrupted", e);
+            }
         }
 
         comm.sendCommand(new RCCommand(botID, new int[] {0, 0, 0, 0}));
@@ -94,10 +98,16 @@ public class RemoteController extends Thread
         Command cmd;
 
         if (buttonMap.isButtonAPressed()) {
-            if (System.currentTimeMillis() - smartCenterTime > SMART_CENTER_TIMEOUT) {
-                smartCenterTime = System.currentTimeMillis();
-                cmd = new SmartCenterCommand(botID);
-                comm.sendCommand(cmd);
+            smartCenterTime = System.currentTimeMillis();
+            cmd = new SmartCenterCommand(botID);
+            comm.sendCommand(cmd);
+
+            //Don't want to send Chessbot any other message while it is
+            //centering
+            try {
+                Thread.sleep(SMART_CENTER_TIMEOUT);
+            } catch (InterruptedException e) {
+                log.debug("Thread Interrupted", e);
             }
         }
     }
