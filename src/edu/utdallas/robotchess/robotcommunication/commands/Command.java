@@ -22,6 +22,11 @@ public abstract class Command
         return this.xbeeAddress;
     }
 
+    public void setXbeeAddress(XBeeAddress64 addr)
+    {
+        this.xbeeAddress = addr;
+    }
+
     public void setRobotID(int robotID)
     {
         this.robotID = robotID;

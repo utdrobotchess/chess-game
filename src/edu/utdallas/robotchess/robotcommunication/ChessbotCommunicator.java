@@ -42,7 +42,7 @@ public class ChessbotCommunicator
             {
                 NodeDiscover nd = NodeDiscover.parse((AtCommandResponse)response);
                 XBeeAddress64 addr = nd.getNodeAddress64();
-                log.debug("Found Address: " + addr);
+                log.info("Found Address: " + addr);
                 chessbots.add(addr);
             }
         }
@@ -60,10 +60,26 @@ public class ChessbotCommunicator
                 int[] payload = rx.getData();
 
                 switch (payload[0]) {
+
                     case 2:
-                        log.debug("Adding ID: " + payload[1] + " to address " + addr);
+                        log.info("Adding ID: " + payload[1] + " to address " + addr);
                         chessbots.add(addr, (Integer) payload[1]);
                         break;
+
+                    case 6:
+                        log.info("Adding Location Data: " + payload[1] + "to address " + addr);
+                        chessbots.add(addr);
+                        chessbots.updateLocation(addr, payload[1]);
+                        break;
+
+                    default:
+                        String str = new String();
+                        for (int data : payload)
+                            str = String.format("%d ", data);
+
+                        str = str.trim();
+
+                        log.info("No appropriate way to handle message with payload: " + str);
                 }
 
                 chessbots.updateMessageReceived(addr, rx);
@@ -162,7 +178,7 @@ public class ChessbotCommunicator
             int timeout = 0;
             discoveringChessbots = true;
 
-            log.debug("Discovering..."); //temp
+            log.info("Discovering..."); //temp
 
             try {
                 @SuppressWarnings("deprecation")
@@ -172,7 +188,7 @@ public class ChessbotCommunicator
                 log.debug("Couldn't send NT command", e);
             }
 
-            log.debug("NT command successful. Timeout: " + (float)timeout/(float)1000 + " seconds"); //temp
+            log.info("NT command successful. Timeout: " + (float)timeout/(float)1000 + " seconds"); //temp
 
             try {
                 xbee.addPacketListener(nodeDiscoverResponseListener);
@@ -181,7 +197,7 @@ public class ChessbotCommunicator
                 log.debug("Couldn't send ND command", e); //For some reason, "ND" works even when the exception is called
             }
 
-            log.debug("ND command successful. Listening for responses..."); //temp
+            log.info("ND command successful. Listening for responses..."); //temp
 
             try {
                 Thread.sleep(timeout);
@@ -234,7 +250,7 @@ public class ChessbotCommunicator
             }
         }
 
-        log.debug("Sent " + cmd);
+        log.info("Sent " + cmd);
     }
 
     //Should be "implements Runnable". But when I correct it, java is unable to
@@ -260,7 +276,7 @@ public class ChessbotCommunicator
                 ZNetTxStatusResponse ACK = (ZNetTxStatusResponse) xbee.sendSynchronous(tx, cmd.getTimeout());
                 boolean deliveryStatus = (ACK.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS);
 
-                log.debug("Got ACK. Delivery Status: " + deliveryStatus); //temp
+                log.info("Got ACK. Delivery Status: " + deliveryStatus); //temp
 
                 chessbots.updateMessageSent(addr, cmd, deliveryStatus);
 

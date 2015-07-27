@@ -480,15 +480,17 @@ public class MainFrame extends JFrame
                 if (i <= ChessBoard.NUM_ROWS * boardRows || (i % ChessBoard.NUM_COLUMNS) <= boardColumns)
                     possibleStartingLocations.add(Integer.toString(i));
 
-            //TODO: Make another option to get Robot Current Locations
+            //TODO: Warn user that Queried Chessbot Locations may not be actual
+            //locations. Lot's of things can go wrong using this third option
             Object[] options = {"Chess Configuration",
-                                "Custom Configuration"};
+                                "Custom Configuration",
+                                "Use Queried Chessbot Locations"};
 
             //TODO: Need to check before here if the default locations of the selected pieces are possibleStartingLocations
             int userChoice = JOptionPane.showOptionDialog(null,
                     "Choose the starting locations of your chess pieces",
                     "Initial Chessboard Configuration",
-                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
                     options,
@@ -496,12 +498,12 @@ public class MainFrame extends JFrame
 
             if (userChoice == 0)
                 pieceLocations = generateDefaultLocations(pieceSelection);
-            else {
+
+            else if (userChoice == 1) {
                 for (int i = 0; i < pieceLocations.length; i++)
                     pieceLocations[i] = -1;
 
                 for (int piece : pieceSelection) {
-
                     String prompt = "Choose an available board location for "
                         + "Piece "
                         + piece
@@ -520,6 +522,22 @@ public class MainFrame extends JFrame
                     pieceLocations[piece] = Integer.parseInt(selectedLocation);
                     possibleStartingLocations.remove(selectedLocation);
                 }
+            }
+
+            else {
+                JOptionPane.showMessageDialog(null, 
+                    "Updating Robot Locations... Please Wait 5 seconds",
+                    "Updating Robot Locations",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                try { 
+                    Thread.sleep(5000); 
+                } 
+                catch (InterruptedException e) { 
+                    log.debug("Thread Interrupted", e); 
+                }
+
+                pieceLocations = manager.getChessbotInfo().getRobotLocations(pieceSelection);
             }
 
             return pieceLocations;

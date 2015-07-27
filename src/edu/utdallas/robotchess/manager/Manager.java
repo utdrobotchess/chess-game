@@ -9,8 +9,10 @@ import edu.utdallas.robotchess.game.ChessGame;
 import edu.utdallas.robotchess.game.ChessPiece;
 import edu.utdallas.robotchess.game.Square;
 import edu.utdallas.robotchess.robotcommunication.ChessbotCommunicator;
+import edu.utdallas.robotchess.robotcommunication.ChessbotInfo;
 import edu.utdallas.robotchess.robotcommunication.ChessbotInfoArrayHandler;
 import edu.utdallas.robotchess.robotcommunication.RemoteController;
+import edu.utdallas.robotchess.robotcommunication.commands.ReadLocationCommand;
 import edu.utdallas.robotchess.robotcommunication.commands.SetLocationCommand;
 
 public abstract class Manager
@@ -170,6 +172,24 @@ public abstract class Manager
             return false;
 
         return comm.isDiscoveringChessbots();
+    }
+
+    public void updateRobotLocations()
+    {
+        ChessbotInfoArrayHandler chessbotInfoArrayHandler = comm.getChessbotInfo();
+        ArrayList<ChessbotInfo> chessbots = chessbotInfoArrayHandler.getChessbotInfoArrayList();
+
+        for (ChessbotInfo chessbot : chessbots) {
+            Integer botId = chessbot.getId();
+    
+            if (botId == null) {
+                ReadLocationCommand cmd = new ReadLocationCommand(0);
+                cmd.setXbeeAddress(chessbot.getXbeeAddress());
+                comm.sendCommand(cmd);
+            }
+            else 
+                comm.sendCommand(new ReadLocationCommand(chessbot.getId()));
+        }
     }
 
     public void notifyRobotsOfTheirLocations()

@@ -26,6 +26,7 @@ public class ChessbotInfoArrayHandler
             Date date = new Date();
             ChessbotInfo chessbotInfo = new ChessbotInfo(addr, null, date);
             chessbotArr.add(chessbotInfo);
+            updated = true;
         }
     }
 
@@ -53,6 +54,7 @@ public class ChessbotInfoArrayHandler
             //I sort upon insertion. May not be the most elegant way of
             //handling this
             Collections.sort(chessbotArr, new ChessbotInfoComparator());
+            updated = true;
         }
     }
 
@@ -80,19 +82,57 @@ public class ChessbotInfoArrayHandler
                                     boolean deliveryStatus) {
         ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
         int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
+
         chessbotInfo.setLastTimeCommunicated(new Date());
         chessbotInfo.setLastCommandSent(cmd, deliveryStatus);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+
         updated = true;
     }
 
     public void updateMessageReceived(XBeeAddress64 addr, ZNetRxResponse msg) {
         ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
         int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
+
         chessbotInfo.setLastTimeCommunicated(new Date());
         chessbotInfo.setLastMessageReceived(msg);
         chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+
         updated = true;
+    }
+
+    public void updateLocation(XBeeAddress64 addr, Integer location) {
+        ChessbotInfo chessbotInfo = getChessbotInfoFromAddress(addr);
+        int chessbotInfoIndex = chessbotArr.indexOf(chessbotInfo);
+
+        chessbotInfo.setLocation(location);
+        chessbotArr.set(chessbotInfoIndex, chessbotInfo);
+
+        updated = true;
+    }
+
+    public int[] getRobotLocations(int[] robotSelection) {
+        int[] robotLocations = new int[32];
+
+        for (int i = 0; i < robotLocations.length; i++)
+            robotLocations[i] = -1;
+
+        for (int robotID : robotSelection) {
+            ChessbotInfo chessbotInfo = getChessbotInfoFromId(robotID);
+            Integer location = null;
+
+            if (chessbotInfo != null)
+                location = chessbotInfo.getLocation();
+
+            if (location != null)
+                robotLocations[robotID] = location.intValue();
+        }
+        
+        return robotLocations;
+    }
+
+    public ArrayList<ChessbotInfo> getChessbotInfoArrayList() {
+        return chessbotArr;
     }
 
     public ChessbotInfo getChessbotInfoFromAddress(XBeeAddress64 addr) {

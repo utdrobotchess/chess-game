@@ -13,6 +13,7 @@ public class ChessbotInfo
 {
     XBeeAddress64 xbeeAddress;
     Integer id;
+    Integer location;
     String pieceType;
     Date lastTimeCommunicated;
     ZNetRxResponse lastMessageReceived; //Last message received from Chessbot
@@ -108,6 +109,14 @@ public class ChessbotInfo
                 pieceType = "Pawn";
     }
 
+    public Integer getLocation() {
+        return location;
+    }
+
+    public void setLocation(Integer location) {
+        this.location = location;
+    }
+
     public String getPieceType() {
         return pieceType;
     }
@@ -187,7 +196,7 @@ public class ChessbotInfo
         return data;
     }
 
-    //This is messy
+    //TODO: Update this
     public String toString() {
         String string = String.format(id + " " + xbeeAddress +
                 " " + formatDateToString() + " " + lastCommandSent +
@@ -196,6 +205,7 @@ public class ChessbotInfo
         return string;
     }
 
+    //TODO: Update this
     @Override
     public boolean equals(Object o) {
         if (this == o)
