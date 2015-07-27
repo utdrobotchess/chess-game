@@ -10,7 +10,9 @@ import edu.utdallas.robotchess.robotcommunication.commands.Command;
 import edu.utdallas.robotchess.robotcommunication.commands.RCCommand;
 import edu.utdallas.robotchess.robotcommunication.commands.SmartCenterCommand;
 
-public class RemoteController implements Runnable
+//TODO: Should 'implement Runnable', however javac is not recognizing the
+//start() method for RemoteController when I make it so
+public class RemoteController extends Thread
 {
     static Controller controller;
     Mapping buttonMap;
